@@ -363,13 +363,13 @@ Tilemap:
       e33: 1
   m_TileColorArray:
   - m_RefCount: 1
-    m_Data: {r: 0.8297534, g: 0.4383794, b: 0.45810792, a: 1}
+    m_Data: {r: 0.8798837, g: 0.5107559, b: 0.53585726, a: 1}
   - m_RefCount: 1
-    m_Data: {r: 0.95557696, g: 0.5640194, b: 0.6025711, a: 1}
+    m_Data: {r: 0.8533653, g: 0.4978946, b: 0.53654635, a: 1}
   - m_RefCount: 1
-    m_Data: {r: 0.88789415, g: 0.55983555, b: 0.6678402, a: 1}
+    m_Data: {r: 0.38027772, g: 0.5483276, b: 0.9245283, a: 1}
   - m_RefCount: 1
-    m_Data: {r: 0.7516514, g: 0.48948336, b: 0.5036419, a: 1}
+    m_Data: {r: 0.7203928, g: 0.3597116, b: 0.40504473, a: 1}
   - m_RefCount: 14
     m_Data: {r: 1, g: 1, b: 1, a: 1}
   m_TileObjectToInstantiateArray: []
@@ -452,7 +452,7 @@ TilemapRenderer:
   m_SortOrder: 0
   m_Mode: 0
   m_DetectChunkCullingBounds: 0
---- !u!114 &1853775850728875767
+--- !u!114 &5994225481013941911
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

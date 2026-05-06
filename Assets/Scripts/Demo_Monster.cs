@@ -27,5 +27,10 @@ public class Demo_Monster : MonoBehaviour
         {
             HPSlider.value = currentHP;
         }
+
+        if (currentHP <= 0)
+        {
+            Destroy(this);
+        }
     }
 }

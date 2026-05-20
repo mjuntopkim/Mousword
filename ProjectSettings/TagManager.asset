@@ -42,6 +42,18 @@ TagManager:
   - name: Background
     uniqueID: 1829066175
     locked: 0
+  - name: Fourth
+    uniqueID: 4238289525
+    locked: 0
+  - name: Third
+    uniqueID: 1826958089
+    locked: 0
+  - name: Second
+    uniqueID: 3957640311
+    locked: 0
+  - name: First
+    uniqueID: 3605603649
+    locked: 0
   - name: Default
     uniqueID: 0
     locked: 0

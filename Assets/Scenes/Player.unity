@@ -182,7 +182,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 1829066175
-  m_SortingLayer: -1
+  m_SortingLayer: -5
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: -7954564674364683927, guid: 55f9be3cd22f08446936e844dc7a6712, type: 3}
@@ -210,6 +210,33 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1037172421 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3552542105719018522, guid: 28df55834ffea8d4bb33011f75809f9d, type: 3}
+  m_PrefabInstance: {fileID: 3700758582164812717}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &1037172427
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1037172421}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 62e9d874a3353d94d8bbfa787291830a, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &1166131473
 GameObject:
   m_ObjectHideFlags: 0
@@ -782,6 +809,38 @@ PrefabInstance:
       propertyPath: jumpForce
       value: 7
       objectReference: {fileID: 0}
+    - target: {fileID: 4634123064666043612, guid: 28df55834ffea8d4bb33011f75809f9d, type: 3}
+      propertyPath: moveSpeed
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 4634123064666043612, guid: 28df55834ffea8d4bb33011f75809f9d, type: 3}
+      propertyPath: checkRadius
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5178068562402907679, guid: 28df55834ffea8d4bb33011f75809f9d, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -1.19
+      objectReference: {fileID: 0}
+    - target: {fileID: 6457473471716323845, guid: 28df55834ffea8d4bb33011f75809f9d, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: -3759438304851422995, guid: e1d2ae5d81c89944e8ba8cd42ae9a504, type: 3}
+    - target: {fileID: 8388611508977351146, guid: 28df55834ffea8d4bb33011f75809f9d, type: 3}
+      propertyPath: m_Size.x
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8388611508977351146, guid: 28df55834ffea8d4bb33011f75809f9d, type: 3}
+      propertyPath: m_Size.y
+      value: 2.75
+      objectReference: {fileID: 0}
+    - target: {fileID: 8388611508977351146, guid: 28df55834ffea8d4bb33011f75809f9d, type: 3}
+      propertyPath: m_SpriteTilingProperty.oldSize.x
+      value: 2.0401244
+      objectReference: {fileID: 0}
+    - target: {fileID: 8388611508977351146, guid: 28df55834ffea8d4bb33011f75809f9d, type: 3}
+      propertyPath: m_SpriteTilingProperty.oldSize.y
+      value: 2.77
+      objectReference: {fileID: 0}
     - target: {fileID: 8923746066673263368, guid: 28df55834ffea8d4bb33011f75809f9d, type: 3}
       propertyPath: m_LocalPosition.x
       value: 1.39537
@@ -825,7 +884,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3552542105719018522, guid: 28df55834ffea8d4bb33011f75809f9d, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1037172427}
   m_SourcePrefab: {fileID: 100100000, guid: 28df55834ffea8d4bb33011f75809f9d, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

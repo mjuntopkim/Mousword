@@ -14,6 +14,14 @@ public class ParallaxGroup : MonoBehaviour
 
     void Start()
     {
+        if(cam == null)
+        {
+            if(Camera.main != null)
+            {
+                cam = Camera.main.transform;
+            }
+        }
+
         backgrounds = new Transform[transform.childCount];
         for (int i = 0; i < transform.childCount; i++)
         {

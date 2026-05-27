@@ -19,6 +19,11 @@ public class PlayerMove : MonoBehaviour
     private Animator anim;                 // 애니메이션 조종기
     private SpriteRenderer spriteRenderer; // 좌우 방향 뒤집기용
 
+    private void Awake()
+    {
+        DontDestroyOnLoad(gameObject);
+    }
+
     void Start()
     {
         rigid = GetComponent<Rigidbody2D>();

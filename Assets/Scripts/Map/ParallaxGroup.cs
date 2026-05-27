@@ -7,10 +7,12 @@ public class ParallaxGroup : MonoBehaviour
     [SerializeField] private float parallaxEffectY = 1.0f;
     [SerializeField] private float backgroundWidth;
     [SerializeField] private float jumpThreshold = 1.5f;
+    [SerializeField] private float offsetY = 0f;
 
     private Transform[] backgrounds;
-    private float startPosY;
-    private float startCamY;
+    private Vector3 lastCamPos;
+    private bool isFirstFrame = true;
+
 
     void Start()
     {
@@ -28,14 +30,25 @@ public class ParallaxGroup : MonoBehaviour
             backgrounds[i] = transform.GetChild(i);
         }
 
-        startPosY = transform.position.y;
-        startCamY = cam.position.y;
+        SnapToCamera();
     }
 
     void LateUpdate()
     {
-        float targetY = startPosY + (cam.position.y - startCamY) * parallaxEffectY;
-        transform.position = new Vector3(cam.position.x * parallaxEffectX, targetY, transform.position.z);
+        Vector3 camDelta = cam.position - lastCamPos;
+
+        if (isFirstFrame || camDelta.magnitude > 5f)
+        {
+            transform.position += camDelta;
+
+            lastCamPos = cam.position;
+            isFirstFrame = false;
+            return;
+        }
+
+        transform.position += new Vector3(camDelta.x * parallaxEffectX, camDelta.y * parallaxEffectY, 0);
+
+        lastCamPos = cam.position;
 
         for (int i = 0; i < backgrounds.Length; i++)
         {
@@ -50,5 +63,11 @@ public class ParallaxGroup : MonoBehaviour
                 backgrounds[i].localPosition += Vector3.left * backgroundWidth * backgrounds.Length;
             }
         }
+    }
+
+    private void SnapToCamera()
+    {
+        transform.position = new Vector3(cam.position.x, cam.position.y + offsetY, transform.position.z);
+        lastCamPos = cam.position;
     }
 }

@@ -10,6 +10,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Animator fadeAnimator;
     [SerializeField] private float fadeTime = 1f;
 
+    public bool IsTransitioning { get; private set; } = false;
+
     private void Awake()
     {
         if(Instance == null)
@@ -25,12 +27,19 @@ public class GameManager : MonoBehaviour
 
     public void TransitionToNextScene(string nextSceneName, string spawnPointName)
     {
+        if (IsTransitioning)
+        {
+            return;
+        }
+
         targetSpawnPointName = spawnPointName;
         StartCoroutine(LoadSceneSequence(nextSceneName));
     }
 
     private IEnumerator LoadSceneSequence(string nextScenename)
     {
+        IsTransitioning = true;
+
         if(fadeAnimator != null)
         {
             fadeAnimator.SetTrigger("StartFadeOut");
@@ -49,6 +58,8 @@ public class GameManager : MonoBehaviour
         {
             fadeAnimator.SetTrigger("StartFadeIn");
         }
+
+        IsTransitioning = false;
     }
 
     private void MovePlayerToSpawn()

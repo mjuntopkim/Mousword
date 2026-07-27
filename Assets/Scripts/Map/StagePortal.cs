@@ -17,6 +17,11 @@ public class StagePortal : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        if(GameManager.Instance != null && GameManager.Instance.IsTransitioning)
+        {
+            return;
+        }
+
         if(collision.CompareTag("Player") && !isActivated)
         {
             isActivated = true;

@@ -3,15 +3,15 @@ using System.Collections;
 
 public class PlayerStatus : MonoBehaviour
 {
-    // 생존 스텟 (Survival Stats)
+    // 생존 스텟
     [SerializeField] private float maxHp = 100f;       // 최대 체력
-    [SerializeField] private float currentHp;          // 현재 체력
+    [SerializeField] private float currentHp;          //현재 체력
 
-    [SerializeField] private float maxMp = 50f;        // 최대 마나 / 스태미나
-    [SerializeField] private float currentMp;          // 현재 마나 / 스태미나
+    [SerializeField] private float maxMp = 50f;        // 최대 마나
+    [SerializeField] private float currentMp;          // 현재 마나
 
-    // 방어 스텟 (Defense Stats)
-    [SerializeField] private float defense = 5f;       // 방어력 (데미지 감면용)
+    //방어 스텟
+    [SerializeField] private float defense = 5f;       // 방어력(데미지 감소)
     [SerializeField] private float invincibleTime = 0.5f; // 피격 무적 시간
 
     private bool isInvincible = false;                 // 현재 무적 상태 여부
@@ -30,10 +30,11 @@ public class PlayerStatus : MonoBehaviour
         currentHp = maxHp;
         currentMp = maxMp;
 
+        // 피격 무적 연출을 위한 스프라이트 렌더러 컴포넌트
         spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
-    /// 플레이어가 데미지를 입을 때 호출하는 메서드
+    // 플레이어가 데미지를 입을 때 호출하는 메서드
     public void TakeDamage(float damage)
     {
         // 사망했거나 무적 상태라면 데미지를 받지 않음
@@ -58,9 +59,10 @@ public class PlayerStatus : MonoBehaviour
         }
     }
 
-    /// 피격 시 일정 시간 무적 상태로 만들고 깜빡이는 연출
+    // 피격 시 일정 시간 무적 상태로 만들고 깜빡이는 연출
     private IEnumerator InvincibleCooldown()
     {
+        // 무적 상태로 전환
         isInvincible = true;
 
         // 무적 시간 동안 캐릭터를 깜빡거리게 만듦 (피격 시각 효과)
@@ -77,10 +79,10 @@ public class PlayerStatus : MonoBehaviour
 
         // 무적 종료 후 원래 투명도로 복귀
         spriteRenderer.color = new Color(1f, 1f, 1f, 1f);
-        isInvincible = false;
+        isInvincible = false;       // 무적 상태 해제
     }
 
-    /// 마나 / 스태미나 소비 메서드
+    // 마나 / 스태미나 소비 메서드
     public bool ConsumeMp(float amount)
     {
         if (currentMp >= amount)
@@ -93,14 +95,14 @@ public class PlayerStatus : MonoBehaviour
         return false; // 소비 실패
     }
 
-    /// 마나 / 스태미나 회복 메서드 (포션이나 자연 회복용)
+    // 마나  회복 메서드 (포션이나 자연 회복용)
     public void RecoverMp(float amount)
     {
         currentMp += amount;
         currentMp = Mathf.Clamp(currentMp, 0f, maxMp);
     }
 
-    /// 체력 회복 메서드 (흡혈이나 포션용)
+    // 체력 회복 메서드 (흡혈이나 포션용)
     public void RecoverHp(float amount)
     {
         if (IsDead) return;
@@ -109,7 +111,7 @@ public class PlayerStatus : MonoBehaviour
         currentHp = Mathf.Clamp(currentHp, 0f, maxHp);
     }
 
-    /// 플레이어 사망 처리
+    // 플레이어 사망 처리
     private void Die()
     {
         IsDead = true;

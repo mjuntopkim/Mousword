@@ -251,6 +251,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerSkillController
   dashSlashSkill: {fileID: 11400000, guid: 7cb66d49612a03b4f988d6e2dd0dd61b, type: 2}
+  swordWaveSkill: {fileID: 11400000, guid: 7cf9d18b87e62e54b93486bd9a8879b1, type: 2}
   weaponPivot: {fileID: 1647138323510087782}
   bodySpriteRenderer: {fileID: 179106190179413510}
 --- !u!114 &3193737103370860514

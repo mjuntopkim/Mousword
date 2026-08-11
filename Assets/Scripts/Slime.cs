@@ -75,10 +75,6 @@ public class Slime : Monster
         }
         wasRecognized = isRecognzed;                //이전 프레임의 인식 상태 저장
 
-
-        
-        Debug.DrawRay(new Vector2(transform.position.x + moveDirection * transform.localScale.x, transform.position.y - transform.localScale.y), Vector2.down * checkRadius, Color.red);
-        Debug.Log($"isGround: {isGround}, moveDirection: {moveDirection}, curWaitTime: {curWaitTime}");
         if (!isGround) //앞에 땅이 없으면
         {
             isWait = true; //대기상태 갱신
@@ -95,6 +91,8 @@ public class Slime : Monster
             curState = state.normal;
             normalAction();
         }
+
+        anim.SetBool("Wait", isWait); //애니메이션 상태 전환
     }
 
     //물리 이동 부분
@@ -113,6 +111,7 @@ public class Slime : Monster
         if (isWait)
         {
             rigid.linearVelocity = new Vector2(0f, rigid.linearVelocity.y);
+            moveDirection = 0; //이동 방향 초기화
         }
 
         //슬라임이 공격 상태일 때 

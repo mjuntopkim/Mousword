@@ -1,5 +1,6 @@
 using System.Runtime.CompilerServices;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using static UnityEditor.Experimental.GraphView.GraphView;
 
@@ -23,12 +24,12 @@ public class Monster : MonoBehaviour
     [SerializeField] protected float maxWaitTime = 2f;                 //몬스터가 가만히 대기하는 최대 시간(초)
     protected float curWaitTime = 0f;                                  //몬스터가 가만히 대기한 시간(초)
 
-    protected SpriteRenderer spriteRenderer;              // 좌우 방향 뒤집기용(flipx)
+    protected Animator anim;                                // 애니메이션 파라미터 제어를 위한 변수
 
     protected virtual void Start()
     {
         currentHP = maxHP;
-        spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        anim = GetComponent<Animator>();
 
         if (HPSlider != null)
         {
@@ -73,13 +74,17 @@ public class Monster : MonoBehaviour
 
         if (currentHP <= 0)
         {
+            if (anim != null)
+            {
+                anim.SetTrigger("Die");
+            }
             Destroy(this);
         }
     }
 
     public void flip(int direction)
     {
-        spriteRenderer.flipX = direction <= 0;
+        transform.localScale = new Vector3(direction, 1, 1);
     }
 
     protected bool groundChecker(Vector2 position, float radius)

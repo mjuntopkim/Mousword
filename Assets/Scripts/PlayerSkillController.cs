@@ -1,14 +1,17 @@
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq; // Y축 순서 정렬(LINQ)에 필수
 
 public class PlayerSkillController : MonoBehaviour
 {
-    [SerializeField] private SkillData dashSlashSkill; // 인스펙터에서 대시 스킬 데이터를 등록
-
-    [SerializeField] private SkillData swordWaveSkill; // 검기 스킬 데이터 등록 (Sword Wave Skill Data)
+    [SerializeField] private SkillData dashSlashSkill; // 대시 스킬 데이터를 등록
+    [SerializeField] private SkillData swordWaveSkill; // 검기 스킬 데이터 등록 
+    [SerializeField] private SkillData ultimateSkill;  // 궁극기 스킬 데이터 등록
 
     [SerializeField] private Transform weaponPivot;    // 360도 무기 회전축
     [SerializeField] private SpriteRenderer bodySpriteRenderer; // idle 상태일때 캐릭터가 바라보고있는 방향 참조
+    [SerializeField] private LayerMask enemyLayer;      // 궁극기 타격 대상 몬스터 레이어
 
     // 컴포넌트 할당할 변수
     private Rigidbody2D rigid;              
@@ -16,31 +19,31 @@ public class PlayerSkillController : MonoBehaviour
 
     private float currentCoolTime = 0f;     // 실시간으로 감소할 현재 남아있는 스킬 쿨타임
     private float swordWaveCoolTime = 0f;     // 검기 스킬 쿨타임
-    private bool isDashing = false;         // 캐릭터가 현재 대시를 수행 중인지 여부를 저장
+    private float ultimateCoolTime = 0f;   // 궁극기 스킬 쿨타임
+
+    private bool isDashing = false;             // 캐릭터가 현재 대시를 수행 중인지 여부를 저장
+    private bool isExecutingUltimate = false;   // 궁극기 시전 중 여부
 
     void Start()
     {   
         // 컴포넌트 할당
         rigid = GetComponent<Rigidbody2D>();
         playerStatus = GetComponent<PlayerStatus>();
+
+        if (bodySpriteRenderer == null)
+        {
+            bodySpriteRenderer = GetComponent<SpriteRenderer>();
+        }
     }
 
     void Update()
     {
-        // 대시 스킬 쿨타임 계산
-        if (currentCoolTime > 0)
-        {
-            // 쿨타임이 남아있으면 매 프레임 흐른 시간만큼 차감
-            currentCoolTime -= Time.deltaTime;
-        }
+        // 쿨타임 타이머 차감(쿨타임이 남아있으면 매 프레임 흐른 시간만큼 차감)
+        if (currentCoolTime > 0) currentCoolTime -= Time.deltaTime;     // 대시 스킬 쿨타임 계산
+        if (swordWaveCoolTime > 0) swordWaveCoolTime -= Time.deltaTime; // 검기 스킬 쿨타임 계산
+        if (ultimateCoolTime > 0) ultimateCoolTime -= Time.deltaTime;   // 궁극기 쿨타임 계산
 
-        // 검기 스킬 쿨타임 계산
-        if (swordWaveCoolTime > 0)
-        {
-            swordWaveCoolTime -= Time.deltaTime;
-        }
-
-        // 좌측 Shift 키를 누르고, 쿨타임이 끝났으며, 현재 대시 중이 아닐 때 실행합니다.
+        // 좌측 Shift 키를 누르고, 쿨타임이 끝났으며, 현재 대시 중이 아닐 때 실행
         if (Input.GetKeyDown(KeyCode.LeftShift) && currentCoolTime <= 0 && !isDashing)
         {
             // 대시 시도
@@ -52,8 +55,15 @@ public class PlayerSkillController : MonoBehaviour
         {
             TryExecuteSwordWave(swordWaveSkill);
         }
+
+        // [R 키] 궁극기 범위 순차 타격 스킬
+        if (Input.GetKeyDown(KeyCode.R) && ultimateCoolTime <= 0 && !isExecutingUltimate)
+        {
+            TryExecuteUltimate(ultimateSkill);
+        }
     }
 
+    #region 1. 대시 스킬 로직
     private void TryExecuteDash(SkillData skill)
     {
         // 예외 처리(에러 방지)
@@ -144,7 +154,9 @@ public class PlayerSkillController : MonoBehaviour
 
         isDashing = false;
     }
+    #endregion
 
+    #region 2. 검기 스킬 로직
     private void TryExecuteSwordWave(SkillData skill)
     {
         if (skill == null || skill.projectilePrefab == null) return;
@@ -188,6 +200,102 @@ public class PlayerSkillController : MonoBehaviour
             swordWave.Initialize(skill.projectileSpeed, skill.damage);
         }
     }
+    #endregion
+
+    #region 3. 궁극기(화면 전체 순차 타격) 로직
+    private void TryExecuteUltimate(SkillData skill)
+    {
+        if (skill == null) return;
+
+        if (playerStatus == null)
+        {
+            Debug.LogError("오류: Player 1 오브젝트에 'PlayerStatus' 스크립트가 없습니다!");
+            return;
+        }
+
+        if (playerStatus.CurrentMp >= skill.manaCost)
+        {
+            playerStatus.ConsumeMp(skill.manaCost);
+            Debug.Log($"[궁극기 발동] 소모 마나: {skill.manaCost} | 남은 마나: {playerStatus.CurrentMp}/{playerStatus.MaxMp}");
+
+            ultimateCoolTime = skill.coolTime;
+
+            // 순수 순차 타격 기능 코루틴 시작
+            StartCoroutine(ExecuteUltimateHitSequence());
+        }
+        else
+        {
+            Debug.Log("마나가 부족하여 궁극기를 사용할 수 없습니다!");
+        }
+    }
+
+    // 지금은 R키로 바로 작동하며, 나중에 모션 완성 시 애니메이션 이벤트로 호출할 핵심 기능
+    public IEnumerator ExecuteUltimateHitSequence()
+    {
+        if (ultimateSkill == null) yield break;
+
+        isExecutingUltimate = true;
+
+        // 1. 현재 화면(메인 카메라) 영역 좌표 및 크기 계산
+        Camera mainCam = Camera.main;
+        if (mainCam == null)
+        {
+            Debug.LogWarning("Main Camera를 찾을 수 없습니다!");
+            isExecutingUltimate = false;
+            yield break;
+        }
+
+        Vector2 center = mainCam.transform.position;
+        Vector2 size = new Vector2(mainCam.orthographicSize * 2 * mainCam.aspect, mainCam.orthographicSize * 2);
+
+        // 2. 화면 전체 영역 안의 모든 enemyLayer 몬스터 수집
+        Collider2D[] hitEnemies = Physics2D.OverlapBoxAll(center, size, 0f, enemyLayer);
+
+        // 3. Y축 기준 내림차순 정렬 (위쪽 Y좌표 -> 아래쪽 Y좌표 순서)
+        List<Collider2D> sortedEnemies = hitEnemies
+            .OrderByDescending(e => e.transform.position.y)
+            .ToList();
+
+        // 4. 위쪽 몬스터부터 순차적으로 데미지 및 이펙트 처리
+        foreach (Collider2D enemy in sortedEnemies)
+        {
+            if (enemy == null) continue;
+
+            // 몬스터 데미지 전달 처리 (프로젝트의 몬스터 스크립트에 맞춰 호출)
+            Demo_Monster monster = enemy.GetComponent<Demo_Monster>();
+            if (monster != null)
+            {
+                monster.TakeDamage(ultimateSkill.damage);
+            }
+
+            Debug.Log($"[궁극기 순차 피격] {enemy.name} 피격! 데미지: {ultimateSkill.damage}");
+
+            // 피격 지점 이펙트 생성
+            if (ultimateSkill.ultimateHitEffectPrefab != null)
+            {
+                Instantiate(ultimateSkill.ultimateHitEffectPrefab, enemy.transform.position, Quaternion.identity);
+            }
+
+            // 위에서 아래로 순차적 피격 느낌을 주는 지연 시간 (SkillData.hitInterval)
+            yield return new WaitForSeconds(ultimateSkill.hitInterval);
+        }
+
+        isExecutingUltimate = false;
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        // 카메라 감지 영역 Gizmo 표시
+        if (Camera.main != null)
+        {
+            Gizmos.color = Color.red;
+            Camera mainCam = Camera.main;
+            Vector3 center = mainCam.transform.position;
+            Vector3 size = new Vector3(mainCam.orthographicSize * 2 * mainCam.aspect, mainCam.orthographicSize * 2, 1);
+            Gizmos.DrawWireCube(center, size);
+        }
+    }
+    #endregion
 }
 
 

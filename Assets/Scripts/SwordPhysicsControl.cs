@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Getting Over It - 진짜 물리 버전 (공중 스윙 / 등반 토크 분리).
+/// Getting Over It - 물리 버전 (공중 스윙 / 등반 토크 분리).
 ///
 /// 구조:
 ///  - 검(Sword)은 Dynamic Rigidbody2D + 콜라이더 → 정적 지면에 실제로 막힘.
@@ -45,7 +45,14 @@ public class SwordPhysicsControl : MonoBehaviour
     [Tooltip("등반 토크 상한(=캐릭터를 미는 힘의 최대).")]
     [SerializeField] float maxClimbTorque = 400f;
 
-    bool touchingGround;     // 직전 물리 스텝에서 검이 지면에 닿았는지
+    // [추가] 코요테 타임: 검이 지면에서 떨어져도 이 시간(초) 동안은
+    //        계속 "닿아 있는 것"으로 취급 → 미세한 튕김에 등반 토크가 끊기는 것 방지.
+    [Tooltip("지면 접촉 유예 시간(초). 검이 살짝 튕겨도 등반 토크가 유지됨.")]
+    [SerializeField] float coyoteTime = 0.1f;
+
+    // bool touchingGround;     // 직전 물리 스텝에서 검이 지면에 닿았는지  ← [변경] 아래 시각 기록으로 대체
+    // [추가] bool 순간값 대신 "마지막으로 지면에 닿은 시각"을 기록 (코요테 타임의 기준점)
+    float lastGroundContactTime = float.NegativeInfinity;
 
     Vector2 Pivot => hinge != null ? (Vector2)transform.TransformPoint(hinge.anchor) : swordRb.position;
 
@@ -64,8 +71,10 @@ public class SwordPhysicsControl : MonoBehaviour
 
     void FixedUpdate()
     {
-        bool braced = touchingGround;
-        touchingGround = false;   // 이번 스텝 충돌은 OnCollisionStay2D 가 다시 채움
+        // bool braced = touchingGround;
+        // touchingGround = false;   // 이번 스텝 충돌은 OnCollisionStay2D 가 다시 채움
+        // [변경] 마지막 접촉 후 coyoteTime 이내면 계속 braced 로 취급 (유예 판정)
+        bool braced = Time.time - lastGroundContactTime <= coyoteTime;
 
         if (cam == null || swordRb == null) return;
 
@@ -107,6 +116,8 @@ public class SwordPhysicsControl : MonoBehaviour
     void OnCollisionStay2D(Collision2D c)
     {
         if (((1 << c.gameObject.layer) & groundLayer) != 0)
-            touchingGround = true;
+            // touchingGround = true;
+            // [변경] 접촉한 "시각"을 기록 → FixedUpdate 에서 코요테 타임 판정에 사용
+            lastGroundContactTime = Time.time;
     }
 }

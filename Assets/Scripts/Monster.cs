@@ -1,8 +1,5 @@
-using System.Runtime.CompilerServices;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class Monster : MonoBehaviour
 {
@@ -13,18 +10,23 @@ public class Monster : MonoBehaviour
     public float damage = 10f;        //공격력
 
     public Transform player;
-    [SerializeField] protected float recognizeRadius = 5f;          //몬스터가 플레이어를 인식하는 범위 반지름
+    [SerializeField] protected float recognizeRadius = 8f;          //몬스터가 플레이어를 인식하는 범위 반지름
+    [SerializeField] private float attackRadius = 4f;               //몬스터가 플레이어를 공격하는 범위
     protected bool isRecognzed = false;                             //몬스터가 플레이어를 인식했는지 확인
-    protected bool wasRecognized = false;                           //이전 프레임의 인식 상태 확인
-    public float distanceToPlayer;                                  //몬스터와 플레이어 사이의 거리
-    protected enum state{normal, attack}                            //몬스터의 공격 상태
+    protected float distanceToPlayer;                                  //몬스터와 플레이어 사이의 거리
+    protected enum state{idle, notice, attack}                            //몬스터의 공격 상태
     protected state curState;                                       //현재 몬스터의 공격 상태
+
+    public Transform groundCheck;                                   // 발밑 위치를 정할 오브젝트
+    private GameObject monsterAttackHitbox;                         //슬라임 공격 동작의 공격 범위 오브젝트
+
 
     protected bool isWait = false;                                     //몬스터가 가만히 대기하는 상태
     [SerializeField] protected float maxWaitTime = 2f;                 //몬스터가 가만히 대기하는 최대 시간(초)
     protected float curWaitTime = 0f;                                  //몬스터가 가만히 대기한 시간(초)
 
     protected Animator anim;                                // 애니메이션 파라미터 제어를 위한 변수
+    
 
     protected virtual void Start()
     {
@@ -36,6 +38,9 @@ public class Monster : MonoBehaviour
             HPSlider.maxValue = maxHP;
             HPSlider.value = currentHP;
         }
+
+        monsterAttackHitbox = GameObject.Find("MonsterAttackHitbox");
+        monsterAttackHitbox.SetActive(false); //슬라임 공격 동작의 공격 범위 비활성화
     }
 
     protected virtual void Update()
@@ -45,22 +50,25 @@ public class Monster : MonoBehaviour
 
         //플레이어와의 거리가 인식 반지름 이하인지 확인
         isRecognzed = distanceToPlayer <= recognizeRadius;
-
-        //플레이어가 인식 범위에 들어선 순간에 플레이어를 바라봄
-        if (isRecognzed==true && wasRecognized==false)
+        
+        //플레이어 인식 여부에 따라 상태 전환
+        if (isRecognzed)
         {
-            if (player.position.x > transform.position.x)           //플레이어가 몬스터의 오른쪽에 있을 때
+            if (distanceToPlayer <= attackRadius)                             //플레이어가 공격 범위 안에 있을 때 공격 범위 활성화
             {
-                flip(1);
+                curState = state.attack;
             }
-            else if (player.position.x < transform.position.x)      //플레이어가 몬스터의 왼쪽에 있을 때
+            else
             {
-                flip(-1);
+                anim.SetBool("Attack", false);      //공격 애니메이션 끔
+                flip(player.position.x > transform.position.x ? 1 : -1);      //플레이어가 인식 범위에 들어선 순간에 플레이어를 바라봄
+                curState = state.notice;
             }
         }
-        wasRecognized = isRecognzed;                //이전 프레임의 인식 상태 저장
-        
-
+        else
+        {
+            curState = state.idle;
+        }
     }
 
     public void TakeDamage(float damage)
@@ -74,11 +82,13 @@ public class Monster : MonoBehaviour
 
         if (currentHP <= 0)
         {
+            moveSpeed = 0f;
             if (anim != null)
             {
                 anim.SetTrigger("Die");
             }
-            Destroy(this);
+            Destroy(gameObject, 1.0f);
+
         }
     }
 
@@ -87,10 +97,16 @@ public class Monster : MonoBehaviour
         transform.localScale = new Vector3(direction, 1, 1);
     }
 
-    protected bool groundChecker(Vector2 position, float radius)
+    protected bool groundChecker(float radius)
     {
         // 핵심: 발밑에 가상의 원을 그려서 'Ground' 레이어와 닿아있는지 체크
-        bool isGrounded = Physics2D.OverlapCircle(position, radius, LayerMask.GetMask("Ground"));
+        bool isGrounded = Physics2D.OverlapCircle(groundCheck.position, radius, LayerMask.GetMask("Ground"));
         return isGrounded;
+    }
+
+    public void setAttackHitbox(int on)
+    {
+        bool isOn = on>0 ? true : false;
+        monsterAttackHitbox.SetActive(isOn);
     }
 }

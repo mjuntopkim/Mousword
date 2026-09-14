@@ -80,6 +80,7 @@ public class Slime : Monster
         switch (curState)
         {
             case state.idle:                // Idle 상태
+                startPosition = transform.position;                           //슬라임의 현재 위치를 startPosition으로 갱신
                 break;
             case state.notice:              // Notice 상태
                 flip(player.position.x > transform.position.x ? 1 : -1);      //플레이어가 인식 범위에 들어선 순간에 플레이어를 바라봄
@@ -103,8 +104,6 @@ public class Slime : Monster
                     curMoveDistance = 0f; //이동 거리 초기화
 
                     transform.position = new Vector2(startPosition.x + moveDirection * maxIdleMoveDistance, transform.position.y);
-
-                    startPosition = transform.position; //슬라임의 현재 위치를 startPosition으로 갱신
                 }
 
                 if (isWait)
@@ -116,6 +115,8 @@ public class Slime : Monster
                     }
                     else if (curWaitTime >= maxWaitTime || !isGround)
                     {
+                        Debug.Log((int)(startPosition.x));
+                        Debug.Log((int)(transform.position.x));
                         moveDirection = (int)(startPosition.x) <= (int)(transform.position.x) ? -1 : 1; //이동 방향 반전
                         flip(moveDirection);                                             //좌우 반전
                         isWait = false;

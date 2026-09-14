@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Monster : MonoBehaviour
+public abstract class Monster : MonoBehaviour
 {
     [SerializeField] private Slider HPSlider;
     [SerializeField] protected float maxHP = 100f;
@@ -60,8 +60,11 @@ public class Monster : MonoBehaviour
             }
             else
             {
-                anim.SetBool("Attack", false);      //공격 애니메이션 끔
-                flip(player.position.x > transform.position.x ? 1 : -1);      //플레이어가 인식 범위에 들어선 순간에 플레이어를 바라봄
+                stateEnd();
+                if (curState == state.idle)
+                {
+                    stateEnter();        //idle 상태에서 notice 상태로 전환될 때 stateEnter() 호출
+                }
                 curState = state.notice;
             }
         }
@@ -91,6 +94,10 @@ public class Monster : MonoBehaviour
 
         }
     }
+
+    public abstract void stateEnter();          //상태 진입시 한번만
+    public abstract void stateUpdate();         //상태 유지시 매 프레임마다
+    public abstract void stateEnd();            //상태 종료시 한번만
 
     public void flip(int direction)
     {

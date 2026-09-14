@@ -11,6 +11,11 @@ public class MonsterHitBox : MonoBehaviour
 
             Monster monster = GetComponentInParent<Monster>();
 
+            if (monster == null || playerStatus == null)
+            {
+                return;
+            }
+            
             //데미지 전달
             playerStatus.TakeDamage(monster.damage);
         }

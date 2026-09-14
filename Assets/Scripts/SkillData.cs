@@ -22,4 +22,8 @@ public class SkillData : ScriptableObject
     // 검기 관련 스텟
     public GameObject projectilePrefab; // 날아갈 검기 프리팹
     public float projectileSpeed = 15f;  // 검기 날아가는 속도
+
+    // 궁극기 관련 스텟
+    public float hitInterval = 0.08f; // 몬스터 간 피격 지연 시간 (초)
+    public GameObject ultimateHitEffectPrefab; // 몬스터 위치에 터질 피격 이펙트
 }

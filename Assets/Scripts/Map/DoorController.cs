@@ -50,6 +50,7 @@ public class DoorController : MonoBehaviour
     public void SetMonsterCount(int count)
     {
         remainingMonsters = count;
+        Debug.Log("¿Ã∞≈¿”" + remainingMonsters);
 
         if (remainingMonsters <= 0)
         {

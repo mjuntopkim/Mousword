@@ -478,7 +478,7 @@ Transform:
   m_GameObject: {fileID: 353701881}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 181.46707, y: 114.915565, z: -10}
+  m_LocalPosition: {x: 181.47008, y: 114.91557, z: -10}
   m_LocalScale: {x: 0.727144, y: 0.727144, z: 0.727144}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -46039,6 +46039,14 @@ PrefabInstance:
       propertyPath: m_IsTrigger
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1382670849420021048, guid: 827bfade240a89c47bd0be19baa596b8, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2139468735010523724, guid: 827bfade240a89c47bd0be19baa596b8, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5330016094060691589, guid: 827bfade240a89c47bd0be19baa596b8, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -46051,9 +46059,17 @@ PrefabInstance:
       propertyPath: BoundingShape2D
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 6667796703764707724, guid: 827bfade240a89c47bd0be19baa596b8, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7424087069261895125, guid: 827bfade240a89c47bd0be19baa596b8, type: 3}
       propertyPath: m_Name
       value: Player 1(MapScene Test) (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 7424087069261895125, guid: 827bfade240a89c47bd0be19baa596b8, type: 3}
+      propertyPath: m_Layer
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9176715121401992591, guid: 827bfade240a89c47bd0be19baa596b8, type: 3}
       propertyPath: m_LocalPosition.x

@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class DoorController : MonoBehaviour
 {
@@ -11,7 +12,7 @@ public class DoorController : MonoBehaviour
 
     [SerializeField] private float openDuration = 0.5f;
 
-    private int remainingMonsters = 0;
+    private List<GameObject> trackedMonsters = new List<GameObject>();
     private bool isClose = false;
 
     private void Awake()
@@ -47,30 +48,22 @@ public class DoorController : MonoBehaviour
         }
     }
 
-    public void SetMonsterCount(int count)
+    public void TrackMonsters(List<GameObject> monsters)
     {
-        remainingMonsters = count;
-        Debug.Log("¿Ã∞≈¿”" + remainingMonsters);
-
-        if (remainingMonsters <= 0)
-        {
-            OpenDoor();
-        }
+        trackedMonsters.AddRange(monsters);
+        StartCoroutine(MonitorMonsterRoutine());
     }
 
-    public void MonsterDied()
+    private IEnumerator MonitorMonsterRoutine()
     {
-        if (!isClose)
+        while(trackedMonsters.Count > 0)
         {
-            return;
+            yield return new WaitForSeconds(0.3f);
+
+            trackedMonsters.RemoveAll(monster => monster == null);
         }
 
-        remainingMonsters--;
-
-        if (remainingMonsters <= 0)
-        {
-            OpenDoor();
-        }
+        OpenDoor();
     }
 
     public void OpenDoor()

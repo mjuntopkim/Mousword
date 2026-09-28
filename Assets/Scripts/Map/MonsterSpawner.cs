@@ -58,7 +58,7 @@ public class MonsterSpawner : MonoBehaviour
         }
 
         List<List<Vector3Int>> clusters = FindTileClusters();
-        int totalSpawnedCount = 0;
+        List<GameObject> spawnedMonsters = new List<GameObject>();
 
         foreach (var cluster in clusters)
         {
@@ -68,15 +68,15 @@ public class MonsterSpawner : MonoBehaviour
             if (prefab != null)
             {
                 Vector3 spawnPos = CalculateClusterCenter(cluster);
-                Instantiate(prefab, spawnPos, Quaternion.identity);
-                totalSpawnedCount++;
+                GameObject monster = Instantiate(prefab, spawnPos, Quaternion.identity);
+                spawnedMonsters.Add(monster);
             }
         }
 
-        if (doorController != null)
+        if (doorController != null && spawnedMonsters.Count > 0)
         {
-            Debug.Log("스폰 시켱용");
-            doorController.SetMonsterCount(totalSpawnedCount);
+            
+            doorController.TrackMonsters(spawnedMonsters);
         }
     }
 

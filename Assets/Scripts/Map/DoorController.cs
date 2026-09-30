@@ -8,7 +8,8 @@ public class DoorController : MonoBehaviour
     [SerializeField] private Collider2D doorCollider;
 
     [SerializeField] private string dropTriggerName = "Drop";
-    [SerializeField] private string OpenTriggerName = "Open";
+    [SerializeField] private string dropStateName = "RockDrop";
+    [SerializeField] private string speedParameterName = "Speed";
 
     [SerializeField] private float openDuration = 0.5f;
 
@@ -19,13 +20,16 @@ public class DoorController : MonoBehaviour
     {
         if (doorAnimator == null)
         {
-            doorAnimator.GetComponent<Animator>();
+            doorAnimator = GetComponent<Animator>();
         }
+
         if (doorCollider == null)
         {
-            doorCollider.GetComponent<Collider2D>();
+            doorCollider = GetComponent<Collider2D>();
         }
     }
+
+
 
     public void CloseDoor()
     {
@@ -38,8 +42,8 @@ public class DoorController : MonoBehaviour
 
         if (doorAnimator != null)
         {
-            doorAnimator.ResetTrigger(OpenTriggerName);
-            doorAnimator.SetTrigger(dropTriggerName);
+            doorAnimator.SetFloat(speedParameterName, 1f);
+            doorAnimator.Play(dropStateName, 0, 0.0f);
         }
 
         if (doorCollider != null)
@@ -56,7 +60,7 @@ public class DoorController : MonoBehaviour
 
     private IEnumerator MonitorMonsterRoutine()
     {
-        while(trackedMonsters.Count > 0)
+        while (trackedMonsters.Count > 0)
         {
             yield return new WaitForSeconds(0.3f);
 
@@ -70,13 +74,14 @@ public class DoorController : MonoBehaviour
     {
         isClose = false;
 
-        if(doorAnimator != null)
+        if (doorAnimator != null)
         {
             doorAnimator.ResetTrigger(dropTriggerName);
-            doorAnimator.SetTrigger(OpenTriggerName);
+            doorAnimator.SetFloat(speedParameterName, -1f);
+            doorAnimator.Play(dropStateName, 0, 1.0f);
         }
 
-        if(doorCollider != null)
+        if (doorCollider != null)
         {
             StartCoroutine(DisableCollider(openDuration));
         }
@@ -85,7 +90,8 @@ public class DoorController : MonoBehaviour
     private IEnumerator DisableCollider(float delay)
     {
         yield return new WaitForSeconds(delay);
-        if(doorCollider != null)
+
+        if (doorCollider != null)
         {
             doorCollider.enabled = false;
         }

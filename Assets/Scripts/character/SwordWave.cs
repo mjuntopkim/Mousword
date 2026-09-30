@@ -25,7 +25,7 @@ public class SwordWave : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other)
     {
         // 몬스터와 충돌 시 데미지 부여 및 검기 삭제
-        Demo_Monster monster = other.GetComponentInParent<Demo_Monster>();
+        Slime monster = other.GetComponentInParent<Slime>();
         if (monster != null)
         {
             monster.TakeDamage((int)damage);

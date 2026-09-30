@@ -14,19 +14,21 @@ public abstract class Monster : MonoBehaviour
     [SerializeField] private float attackRadius = 4f;               //몬스터가 플레이어를 공격하는 범위
     protected bool isRecognzed = false;                             //몬스터가 플레이어를 인식했는지 확인
     protected float distanceToPlayer;                                  //몬스터와 플레이어 사이의 거리
-    protected enum state{idle, notice, attack}                            //몬스터의 공격 상태
-    protected state curState;                                       //현재 몬스터의 공격 상태
+    public enum state{idle, notice, attack, die}                            //몬스터의 상태
+    protected state curState;                                       //현재 몬스터의 상태
 
     public Transform groundCheck;                                   // 발밑 위치를 정할 오브젝트
-    private GameObject monsterAttackHitbox;                         //슬라임 공격 동작의 공격 범위 오브젝트
+    private GameObject monsterAttackHitbox;                         //몬스터 공격 동작의 공격 범위 오브젝트
 
 
-    protected bool isWait = false;                                     //몬스터가 가만히 대기하는 상태
-    [SerializeField] protected float maxWaitTime = 2f;                 //몬스터가 가만히 대기하는 최대 시간(초)
-    protected float curWaitTime = 0f;                                  //몬스터가 가만히 대기한 시간(초)
+    public bool isWait = false;                                     //몬스터가 가만히 대기하는 상태
+    public float maxWaitTime = 2f;                 //몬스터가 가만히 대기하는 최대 시간(초)
+    public float curWaitTime = 0f;                                  //몬스터가 가만히 대기한 시간(초)
 
-    protected Animator anim;                                // 애니메이션 파라미터 제어를 위한 변수
-    
+    public Animator anim;                                // 애니메이션 파라미터 제어를 위한 변수
+
+    protected FSM fsm;                                //상태 전환을 위한 FSM 객체
+
 
     protected virtual void Start()
     {
@@ -40,7 +42,9 @@ public abstract class Monster : MonoBehaviour
         }
 
         monsterAttackHitbox = GameObject.Find("MonsterAttackHitbox");
-        monsterAttackHitbox.SetActive(false); //슬라임 공격 동작의 공격 범위 비활성화
+        monsterAttackHitbox.SetActive(false); //몬스터 공격 동작의 공격 범위 비활성화
+
+        
     }
 
     protected virtual void Update()
@@ -60,11 +64,6 @@ public abstract class Monster : MonoBehaviour
             }
             else
             {
-                stateEnd();
-                if (curState == state.idle)
-                {
-                    stateEnter();        //idle 상태에서 notice 상태로 전환될 때 stateEnter() 호출
-                }
                 curState = state.notice;
             }
         }
@@ -72,6 +71,7 @@ public abstract class Monster : MonoBehaviour
         {
             curState = state.idle;
         }
+        changeState(curState);
     }
 
     public void TakeDamage(float damage)
@@ -85,19 +85,11 @@ public abstract class Monster : MonoBehaviour
 
         if (currentHP <= 0)
         {
-            moveSpeed = 0f;
-            if (anim != null)
-            {
-                anim.SetTrigger("Die");
-            }
+            curState = state.die;
+            changeState(curState);
             Destroy(gameObject, 1.0f);
-
         }
     }
-
-    public abstract void stateEnter();          //상태 진입시 한번만
-    public abstract void stateUpdate();         //상태 유지시 매 프레임마다
-    public abstract void stateEnd();            //상태 종료시 한번만
 
     public void flip(int direction)
     {
@@ -115,5 +107,17 @@ public abstract class Monster : MonoBehaviour
     {
         bool isOn = on>0 ? true : false;
         monsterAttackHitbox.SetActive(isOn);
+    }
+
+    public virtual void changeState(state newState)
+    {
+        curState = newState;
+
+        switch (curState)
+        {
+            case state.die:
+                fsm.changeState(new CommonState.DieState(this));
+                break;
+        }
     }
 }

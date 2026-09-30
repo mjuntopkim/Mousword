@@ -26,4 +26,8 @@ public class SkillData : ScriptableObject
     // 궁극기 관련 스텟
     public float hitInterval = 0.08f; // 몬스터 간 피격 지연 시간 (초)
     public GameObject ultimateHitEffectPrefab; // 몬스터 위치에 터질 피격 이펙트
+
+    // 360도 회전 스킬
+    public float spinDegrees = 360f;       // 회전 각도
+    public float spinDuration = 0.5f;      // 회전 시간
 }

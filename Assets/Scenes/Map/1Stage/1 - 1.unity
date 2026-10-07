@@ -455,7 +455,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &129048043
 Transform:
   m_ObjectHideFlags: 0
@@ -48526,11 +48526,13 @@ MonoBehaviour:
   dashSlashSkill: {fileID: 11400000, guid: 7cb66d49612a03b4f988d6e2dd0dd61b, type: 2}
   swordWaveSkill: {fileID: 0}
   ultimateSkill: {fileID: 0}
+  spinSkill: {fileID: 0}
   weaponPivot: {fileID: 1670753609}
   bodySpriteRenderer: {fileID: 1269851106}
   enemyLayer:
     serializedVersion: 2
     m_Bits: 0
+  spinHitbox: {fileID: 0}
 --- !u!1 &2083914032
 GameObject:
   m_ObjectHideFlags: 0

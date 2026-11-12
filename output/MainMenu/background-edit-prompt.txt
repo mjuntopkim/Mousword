@@ -1,0 +1,5 @@
+Tool: built-in image_gen
+Source: Mousword-Pixel-Menu-Concept.png
+Runtime asset: Assets/Art/MainMenu/PixelForestMenu.png
+
+Edit this approved pixel-art game menu image for use as a Unity background asset. Preserve the entire image composition, resolution, pixel-art style, colors, sword, forest, terrain, fireflies, and especially the MOUSWORD wordmark and its gold ornaments EXACTLY as they are. Change ONLY the three Korean menu labels 시작 옵션 종료 and the gold cursor diamond beside 시작: remove those four items completely and fill their former pixels seamlessly with the same dark teal forest background. This area must be empty for live Unity UI buttons. Keep the MOUSWORD logo unchanged. Do not add anything. No redesign. No new words or buttons. Preserve the exact existing artwork.

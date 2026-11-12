@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class MainMenuController : MonoBehaviour
 {
-    public const string FirstStagePath = "Assets/Scenes/Map/1Stage/1 - 1.unity";
+    public const string FirstStagePath = "Assets/Scenes/Main/1 - 1.unity";
     private const string VolumePreference = "MasterVolume";
 
     [SerializeField] private GameObject mainPanel;

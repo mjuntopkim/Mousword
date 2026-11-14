@@ -134,6 +134,7 @@ public static class GoblinState
             goblin.anim.SetBool("Attack", false);
             goblin.isWait = false;
             goblin.startPosition = goblin.transform.position;
+            goblin.groundCheck.transform.localPosition = new Vector2(1, goblin.groundCheck.transform.localPosition.y);
         }
 
     }

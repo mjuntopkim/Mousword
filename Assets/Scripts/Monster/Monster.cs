@@ -143,4 +143,15 @@ public abstract class Monster : MonoBehaviour
             string clipName = anim.GetCurrentAnimatorClipInfo(0)[0].clip.name;
         }
     }
+    void OnBecameInvisible()
+    {
+        
+        //this.enabled = false;
+        anim.enabled = false;
+    }
+    void OnBecameVisible()
+    {
+        //this.enabled = true;
+        anim.enabled = true;
+    }
 }

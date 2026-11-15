@@ -5,6 +5,16 @@ using System.Linq; // Y축 순서 정렬(LINQ)에 필수
 
 public class PlayerSkillController : MonoBehaviour
 {
+    public float DashCooldownRemaining => Mathf.Max(0f, currentCoolTime);
+    public float SpinCooldownRemaining => Mathf.Max(0f, spinCoolTime);
+    public float SwordWaveCooldownRemaining => Mathf.Max(0f, swordWaveCoolTime);
+    public float UltimateCooldownRemaining => Mathf.Max(0f, ultimateCoolTime);
+
+    public SkillData DashSkillData => dashSlashSkill;
+    public SkillData SpinSkillData => spinSkill;
+    public SkillData SwordWaveSkillData => swordWaveSkill;
+    public SkillData UltimateSkillData => ultimateSkill;
+
     [SerializeField] private SkillData dashSlashSkill; // 대시 스킬 데이터를 등록
     [SerializeField] private SkillData swordWaveSkill; // 검기 스킬 데이터 등록 
     [SerializeField] private SkillData ultimateSkill;  // 궁극기 스킬 데이터 등록
@@ -22,6 +32,12 @@ public class PlayerSkillController : MonoBehaviour
     private float currentCoolTime = 0f;     // 실시간으로 감소할 현재 남아있는 스킬 쿨타임
     private float swordWaveCoolTime = 0f;     // 검기 스킬 쿨타임
     private float ultimateCoolTime = 0f;   // 궁극기 스킬 쿨타임
+
+    private PlayerDashVisuals dashVisuals;
+    private PlayerMove dashMovement;
+    private bool dashMovementWasEnabled;
+    private float dashOriginalGravity;
+    private Coroutine dashRoutine;
 
     private bool isDashing = false;             // 캐릭터가 현재 대시를 수행 중인지 여부를 저장
     private bool isExecutingUltimate = false;   // 궁극기 시전 중 여부
@@ -123,7 +139,7 @@ public class PlayerSkillController : MonoBehaviour
             currentCoolTime = skill.coolTime;       // 쿨타임 적용
 
             // 대시 물리 연산 코루틴 시작
-            StartCoroutine(DashCoroutine(skill));
+            dashRoutine = StartCoroutine(DashCoroutine(skill));
         }
         else
         {
@@ -133,63 +149,64 @@ public class PlayerSkillController : MonoBehaviour
 
     private IEnumerator DashCoroutine(SkillData skill)
     {
-        // 대시 상태 활성화
         isDashing = true;
-
-        // 1. 대시 중 플레이어 조작(PlayerMove)이 물리 연산을 방해하지 못하게 비활성화
-        PlayerMove playerMove = GetComponent<PlayerMove>();
-        if (playerMove != null) playerMove.enabled = false;
-
-        // 2. 대시 중 중력 때문에 밑으로 쳐지는 현상 방지
-        float originalGravity = rigid.gravityScale;
+        dashMovement = GetComponent<PlayerMove>();
+        dashMovementWasEnabled = dashMovement != null && dashMovement.enabled;
+        if (dashMovement != null) dashMovement.enabled = false;
+        dashOriginalGravity = rigid.gravityScale;
         rigid.gravityScale = 0f;
 
-        // 대시 방향 결정
-        Vector2 dashDirection = Vector2.right;
+        float horizontal = Input.GetAxisRaw("Horizontal");
+        float facing = horizontal != 0f ? Mathf.Sign(horizontal) :
+            (bodySpriteRenderer != null ? (bodySpriteRenderer.flipX ? -1f : 1f) : Mathf.Sign(transform.localScale.x));
+        if (bodySpriteRenderer != null) bodySpriteRenderer.flipX = facing < 0f;
+        if (dashVisuals == null)
+            dashVisuals = GetComponent<PlayerDashVisuals>() ?? gameObject.AddComponent<PlayerDashVisuals>();
 
-        // 키보드 AD나 방향키 입력을 직접 감지 (GetAxisRaw 사용으로 미끄러짐 방지)
-        float horizontalInput = Input.GetAxisRaw("Horizontal");
-
-        if (horizontalInput != 0)
+        try
         {
-            // 키 입력이 있다면 누르고 있는 좌/우 방향으로 대시(-1, 1)
-            dashDirection = new Vector2(horizontalInput, 0f).normalized;
-        }
-        else
-        {
-            // 2.정지 상태일 때는 직접 연결한 몸통 스프라이트의 flipX 값을 읽어옴
-            if (bodySpriteRenderer != null)
+            dashVisuals.Begin(bodySpriteRenderer, facing, skill.dashDuration, IsDashGrounded());
+            rigid.linearVelocity = Vector2.right * facing * skill.dashForce;
+            if (skill.effectPrefab != null)
             {
-                float facingDirection = bodySpriteRenderer.flipX ? -1f : 1f;
-                dashDirection = new Vector2(facingDirection, 0f).normalized;
+                var effect = Instantiate(skill.effectPrefab, transform.position, Quaternion.identity);
+                var scale = effect.transform.localScale;
+                scale.x *= facing;
+                effect.transform.localScale = scale;
             }
-            else
-            {
-                Debug.LogWarning("방향 추적용 스프라이트가 인스펙터에 연결되지 않았습니다!");
-                dashDirection = new Vector2(transform.localScale.x, 0f).normalized;
-            }
+            yield return new WaitForSeconds(Mathf.Max(0.01f, skill.dashDuration));
         }
-        // ====================================================================
-
-        // 4. 계산된 대시 방향 벡터에 대시 속도를 곱해 일직선으로 뻗어가도록 이동
-        rigid.linearVelocity = dashDirection * skill.dashForce;
-
-        // 5. 대시 이펙트 프리팹 생성 (있을 경우에만)
-        if (skill.effectPrefab != null)
+        finally
         {
-            Instantiate(skill.effectPrefab, transform.position, transform.rotation);
+            FinishDash();
         }
+    }
 
-        // 6. 스킬 데이터에 정의된 대시 지속 시간만큼 대기
-        yield return new WaitForSeconds(skill.dashDuration);
+    private bool IsDashGrounded()
+    {
+        return dashMovement != null && dashMovement.groundCheck != null &&
+            Physics2D.OverlapCircle(dashMovement.groundCheck.position, dashMovement.checkRadius, dashMovement.isLayer) != null;
+    }
 
-        // 7. 대시 종료 후 정지 및 중력/스크립트 상태 원상복구
-        rigid.linearVelocity = Vector2.zero;    // 대기 지속 시간이 지나면 밀리는 관성을 지우기 휘애 속도를 즉시 0으로 만듦
-        rigid.gravityScale = originalGravity;   // 대시 시작 전에 백업해 두었던 원래 중력 값으로 원복
-
-        if (playerMove != null) playerMove.enabled = true; // 이동 제어 스크립트 복구
-
+    private void FinishDash()
+    {
+        if (!isDashing) return;
         isDashing = false;
+        if (rigid != null)
+        {
+            rigid.linearVelocity = Vector2.zero;
+            rigid.gravityScale = dashOriginalGravity;
+        }
+        if (dashMovement != null) dashMovement.enabled = dashMovementWasEnabled;
+        if (dashVisuals != null) dashVisuals.End(IsDashGrounded());
+        dashRoutine = null;
+    }
+
+    private void OnDisable()
+    {
+        if (dashRoutine != null) StopCoroutine(dashRoutine);
+        FinishDash();
+        if (dashVisuals != null) dashVisuals.Cancel();
     }
     #endregion
 

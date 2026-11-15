@@ -1,0 +1,14 @@
+Dash Particle 0 position=(-0.73, 0.84, 0.00) scale=(0.84, 0.05, 0.73) alpha=0.345 bounds=Center: (-0.73, 0.84, 0.00), Extents: (0.42, 0.03, 0.07) hidden=False
+Dash Particle 1 position=(-0.89, 1.15, 0.00) scale=(1.13, 0.05, 0.73) alpha=0.4077272 bounds=Center: (-0.89, 1.15, 0.00), Extents: (0.57, 0.03, 0.07) hidden=False
+Dash Particle 2 position=(-1.04, 1.46, 0.00) scale=(1.43, 0.05, 0.73) alpha=0.345 bounds=Center: (-1.04, 1.46, 0.00), Extents: (0.72, 0.03, 0.07) hidden=False
+Dash Particle 18 position=(-0.28, -0.74, 0.00) scale=(0.05, 0.05, 0.73) alpha=0.1797059 bounds=Center: (-0.28, -0.74, 0.00), Extents: (0.03, 0.03, 0.07) hidden=False
+Dash Particle 19 position=(-0.38, -0.70, 0.00) scale=(0.10, 0.10, 0.73) alpha=0.2178378 bounds=Center: (-0.38, -0.70, 0.00), Extents: (0.05, 0.05, 0.07) hidden=False
+Dash Particle 20 position=(-0.48, -0.65, 0.00) scale=(0.05, 0.05, 0.73) alpha=0.25025 bounds=Center: (-0.48, -0.65, 0.00), Extents: (0.03, 0.03, 0.07) hidden=False
+Dash Particle 21 position=(-0.57, -0.74, 0.00) scale=(0.10, 0.10, 0.73) alpha=0.2781395 bounds=Center: (-0.57, -0.74, 0.00), Extents: (0.05, 0.05, 0.07) hidden=False
+Dash Particle 22 position=(-0.67, -0.70, 0.00) scale=(0.05, 0.05, 0.73) alpha=0.3023913 bounds=Center: (-0.67, -0.70, 0.00), Extents: (0.03, 0.03, 0.07) hidden=False
+Dash Particle 23 position=(-1.90, 1.10, 0.00) scale=(0.73, 0.73, 0.73) alpha=0.05464284 bounds=Center: (-1.90, 1.10, 0.00), Extents: (1.25, 1.04, 0.07) hidden=False
+Dash Particle 27 position=(-1.24, 1.10, 0.00) scale=(0.73, 0.73, 0.73) alpha=0.1864286 bounds=Center: (-1.24, 1.10, 0.00), Extents: (1.25, 1.04, 0.07) hidden=False
+Dash Particle 28 position=(-1.44, 0.79, 0.00) scale=(0.94, 0.05, 0.73) alpha=0.14 bounds=Center: (-1.44, 0.79, 0.00), Extents: (0.47, 0.03, 0.07) hidden=False
+Dash Particle 29 position=(-1.60, 1.10, 0.00) scale=(1.28, 0.05, 0.73) alpha=0.1654545 bounds=Center: (-1.60, 1.10, 0.00), Extents: (0.64, 0.03, 0.07) hidden=False
+Dash Particle 30 position=(-1.75, 1.41, 0.00) scale=(1.62, 0.05, 0.73) alpha=0.14 bounds=Center: (-1.75, 1.41, 0.00), Extents: (0.81, 0.03, 0.07) hidden=False
+Dash Particle 31 position=(-0.58, 1.10, 0.00) scale=(0.73, 0.73, 0.73) alpha=0.3182143 bounds=Center: (-0.58, 1.10, 0.00), Extents: (1.25, 1.04, 0.07) hidden=False

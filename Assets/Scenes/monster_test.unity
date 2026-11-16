@@ -58993,6 +58993,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Skeleton
       objectReference: {fileID: 0}
+    - target: {fileID: 6857925078831380166, guid: f963d555dbc7abd4ba7f54520efe66ba, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 1.5
+      objectReference: {fileID: 0}
     - target: {fileID: 9180953098196419281, guid: f963d555dbc7abd4ba7f54520efe66ba, type: 3}
       propertyPath: m_LocalPosition.x
       value: 8.96

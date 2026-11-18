@@ -43,13 +43,13 @@ public class Goblin : Monster
     void FixedUpdate()
     {
         //가상의 원을 그려서 'Ground' 레이어와 닿아있는지 체크
-        //슬라임이 이동할 방향의 바로 앞에 땅이 있는지 확인
+        //고블린이 이동할 방향의 바로 앞에 땅이 있는지 확인
         isGround = groundChecker(checkRadius);
 
-        //슬라임이 이동한 거리 계산
+        //고블린이 이동한 거리 계산
         curMoveDistance = Mathf.Abs(transform.position.x - startPosition.x);
 
-        //슬라임이 대기 상태일 때
+        //고블린이 대기 상태일 때
         if (isWait)
         {
             moveSpeed = 0; //이동속도 0으로 설정

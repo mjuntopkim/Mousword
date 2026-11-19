@@ -252,8 +252,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerSkillController
   dashSlashSkill: {fileID: 11400000, guid: 7cb66d49612a03b4f988d6e2dd0dd61b, type: 2}
   swordWaveSkill: {fileID: 11400000, guid: 7cf9d18b87e62e54b93486bd9a8879b1, type: 2}
+  ultimateSkill: {fileID: 11400000, guid: 3d16dc696e9fca44e81425452a5ce6a6, type: 2}
+  spinSkill: {fileID: 11400000, guid: 148ba0efa5d4b1d4eaae15bd5b1c4098, type: 2}
   weaponPivot: {fileID: 1647138323510087782}
   bodySpriteRenderer: {fileID: 179106190179413510}
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  spinHitbox: {fileID: 904742356284374831}
 --- !u!114 &3193737103370860514
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -267,11 +273,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerStatus
   maxHp: 100
-  currentHp: 0
-  maxMp: 50
-  currentMp: 0
-  defense: 5
-  invincibleTime: 0.5
+  currentHp: 100
+  maxMp: 60
+  currentMp: 60
+  defense: 0
+  invincibleTime: 0.8
 --- !u!1001 &6114602546570985028
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -281,12 +287,20 @@ PrefabInstance:
     m_TransformParent: {fileID: 9176715121401992591}
     m_Modifications:
     - target: {fileID: 1757502443262723210, guid: b3a33afbeddd08342bb8403259ff5266, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: -6073256361147814638, guid: 7d55fed1910f54f4d9fea20b5c3065e5, type: 3}
+    - target: {fileID: 1757502443262723210, guid: b3a33afbeddd08342bb8403259ff5266, type: 3}
       propertyPath: m_SortingLayer
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1757502443262723210, guid: b3a33afbeddd08342bb8403259ff5266, type: 3}
       propertyPath: m_SortingLayerID
       value: 320608523
+      objectReference: {fileID: 0}
+    - target: {fileID: 2382758603708226184, guid: b3a33afbeddd08342bb8403259ff5266, type: 3}
+      propertyPath: damage
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 4755978273371958818, guid: b3a33afbeddd08342bb8403259ff5266, type: 3}
       propertyPath: m_LocalScale.x
@@ -348,6 +362,34 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6365034329157632363, guid: b3a33afbeddd08342bb8403259ff5266, type: 3}
+      propertyPath: m_SpriteTilingProperty.oldSize.x
+      value: 7.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6365034329157632363, guid: b3a33afbeddd08342bb8403259ff5266, type: 3}
+      propertyPath: m_SpriteTilingProperty.oldSize.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9171875464971516690, guid: b3a33afbeddd08342bb8403259ff5266, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9171875464971516690, guid: b3a33afbeddd08342bb8403259ff5266, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9171875464971516690, guid: b3a33afbeddd08342bb8403259ff5266, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9171875464971516690, guid: b3a33afbeddd08342bb8403259ff5266, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9171875464971516690, guid: b3a33afbeddd08342bb8403259ff5266, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -356,6 +398,11 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 6617027106530281794}
   m_SourcePrefab: {fileID: 100100000, guid: b3a33afbeddd08342bb8403259ff5266, type: 3}
+--- !u!61 &904742356284374831 stripped
+BoxCollider2D:
+  m_CorrespondingSourceObject: {fileID: 6365034329157632363, guid: b3a33afbeddd08342bb8403259ff5266, type: 3}
+  m_PrefabInstance: {fileID: 6114602546570985028}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1647138323510087782 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4755978273371958818, guid: b3a33afbeddd08342bb8403259ff5266, type: 3}

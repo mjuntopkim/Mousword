@@ -3,50 +3,50 @@ using System.Collections;
 
 public class PlayerStatus : MonoBehaviour
 {
-    // »ýÁ¸ ½ºÅÝ
-    [SerializeField] private float maxHp = 100f;       // ÃÖ´ë Ã¼·Â
-    [SerializeField] private float currentHp;          //ÇöÀç Ã¼·Â
+    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    [SerializeField] private float maxHp = 100f;       // ï¿½Ö´ï¿½ Ã¼ï¿½ï¿½
+    [SerializeField] private float currentHp;          //ï¿½ï¿½ï¿½ï¿½ Ã¼ï¿½ï¿½
 
-    [SerializeField] private float maxMp = 50f;        // ÃÖ´ë ¸¶³ª
-    [SerializeField] private float currentMp;          // ÇöÀç ¸¶³ª
+    [SerializeField] private float maxMp = 50f;        // ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½
+    [SerializeField] private float currentMp;          // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
-    //¹æ¾î ½ºÅÝ
-    [SerializeField] private float defense = 5f;       // ¹æ¾î·Â(µ¥¹ÌÁö °¨¼Ò)
-    [SerializeField] private float invincibleTime = 0.5f; // ÇÇ°Ý ¹«Àû ½Ã°£
+    //ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    [SerializeField] private float defense = 5f;       // ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
+    [SerializeField] private float invincibleTime = 0.5f; // ï¿½Ç°ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½
 
-    private bool isInvincible = false;                 // ÇöÀç ¹«Àû »óÅÂ ¿©ºÎ
+    private bool isInvincible = false;                 // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     private SpriteRenderer spriteRenderer;
 
-    // ´Ù¸¥ ½ºÅ©¸³Æ®¿¡¼­ ½ºÅÝÀ» ¾ÈÀüÇÏ°Ô ÀÐÀ» ¼ö ÀÖµµ·Ï ÇÁ·ÎÆÛÆ¼(Property) Á¦°ø
+    // ï¿½Ù¸ï¿½ ï¿½ï¿½Å©ï¿½ï¿½Æ®ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Öµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ¼(Property) ï¿½ï¿½ï¿½ï¿½
     public float CurrentHp => currentHp;
     public float MaxHp => maxHp;
     public float CurrentMp => currentMp;
     public float MaxMp => maxMp;
-    public bool IsDead { get; private set; } = false;   // »ç¸Á ¿©ºÎ
+    public bool IsDead { get; private set; } = false;   // ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
     void Start()
     {
-        // °ÔÀÓ ½ÃÀÛ ½Ã Ã¼·Â°ú ¸¶³ª¸¦ ÃÖ´ëÄ¡·Î ÃÊ±âÈ­
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ Ã¼ï¿½Â°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½Ä¡ï¿½ï¿½ ï¿½Ê±ï¿½È­
         currentHp = maxHp;
         currentMp = maxMp;
 
-        // ÇÇ°Ý ¹«Àû ¿¬ÃâÀ» À§ÇÑ ½ºÇÁ¶óÀÌÆ® ·»´õ·¯ ÄÄÆ÷³ÍÆ®
+        // ï¿½Ç°ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®
         spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
-    // ÇÃ·¹ÀÌ¾î°¡ µ¥¹ÌÁö¸¦ ÀÔÀ» ¶§ È£ÃâÇÏ´Â ¸Þ¼­µå
+    // ï¿½Ã·ï¿½ï¿½Ì¾î°¡ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ È£ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Þ¼ï¿½ï¿½ï¿½
     public void TakeDamage(float damage)
     {
-        // »ç¸ÁÇß°Å³ª ¹«Àû »óÅÂ¶ó¸é µ¥¹ÌÁö¸¦ ¹ÞÁö ¾ÊÀ½
+        // ï¿½ï¿½ï¿½ï¿½ß°Å³ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Â¶ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         if (IsDead || isInvincible) return;
 
-        // ¹æ¾î·ÂÀ» °è»êÇÑ ÃÖÁ¾ µ¥¹ÌÁö (ÃÖ¼Ò 1ÀÇ µ¥¹ÌÁö´Â ÀÔµµ·Ï ¼³Á¤)
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ (ï¿½Ö¼ï¿½ 1ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ôµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
         float finalDamage = Mathf.Max(damage - defense, 1f);
 
         currentHp -= finalDamage;
-        currentHp = Mathf.Clamp(currentHp, 0f, maxHp); // Ã¼·ÂÀÌ 0 ¹Ì¸¸, ÃÖ´ëÄ¡ ÃÊ°úµÇÁö ¾Ê°Ô ¹æÁö
+        currentHp = Mathf.Clamp(currentHp, 0f, maxHp); // Ã¼ï¿½ï¿½ï¿½ï¿½ 0 ï¿½Ì¸ï¿½, ï¿½Ö´ï¿½Ä¡ ï¿½Ê°ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê°ï¿½ ï¿½ï¿½ï¿½ï¿½
 
-        Debug.Log($"ÇÃ·¹ÀÌ¾î°¡ {finalDamage}ÀÇ µ¥¹ÌÁö¸¦ ÀÔ¾ú½À´Ï´Ù. ³²Àº Ã¼·Â: {currentHp}");
+        Debug.Log($"ï¿½Ã·ï¿½ï¿½Ì¾î°¡ {finalDamage}ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¾ï¿½ï¿½ï¿½ï¿½Ï´ï¿½. ï¿½ï¿½ï¿½ï¿½ Ã¼ï¿½ï¿½: {currentHp}");
 
         if (currentHp <= 0)
         {
@@ -54,22 +54,22 @@ public class PlayerStatus : MonoBehaviour
         }
         else
         {
-            // ¹«Àû ½Ã°£ ¹× ÇÇ°Ý ¿¬Ãâ ¿¬Ãâ ½ÃÀÛ
+            // ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ ï¿½ï¿½ ï¿½Ç°ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
             StartCoroutine(InvincibleCooldown());
         }
     }
 
-    // ÇÇ°Ý ½Ã ÀÏÁ¤ ½Ã°£ ¹«Àû »óÅÂ·Î ¸¸µé°í ±ôºýÀÌ´Â ¿¬Ãâ
+    // ï¿½Ç°ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Â·ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ì´ï¿½ ï¿½ï¿½ï¿½ï¿½
     private IEnumerator InvincibleCooldown()
     {
-        // ¹«Àû »óÅÂ·Î ÀüÈ¯
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Â·ï¿½ ï¿½ï¿½È¯
         isInvincible = true;
 
-        // ¹«Àû ½Ã°£ µ¿¾È Ä³¸¯ÅÍ¸¦ ±ôºý°Å¸®°Ô ¸¸µê (ÇÇ°Ý ½Ã°¢ È¿°ú)
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ ï¿½ï¿½ï¿½ï¿½ Ä³ï¿½ï¿½ï¿½Í¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Å¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½Ç°ï¿½ ï¿½Ã°ï¿½ È¿ï¿½ï¿½)
         float timer = 0f;
         while (timer < invincibleTime)
         {
-            // ¾ËÆÄ°ªÀ» 0.2¿Í 1.0 »çÀÌ·Î º¯È¯
+            // ï¿½ï¿½ï¿½Ä°ï¿½ï¿½ï¿½ 0.2ï¿½ï¿½ 1.0 ï¿½ï¿½ï¿½Ì·ï¿½ ï¿½ï¿½È¯
             float alpha = spriteRenderer.color.a == 1f ? 0.2f : 1f;
             spriteRenderer.color = new Color(1f, 1f, 1f, alpha);
 
@@ -77,32 +77,32 @@ public class PlayerStatus : MonoBehaviour
             timer += 0.1f;
         }
 
-        // ¹«Àû Á¾·á ÈÄ ¿ø·¡ Åõ¸íµµ·Î º¹±Í
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         spriteRenderer.color = new Color(1f, 1f, 1f, 1f);
-        isInvincible = false;       // ¹«Àû »óÅÂ ÇØÁ¦
+        isInvincible = false;       // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     }
 
-    // ¸¶³ª / ½ºÅÂ¹Ì³ª ¼Òºñ ¸Þ¼­µå
+    // ï¿½ï¿½ï¿½ï¿½ / ï¿½ï¿½ï¿½Â¹Ì³ï¿½ ï¿½Òºï¿½ ï¿½Þ¼ï¿½ï¿½ï¿½
     public bool ConsumeMp(float amount)
     {
         if (currentMp >= amount)
         {
             currentMp -= amount;
-            return true; // ¼Òºñ ¼º°ø
+            return true; // ï¿½Òºï¿½ ï¿½ï¿½ï¿½ï¿½
         }
 
-        Debug.Log("¸¶³ª/½ºÅÂ¹Ì³ª°¡ ºÎÁ·ÇÕ´Ï´Ù.");
-        return false; // ¼Òºñ ½ÇÆÐ
+        Debug.Log("ï¿½ï¿½ï¿½ï¿½/ï¿½ï¿½ï¿½Â¹Ì³ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½.");
+        return false; // ï¿½Òºï¿½ ï¿½ï¿½ï¿½ï¿½
     }
 
-    // ¸¶³ª  È¸º¹ ¸Þ¼­µå (Æ÷¼ÇÀÌ³ª ÀÚ¿¬ È¸º¹¿ë)
+    // ï¿½ï¿½ï¿½ï¿½  È¸ï¿½ï¿½ ï¿½Þ¼ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ï¿½Ì³ï¿½ ï¿½Ú¿ï¿½ È¸ï¿½ï¿½ï¿½ï¿½)
     public void RecoverMp(float amount)
     {
         currentMp += amount;
         currentMp = Mathf.Clamp(currentMp, 0f, maxMp);
     }
 
-    // Ã¼·Â È¸º¹ ¸Þ¼­µå (ÈíÇ÷ÀÌ³ª Æ÷¼Ç¿ë)
+    // Ã¼ï¿½ï¿½ È¸ï¿½ï¿½ ï¿½Þ¼ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ï¿½Ì³ï¿½ ï¿½ï¿½ï¿½Ç¿ï¿½)
     public void RecoverHp(float amount)
     {
         if (IsDead) return;
@@ -111,13 +111,13 @@ public class PlayerStatus : MonoBehaviour
         currentHp = Mathf.Clamp(currentHp, 0f, maxHp);
     }
 
-    // ÇÃ·¹ÀÌ¾î »ç¸Á Ã³¸®
+    // ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½
     private void Die()
     {
         IsDead = true;
-        Debug.Log("ÇÃ·¹ÀÌ¾î°¡ »ç¸ÁÇß½À´Ï´Ù.");
+        Debug.Log("ï¿½Ã·ï¿½ï¿½Ì¾î°¡ ï¿½ï¿½ï¿½ï¿½ß½ï¿½ï¿½Ï´ï¿½.");
 
-        // TODO: ¾Ö´Ï¸ÞÀÌÅÍ¿¡°Ô »ç¸Á ¾Ö´Ï¸ÞÀÌ¼Ç Àü´Þ, Á¶ÀÛ ½ºÅ©¸³Æ® ºñÈ°¼ºÈ­ µîÀÇ ·ÎÁ÷À» ¿©±â¿¡ Ãß°¡
-        // ¿¹: GetComponent<PlayerMove>().enabled = false;
+        // TODO: ï¿½Ö´Ï¸ï¿½ï¿½ï¿½ï¿½Í¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å©ï¿½ï¿½Æ® ï¿½ï¿½È°ï¿½ï¿½È­ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½â¿¡ ï¿½ß°ï¿½
+        // ï¿½ï¿½: GetComponent<PlayerMove>().enabled = false;
     }
 }

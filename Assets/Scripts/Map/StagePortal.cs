@@ -9,9 +9,13 @@ public class StagePortal : MonoBehaviour
     [SerializeField] private Animator doorAnimator;
     [SerializeField] private ParticleSystem dustParticle;
     [SerializeField] private CinemachineImpulseSource impulseSource;
+    [SerializeField] private float recoveryHPAmount = 100f;  //HP 회복량
+    [SerializeField] private float recoveryManaAmount = 100f;    //마나 회복량
 
     [SerializeField] private float doorDropDuration = 0.25f;
     [SerializeField] private float waitAfterHit = 0.5f;
+
+    private PlayerStatus playerStatus;
 
     private bool isActivated = false;
 
@@ -50,6 +54,13 @@ public class StagePortal : MonoBehaviour
         }
 
         yield return new WaitForSeconds(waitAfterHit);
+
+        playerStatus = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerStatus>();
+        if(playerStatus != null)
+        {
+            playerStatus.TakeDamage(-recoveryHPAmount); // HP 회복
+            playerStatus.TakeDamage(-recoveryManaAmount); // 마나 회복
+        }
 
         GameManager.Instance.TransitionToNextScene(nextSceneName, targetSpawnPointName);
     }

@@ -29,6 +29,9 @@ public sealed class PlayerDashVisuals : MonoBehaviour
     {
         Cancel();
         if (body == null || body.sprite == null) return;
+        // Same rule as the sword wave cast: never capture another effect's temporary hide as the body's real state.
+        var swordWave = GetComponent<PlayerSwordWaveVisuals>();
+        if (swordWave != null) swordWave.Cancel();
         source = body;
         if (!PrepareSprites(body.sprite.pixelsPerUnit)) return;
 

@@ -42,6 +42,10 @@ public class PlayerSkillController : MonoBehaviour
     private bool isDashing = false;             // 캐릭터가 현재 대시를 수행 중인지 여부를 저장
     private bool isExecutingUltimate = false;   // 궁극기 시전 중 여부
 
+    private PlayerSwordWaveVisuals swordWaveVisuals; // 검기 시전 모션 연출
+    private Coroutine swordWaveRoutine;
+    private bool isCastingSwordWave = false;        // 검기 시전 모션 중 여부
+
     private float spinCoolTime = 0f;            // 회전 스킬 쿨타임
     private bool isSpinning = false;            // 회전 상태
 
@@ -92,14 +96,14 @@ public class PlayerSkillController : MonoBehaviour
         if (spinCoolTime > 0) spinCoolTime -= Time.deltaTime;
 
         // 좌측 Shift 키를 누르고, 쿨타임이 끝났으며, 현재 대시 중이 아닐 때 실행
-        if (Input.GetKeyDown(KeyCode.LeftShift) && currentCoolTime <= 0 && !isDashing)
+        if (Input.GetKeyDown(KeyCode.LeftShift) && currentCoolTime <= 0 && !isDashing && !isCastingSwordWave)
         {
             // 대시 시도
             TryExecuteDash(dashSlashSkill);
         }
 
         // E 키 또는 마우스 우클릭: 검기 발사 스킬 실행
-        if ((Input.GetKeyDown(KeyCode.E) || Input.GetMouseButtonDown(1)) && swordWaveCoolTime <= 0)
+        if ((Input.GetKeyDown(KeyCode.E) || Input.GetMouseButtonDown(1)) && swordWaveCoolTime <= 0 && !isCastingSwordWave && !isDashing && !isSpinning)
         {
             TryExecuteSwordWave(swordWaveSkill);
         }
@@ -110,7 +114,7 @@ public class PlayerSkillController : MonoBehaviour
             TryExecuteUltimate(ultimateSkill);
         }
 
-        if (Input.GetKeyDown(KeyCode.Q) && spinCoolTime <= 0f && !isSpinning)
+        if (Input.GetKeyDown(KeyCode.Q) && spinCoolTime <= 0f && !isSpinning && !isCastingSwordWave)
         {
             TryExecuteSpin(spinSkill);
         }
@@ -207,6 +211,8 @@ public class PlayerSkillController : MonoBehaviour
         if (dashRoutine != null) StopCoroutine(dashRoutine);
         FinishDash();
         if (dashVisuals != null) dashVisuals.Cancel();
+        if (swordWaveRoutine != null) StopCoroutine(swordWaveRoutine);
+        FinishSwordWave();
     }
     #endregion
 
@@ -228,7 +234,7 @@ public class PlayerSkillController : MonoBehaviour
             Debug.Log($"[검기 발사] 소모 마나: {skill.manaCost} | 남은 마나: {playerStatus.CurrentMp}/{playerStatus.MaxMp}");
 
             swordWaveCoolTime = skill.coolTime; // 쿨타임 적용
-            ShootSwordWave(skill);             // 실제 투사체 생성
+            swordWaveRoutine = StartCoroutine(SwordWaveCoroutine(skill)); // 내려베기 모션 후 임팩트 프레임에서 발사
         }
         else
         {
@@ -236,22 +242,63 @@ public class PlayerSkillController : MonoBehaviour
         }
     }
 
-    private void ShootSwordWave(SkillData skill)
+    // 검기 시전: 조준 방향으로 몸을 돌리고 내려베기 모션을 재생한 뒤, 임팩트 프레임에서 검기 발사
+    private IEnumerator SwordWaveCoroutine(SkillData skill)
     {
-        if (weaponPivot == null)
+        isCastingSwordWave = true;
+        try
         {
-            Debug.LogWarning("Weapon Pivot이 인스펙터에 연결되지 않았습니다!");
-            return;
+            if (weaponPivot == null)
+            {
+                Debug.LogWarning("Weapon Pivot이 인스펙터에 연결되지 않았습니다!");
+                yield break;
+            }
+
+            // 키를 누른 순간 마우스를 향한 weaponPivot 방향으로 발사 방향 고정
+            Quaternion aim = weaponPivot.rotation;
+            float facing = (aim * Vector3.right).x < 0f ? -1f : 1f;
+            if (bodySpriteRenderer != null) bodySpriteRenderer.flipX = facing < 0f;
+
+            if (swordWaveVisuals == null)
+                swordWaveVisuals = GetComponent<PlayerSwordWaveVisuals>() ?? gameObject.AddComponent<PlayerSwordWaveVisuals>();
+            swordWaveVisuals.Begin(bodySpriteRenderer, weaponPivot, facing);
+
+            yield return new WaitForSeconds(PlayerSwordWaveVisuals.ReleaseTime);
+            ShootSwordWave(skill, aim);
+            yield return new WaitForSeconds(PlayerSwordWaveVisuals.Duration - PlayerSwordWaveVisuals.ReleaseTime);
+        }
+        finally
+        {
+            FinishSwordWave();
+        }
+    }
+
+    private void FinishSwordWave()
+    {
+        isCastingSwordWave = false;
+        swordWaveRoutine = null;
+        if (swordWaveVisuals != null) swordWaveVisuals.Cancel();
+    }
+
+    private void ShootSwordWave(SkillData skill, Quaternion aim)
+    {
+        // 1. weaponPivot 위치에서 조준 방향(aim)으로 검기 생성
+        GameObject waveObj = Instantiate(skill.projectilePrefab, weaponPivot.position, aim);
+
+        // 2. 배경 소품에 가리지 않도록 플레이어와 같은 정렬 레이어의 앞쪽에 그림
+        SpriteRenderer waveRenderer = waveObj.GetComponent<SpriteRenderer>();
+        if (waveRenderer != null && bodySpriteRenderer != null)
+        {
+            waveRenderer.sortingLayerID = bodySpriteRenderer.sortingLayerID;
+            waveRenderer.sortingOrder = bodySpriteRenderer.sortingOrder + 5;
         }
 
-        // 1. 마우스를 바라보고 있는 weaponPivot의 위치와 회전값(rotation)으로 검기 생성
-        GameObject waveObj = Instantiate(skill.projectilePrefab, weaponPivot.position, weaponPivot.rotation);
-
-        // 2. 검기 스크립트에 속도 및 데미지 전달
+        // 3. 검기 스크립트에 속도, 데미지, 캐릭터 픽셀 크기 전달
         SwordWave swordWave = waveObj.GetComponent<SwordWave>();
         if (swordWave != null)
         {
-            swordWave.Initialize(skill.projectileSpeed, skill.damage);
+            float pixel = swordWaveVisuals != null ? swordWaveVisuals.PixelWorldSize : 0f;
+            swordWave.Initialize(skill.projectileSpeed, skill.damage, pixel);
         }
     }
     #endregion

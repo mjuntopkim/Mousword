@@ -1,33 +1,34 @@
 using UnityEngine;
 
-// À¯´ÏÆ¼ ÇÁ·ÎÁ§Æ® Ã¢¿¡¼­ ¸¶¿ì½º ¿ìÅ¬¸¯À¸·Î ½ºÅ³ ÆÄÀÏÀ» ¸¸µé ¼ö ÀÖ°Ô µÈ´Ù.
-// ¸Ş´º¸¦ ÅëÇØ ½ºÅ³ µ¥ÀÌÅÍ ¿¡¼Â ÆÄÀÏÀ» »õ·Î ¸¸µé ¼ö ÀÖµµ·Ï µî·ÏÇØÁÖ´Â ¼Ó¼º
+// ìœ ë‹ˆí‹° í”„ë¡œì íŠ¸ ì°½ì—ì„œ ë§ˆìš°ìŠ¤ ìš°í´ë¦­ìœ¼ë¡œ ìŠ¤í‚¬ íŒŒì¼ì„ ë§Œë“¤ ìˆ˜ ìˆê²Œ ëœë‹¤.
+// ë©”ë‰´ë¥¼ í†µí•´ ìŠ¤í‚¬ ë°ì´í„° ì—ì…‹ íŒŒì¼ì„ ìƒˆë¡œ ë§Œë“¤ ìˆ˜ ìˆë„ë¡ ë“±ë¡í•´ì£¼ëŠ” ì†ì„±
 [CreateAssetMenu(fileName = "SkillData", menuName = "Scriptable Objects/SkillData")]
 
-// °ÔÀÓ ¿ÀºêÁ§Æ®¿¡ ÄÄÆ÷³ÍÆ®·Î ºÎÂøµÇ´Â ½ºÅ©¸³Æ®°¡ ¾Æ´Ñ ÇÁ·ÎÁ§Æ® Ã¢¿¡ µ¶¸³ÀûÀÎ µ¥ÀÌÅÍ ÆÄÀÏ·Î Á¸Àç
+// ê²Œì„ ì˜¤ë¸Œì íŠ¸ì— ì»´í¬ë„ŒíŠ¸ë¡œ ë¶€ì°©ë˜ëŠ” ìŠ¤í¬ë¦½íŠ¸ê°€ ì•„ë‹Œ í”„ë¡œì íŠ¸ ì°½ì— ë…ë¦½ì ì¸ ë°ì´í„° íŒŒì¼ë¡œ ì¡´ì¬
 public class SkillData : ScriptableObject
 {
-    public string skillName;       // ½ºÅ³ ÀÌ¸§
-    public float damageMultiplier; // µ¥¹ÌÁö ¹èÀ²
-    public float manaCost;         // ¼Ò¸ğ ¸¶³ª [cite: 7]
-    public float coolTime;         // ÄğÅ¸ÀÓ
-    public GameObject effectPrefab;// ½ºÅ³ ÀÌÆåÆ® ÇÁ¸®ÆÕ
+    public string skillName;       // ìŠ¤í‚¬ ì´ë¦„
+    public float damageMultiplier; // ë°ë¯¸ì§€ ë°°ìœ¨
+    public float manaCost;         // ì†Œëª¨ ë§ˆë‚˜ [cite: 7]
+    public float coolTime;         // ì¿¨íƒ€ì„
+    public GameObject effectPrefab;// ìŠ¤í‚¬ ì´í™íŠ¸ í”„ë¦¬íŒ¹
 
     public float damage = 10f;
 
-    // ´ë½Ã °ü·Ã ½ºÅİ
-    public float dashForce = 20f;     // ´ë½Ã ¼Óµµ
-    public float dashDuration = 0.2f; // ´ë½Ã Áö¼Ó ½Ã°£
+    // ëŒ€ì‹œ ê´€ë ¨ ìŠ¤í…Ÿ
+    public float dashForce = 20f;     // ëŒ€ì‹œ ì†ë„
+    public float dashDuration = 0.2f; // ëŒ€ì‹œ ì§€ì† ì‹œê°„
 
-    // °Ë±â °ü·Ã ½ºÅİ
-    public GameObject projectilePrefab; // ³¯¾Æ°¥ °Ë±â ÇÁ¸®ÆÕ
-    public float projectileSpeed = 15f;  // °Ë±â ³¯¾Æ°¡´Â ¼Óµµ
+    // ê²€ê¸° ê´€ë ¨ ìŠ¤í…Ÿ
+    public GameObject projectilePrefab; // ë‚ ì•„ê°ˆ ê²€ê¸° í”„ë¦¬íŒ¹
+    public float projectileSpeed = 15f;  // ê²€ê¸° ë‚ ì•„ê°€ëŠ” ì†ë„
 
-    // ±Ã±Ø±â °ü·Ã ½ºÅİ
-    public float hitInterval = 0.08f; // ¸ó½ºÅÍ °£ ÇÇ°İ Áö¿¬ ½Ã°£ (ÃÊ)
-    public GameObject ultimateHitEffectPrefab; // ¸ó½ºÅÍ À§Ä¡¿¡ ÅÍÁú ÇÇ°İ ÀÌÆåÆ®
+    // ê¶ê·¹ê¸° ê´€ë ¨ ìŠ¤í…Ÿ
+    public float hitInterval = 0.08f; // ëª¬ìŠ¤í„° ê°„ í”¼ê²© ì§€ì—° ì‹œê°„ (ì´ˆ)
+    public GameObject ultimateHitEffectPrefab; // ëª¬ìŠ¤í„° ìœ„ì¹˜ì— í„°ì§ˆ í”¼ê²© ì´í™íŠ¸
 
-    // 360µµ È¸Àü ½ºÅ³
-    public float spinDegrees = 360f;       // È¸Àü °¢µµ
-    public float spinDuration = 0.5f;      // È¸Àü ½Ã°£
+    // 360ë„ íšŒì „ ìŠ¤í‚¬
+    public float spinDegrees = 360f;       // íšŒì „ ê°ë„
+    public float spinDuration = 0.5f;      // íšŒì „ ì‹œê°„
+    public float spinRadiusBonus = 0f;     // íŒì • ë°˜ê²½ ë³´ì •ê°’ (ê²€ ëê¹Œì§€ì˜ ê¸¸ì´ì— ë”í•¨)
 }

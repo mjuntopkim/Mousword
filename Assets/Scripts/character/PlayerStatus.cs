@@ -3,50 +3,50 @@ using System.Collections;
 
 public class PlayerStatus : MonoBehaviour
 {
-    // »ıÁ¸ ½ºÅİ
-    [SerializeField] private float maxHp = 100f;       // ÃÖ´ë Ã¼·Â
-    [SerializeField] private float currentHp;          //ÇöÀç Ã¼·Â
+    // ìƒì¡´ ìŠ¤í…Ÿ
+    [SerializeField] private float maxHp = 100f;       // ìµœëŒ€ ì²´ë ¥
+    [SerializeField] private float currentHp;          //í˜„ì¬ ì²´ë ¥
 
-    [SerializeField] private float maxMp = 50f;        // ÃÖ´ë ¸¶³ª
-    [SerializeField] private float currentMp;          // ÇöÀç ¸¶³ª
+    [SerializeField] private float maxMp = 50f;        // ìµœëŒ€ ë§ˆë‚˜
+    [SerializeField] private float currentMp;          // í˜„ì¬ ë§ˆë‚˜
 
-    //¹æ¾î ½ºÅİ
-    [SerializeField] private float defense = 5f;       // ¹æ¾î·Â(µ¥¹ÌÁö °¨¼Ò)
-    [SerializeField] private float invincibleTime = 0.5f; // ÇÇ°İ ¹«Àû ½Ã°£
+    //ë°©ì–´ ìŠ¤í…Ÿ
+    [SerializeField] private float defense = 5f;       // ë°©ì–´ë ¥(ë°ë¯¸ì§€ ê°ì†Œ)
+    [SerializeField] private float invincibleTime = 0.5f; // í”¼ê²© ë¬´ì  ì‹œê°„
 
-    private bool isInvincible = false;                 // ÇöÀç ¹«Àû »óÅÂ ¿©ºÎ
+    private bool isInvincible = false;                 // í˜„ì¬ ë¬´ì  ìƒíƒœ ì—¬ë¶€
     private SpriteRenderer spriteRenderer;
 
-    // ´Ù¸¥ ½ºÅ©¸³Æ®¿¡¼­ ½ºÅİÀ» ¾ÈÀüÇÏ°Ô ÀĞÀ» ¼ö ÀÖµµ·Ï ÇÁ·ÎÆÛÆ¼(Property) Á¦°ø
+    // ë‹¤ë¥¸ ìŠ¤í¬ë¦½íŠ¸ì—ì„œ ìŠ¤í…Ÿì„ ì•ˆì „í•˜ê²Œ ì½ì„ ìˆ˜ ìˆë„ë¡ í”„ë¡œí¼í‹°(Property) ì œê³µ
     public float CurrentHp => currentHp;
     public float MaxHp => maxHp;
     public float CurrentMp => currentMp;
     public float MaxMp => maxMp;
-    public bool IsDead { get; private set; } = false;   // »ç¸Á ¿©ºÎ
+    public bool IsDead { get; private set; } = false;   // ì‚¬ë§ ì—¬ë¶€
 
     void Start()
     {
-        // °ÔÀÓ ½ÃÀÛ ½Ã Ã¼·Â°ú ¸¶³ª¸¦ ÃÖ´ëÄ¡·Î ÃÊ±âÈ­
+        // ê²Œì„ ì‹œì‘ ì‹œ ì²´ë ¥ê³¼ ë§ˆë‚˜ë¥¼ ìµœëŒ€ì¹˜ë¡œ ì´ˆê¸°í™”
         currentHp = maxHp;
         currentMp = maxMp;
 
-        // ÇÇ°İ ¹«Àû ¿¬ÃâÀ» À§ÇÑ ½ºÇÁ¶óÀÌÆ® ·»´õ·¯ ÄÄÆ÷³ÍÆ®
+        // í”¼ê²© ë¬´ì  ì—°ì¶œì„ ìœ„í•œ ìŠ¤í”„ë¼ì´íŠ¸ ë Œë”ëŸ¬ ì»´í¬ë„ŒíŠ¸
         spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
-    // ÇÃ·¹ÀÌ¾î°¡ µ¥¹ÌÁö¸¦ ÀÔÀ» ¶§ È£ÃâÇÏ´Â ¸Ş¼­µå
+    // í”Œë ˆì´ì–´ê°€ ë°ë¯¸ì§€ë¥¼ ì…ì„ ë•Œ í˜¸ì¶œí•˜ëŠ” ë©”ì„œë“œ
     public void TakeDamage(float damage)
     {
-        // »ç¸ÁÇß°Å³ª ¹«Àû »óÅÂ¶ó¸é µ¥¹ÌÁö¸¦ ¹ŞÁö ¾ÊÀ½
+        // ì‚¬ë§í–ˆê±°ë‚˜ ë¬´ì  ìƒíƒœë¼ë©´ ë°ë¯¸ì§€ë¥¼ ë°›ì§€ ì•ŠìŒ
         if (IsDead || isInvincible) return;
 
-        // ¹æ¾î·ÂÀ» °è»êÇÑ ÃÖÁ¾ µ¥¹ÌÁö (ÃÖ¼Ò 1ÀÇ µ¥¹ÌÁö´Â ÀÔµµ·Ï ¼³Á¤)
+        // ë°©ì–´ë ¥ì„ ê³„ì‚°í•œ ìµœì¢… ë°ë¯¸ì§€ (ìµœì†Œ 1ì˜ ë°ë¯¸ì§€ëŠ” ì…ë„ë¡ ì„¤ì •)
         float finalDamage = Mathf.Max(damage - defense, 1f);
 
         currentHp -= finalDamage;
-        currentHp = Mathf.Clamp(currentHp, 0f, maxHp); // Ã¼·ÂÀÌ 0 ¹Ì¸¸, ÃÖ´ëÄ¡ ÃÊ°úµÇÁö ¾Ê°Ô ¹æÁö
+        currentHp = Mathf.Clamp(currentHp, 0f, maxHp); // ì²´ë ¥ì´ 0 ë¯¸ë§Œ, ìµœëŒ€ì¹˜ ì´ˆê³¼ë˜ì§€ ì•Šê²Œ ë°©ì§€
 
-        Debug.Log($"ÇÃ·¹ÀÌ¾î°¡ {finalDamage}ÀÇ µ¥¹ÌÁö¸¦ ÀÔ¾ú½À´Ï´Ù. ³²Àº Ã¼·Â: {currentHp}");
+        Debug.Log($"í”Œë ˆì´ì–´ê°€ {finalDamage}ì˜ ë°ë¯¸ì§€ë¥¼ ì…ì—ˆìŠµë‹ˆë‹¤. ë‚¨ì€ ì²´ë ¥: {currentHp}");
 
         if (currentHp <= 0)
         {
@@ -54,22 +54,22 @@ public class PlayerStatus : MonoBehaviour
         }
         else
         {
-            // ¹«Àû ½Ã°£ ¹× ÇÇ°İ ¿¬Ãâ ¿¬Ãâ ½ÃÀÛ
+            // ë¬´ì  ì‹œê°„ ë° í”¼ê²© ì—°ì¶œ ì—°ì¶œ ì‹œì‘
             StartCoroutine(InvincibleCooldown());
         }
     }
 
-    // ÇÇ°İ ½Ã ÀÏÁ¤ ½Ã°£ ¹«Àû »óÅÂ·Î ¸¸µé°í ±ôºıÀÌ´Â ¿¬Ãâ
+    // í”¼ê²© ì‹œ ì¼ì • ì‹œê°„ ë¬´ì  ìƒíƒœë¡œ ë§Œë“¤ê³  ê¹œë¹¡ì´ëŠ” ì—°ì¶œ
     private IEnumerator InvincibleCooldown()
     {
-        // ¹«Àû »óÅÂ·Î ÀüÈ¯
+        // ë¬´ì  ìƒíƒœë¡œ ì „í™˜
         isInvincible = true;
 
-        // ¹«Àû ½Ã°£ µ¿¾È Ä³¸¯ÅÍ¸¦ ±ôºı°Å¸®°Ô ¸¸µê (ÇÇ°İ ½Ã°¢ È¿°ú)
+        // ë¬´ì  ì‹œê°„ ë™ì•ˆ ìºë¦­í„°ë¥¼ ê¹œë¹¡ê±°ë¦¬ê²Œ ë§Œë“¦ (í”¼ê²© ì‹œê° íš¨ê³¼)
         float timer = 0f;
         while (timer < invincibleTime)
         {
-            // ¾ËÆÄ°ªÀ» 0.2¿Í 1.0 »çÀÌ·Î º¯È¯
+            // ì•ŒíŒŒê°’ì„ 0.2ì™€ 1.0 ì‚¬ì´ë¡œ ë³€í™˜
             float alpha = spriteRenderer.color.a == 1f ? 0.2f : 1f;
             spriteRenderer.color = new Color(1f, 1f, 1f, alpha);
 
@@ -77,32 +77,32 @@ public class PlayerStatus : MonoBehaviour
             timer += 0.1f;
         }
 
-        // ¹«Àû Á¾·á ÈÄ ¿ø·¡ Åõ¸íµµ·Î º¹±Í
+        // ë¬´ì  ì¢…ë£Œ í›„ ì›ë˜ íˆ¬ëª…ë„ë¡œ ë³µê·€
         spriteRenderer.color = new Color(1f, 1f, 1f, 1f);
-        isInvincible = false;       // ¹«Àû »óÅÂ ÇØÁ¦
+        isInvincible = false;       // ë¬´ì  ìƒíƒœ í•´ì œ
     }
 
-    // ¸¶³ª / ½ºÅÂ¹Ì³ª ¼Òºñ ¸Ş¼­µå
+    // ë§ˆë‚˜ / ìŠ¤íƒœë¯¸ë‚˜ ì†Œë¹„ ë©”ì„œë“œ
     public bool ConsumeMp(float amount)
     {
         if (currentMp >= amount)
         {
             currentMp -= amount;
-            return true; // ¼Òºñ ¼º°ø
+            return true; // ì†Œë¹„ ì„±ê³µ
         }
 
-        Debug.Log("¸¶³ª/½ºÅÂ¹Ì³ª°¡ ºÎÁ·ÇÕ´Ï´Ù.");
-        return false; // ¼Òºñ ½ÇÆĞ
+        Debug.Log("ë§ˆë‚˜/ìŠ¤íƒœë¯¸ë‚˜ê°€ ë¶€ì¡±í•©ë‹ˆë‹¤.");
+        return false; // ì†Œë¹„ ì‹¤íŒ¨
     }
 
-    // ¸¶³ª  È¸º¹ ¸Ş¼­µå (Æ÷¼ÇÀÌ³ª ÀÚ¿¬ È¸º¹¿ë)
+    // ë§ˆë‚˜  íšŒë³µ ë©”ì„œë“œ (í¬ì…˜ì´ë‚˜ ìì—° íšŒë³µìš©)
     public void RecoverMp(float amount)
     {
         currentMp += amount;
         currentMp = Mathf.Clamp(currentMp, 0f, maxMp);
     }
 
-    // Ã¼·Â È¸º¹ ¸Ş¼­µå (ÈíÇ÷ÀÌ³ª Æ÷¼Ç¿ë)
+    // ì²´ë ¥ íšŒë³µ ë©”ì„œë“œ (í¡í˜ˆì´ë‚˜ í¬ì…˜ìš©)
     public void RecoverHp(float amount)
     {
         if (IsDead) return;
@@ -111,13 +111,13 @@ public class PlayerStatus : MonoBehaviour
         currentHp = Mathf.Clamp(currentHp, 0f, maxHp);
     }
 
-    // ÇÃ·¹ÀÌ¾î »ç¸Á Ã³¸®
+    // í”Œë ˆì´ì–´ ì‚¬ë§ ì²˜ë¦¬
     private void Die()
     {
         IsDead = true;
-        Debug.Log("ÇÃ·¹ÀÌ¾î°¡ »ç¸ÁÇß½À´Ï´Ù.");
+        Debug.Log("í”Œë ˆì´ì–´ê°€ ì‚¬ë§í–ˆìŠµë‹ˆë‹¤.");
 
-        // TODO: ¾Ö´Ï¸ŞÀÌÅÍ¿¡°Ô »ç¸Á ¾Ö´Ï¸ŞÀÌ¼Ç Àü´Ş, Á¶ÀÛ ½ºÅ©¸³Æ® ºñÈ°¼ºÈ­ µîÀÇ ·ÎÁ÷À» ¿©±â¿¡ Ãß°¡
-        // ¿¹: GetComponent<PlayerMove>().enabled = false;
+        // TODO: ì• ë‹ˆë©”ì´í„°ì—ê²Œ ì‚¬ë§ ì• ë‹ˆë©”ì´ì…˜ ì „ë‹¬, ì¡°ì‘ ìŠ¤í¬ë¦½íŠ¸ ë¹„í™œì„±í™” ë“±ì˜ ë¡œì§ì„ ì—¬ê¸°ì— ì¶”ê°€
+        // ì˜ˆ: GetComponent<PlayerMove>().enabled = false;
     }
 }

@@ -4,12 +4,12 @@ public class SwordWave : MonoBehaviour
 {
     private const float Lifetime = 3f;
     private const int SpawnFrames = 2, LoopFrames = 4, FadeFrames = 3;
-    private const float SpawnFrameTime = 0.04f; // ÆîÃÄÁö¸ç »ı°Ü³ª´Â 2ÇÁ·¹ÀÓ
-    private const float LoopFrameTime = 0.05f;  // ½É¼±ÀÌ ÀÏ··ÀÌ´Â 4ÇÁ·¹ÀÓ ¹İº¹
-    private const float FadeFrameTime = 0.06f;  // Á¶°¢À¸·Î Èğ¾îÁö´Â 3ÇÁ·¹ÀÓ
+    private const float SpawnFrameTime = 0.04f; // í¼ì³ì§€ë©° ìƒê²¨ë‚˜ëŠ” 2í”„ë ˆì„
+    private const float LoopFrameTime = 0.05f;  // ì‹¬ì„ ì´ ì¼ë ì´ëŠ” 4í”„ë ˆì„ ë°˜ë³µ
+    private const float FadeFrameTime = 0.06f;  // ì¡°ê°ìœ¼ë¡œ í©ì–´ì§€ëŠ” 3í”„ë ˆì„
     private const int FrameWidth = 56, FrameHeight = 80;
 
-    // °Ë±â ÇÈ¼¿ ÇÁ·¹ÀÓÀº ÇÈ¼¿ Å©±â(PPU)º°·Î ÇÑ ¹ø¸¸ ¸¸µé¾î Àç»ç¿ë
+    // ê²€ê¸° í”½ì…€ í”„ë ˆì„ì€ í”½ì…€ í¬ê¸°(PPU)ë³„ë¡œ í•œ ë²ˆë§Œ ë§Œë“¤ì–´ ì¬ì‚¬ìš©
     private static Sprite[] cachedFrames;
     private static float cachedPpu;
 
@@ -28,7 +28,7 @@ public class SwordWave : MonoBehaviour
         Initialize(moveSpeed, skillDamage, 0f);
     }
 
-    // pixelWorldSize: Ä³¸¯ÅÍ ½ÃÆ® 1ÇÈ¼¿ÀÇ ¿ùµå Å©±â. 0º¸´Ù Å©¸é ÇÈ¼¿ °Ë±â ¾Ö´Ï¸ŞÀÌ¼ÇÀ» °°Àº ÇÈ¼¿ Å©±â·Î Àç»ı
+    // pixelWorldSize: ìºë¦­í„° ì‹œíŠ¸ 1í”½ì…€ì˜ ì›”ë“œ í¬ê¸°. 0ë³´ë‹¤ í¬ë©´ í”½ì…€ ê²€ê¸° ì• ë‹ˆë©”ì´ì…˜ì„ ê°™ì€ í”½ì…€ í¬ê¸°ë¡œ ì¬ìƒ
     public void Initialize(float moveSpeed, float skillDamage, float pixelWorldSize)
     {
         speed = moveSpeed;
@@ -36,7 +36,7 @@ public class SwordWave : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         hitCollider = GetComponent<Collider2D>();
 
-        // »ı¼º ´ç½Ã ¼³Á¤µÈ È¸Àü °¢µµÀÇ ¿À¸¥ÂÊ(transform.right) ¹æÇâÀ¸·Î ³¯¾Æ°¨
+        // ìƒì„± ë‹¹ì‹œ ì„¤ì •ëœ íšŒì „ ê°ë„ì˜ ì˜¤ë¥¸ìª½(transform.right) ë°©í–¥ìœ¼ë¡œ ë‚ ì•„ê°
         if (rb != null)
         {
             rb.linearVelocity = transform.right * speed;
@@ -47,7 +47,7 @@ public class SwordWave : MonoBehaviour
             SetupPixelFrames(pixelWorldSize);
         }
 
-        // 3ÃÊ µÚ ¸Ş¸ğ¸® °ü¸®¸¦ À§ÇØ ÀÚµ¿ ÆÄ±«
+        // 3ì´ˆ ë’¤ ë©”ëª¨ë¦¬ ê´€ë¦¬ë¥¼ ìœ„í•´ ìë™ íŒŒê´´
         Destroy(gameObject, Lifetime);
     }
 
@@ -64,7 +64,7 @@ public class SwordWave : MonoBehaviour
             var sheet = Resources.Load<Texture2D>("SwordWave/SwordWaveProjectile");
             if (sheet == null)
             {
-                Debug.LogWarning("°Ë±â ½ºÇÁ¶óÀÌÆ®°¡ ¾ø½À´Ï´Ù: Resources/SwordWave/SwordWaveProjectile", this);
+                Debug.LogWarning("ê²€ê¸° ìŠ¤í”„ë¼ì´íŠ¸ê°€ ì—†ìŠµë‹ˆë‹¤: Resources/SwordWave/SwordWaveProjectile", this);
                 return;
             }
             cachedFrames = new Sprite[SpawnFrames + LoopFrames + FadeFrames];
@@ -77,10 +77,10 @@ public class SwordWave : MonoBehaviour
         }
         frames = cachedFrames;
         spriteRenderer.sprite = frames[0];
-        // ¿ŞÂÊÀ¸·Î ³¯¾Æ°¥ ¶§µµ °¥°í¸® ³¡ÀÌ À§ÂÊ¿¡ ¿Àµµ·Ï »óÇÏ ¹İÀü
+        // ì™¼ìª½ìœ¼ë¡œ ë‚ ì•„ê°ˆ ë•Œë„ ê°ˆê³ ë¦¬ ëì´ ìœ„ìª½ì— ì˜¤ë„ë¡ ìƒí•˜ ë°˜ì „
         spriteRenderer.flipY = transform.right.x < 0f;
 
-        // Ãæµ¹ ¹üÀ§¸¦ ÃÊ½Â´Ş ¸öÅë(°¡·Î 13px, ¼¼·Î 64px)¿¡ ¸ÂÃã
+        // ì¶©ëŒ ë²”ìœ„ë¥¼ ì´ˆìŠ¹ë‹¬ ëª¸í†µ(ê°€ë¡œ 13px, ì„¸ë¡œ 64px)ì— ë§ì¶¤
         var box = hitCollider as BoxCollider2D;
         if (box != null)
         {
@@ -122,13 +122,13 @@ public class SwordWave : MonoBehaviour
     {
         if (fadeStart >= 0f) return;
 
-        // ¸ó½ºÅÍ¿Í Ãæµ¹ ½Ã µ¥¹ÌÁö ºÎ¿© ¹× °Ë±â »èÁ¦
+        // ëª¬ìŠ¤í„°ì™€ ì¶©ëŒ ì‹œ ë°ë¯¸ì§€ ë¶€ì—¬ ë° ê²€ê¸° ì‚­ì œ
         Slime monster = other.GetComponentInParent<Slime>();
         if (monster != null)
         {
             monster.TakeDamage((int)damage);
 
-            // ÇÈ¼¿ °Ë±â´Â »ç¶óÁö´Â ÇÁ·¹ÀÓÀ» º¸¿©ÁØ µÚ »èÁ¦
+            // í”½ì…€ ê²€ê¸°ëŠ” ì‚¬ë¼ì§€ëŠ” í”„ë ˆì„ì„ ë³´ì—¬ì¤€ ë’¤ ì‚­ì œ
             if (frames != null) BeginFade();
             else Destroy(gameObject);
         }

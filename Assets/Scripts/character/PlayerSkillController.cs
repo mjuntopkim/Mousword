@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq; // YÃà ¼ø¼­ Á¤·Ä(LINQ)¿¡ ÇÊ¼ö
+using System.Linq; // Yì¶• ìˆœì„œ ì •ë ¬(LINQ)ì— í•„ìˆ˜
 
 public class PlayerSkillController : MonoBehaviour
 {
@@ -15,23 +15,22 @@ public class PlayerSkillController : MonoBehaviour
     public SkillData SwordWaveSkillData => swordWaveSkill;
     public SkillData UltimateSkillData => ultimateSkill;
 
-    [SerializeField] private SkillData dashSlashSkill; // ´ë½Ã ½ºÅ³ µ¥ÀÌÅÍ¸¦ µî·Ï
-    [SerializeField] private SkillData swordWaveSkill; // °Ë±â ½ºÅ³ µ¥ÀÌÅÍ µî·Ï 
-    [SerializeField] private SkillData ultimateSkill;  // ±Ã±Ø±â ½ºÅ³ µ¥ÀÌÅÍ µî·Ï
+    [SerializeField] private SkillData dashSlashSkill; // ëŒ€ì‹œ ìŠ¤í‚¬ ë°ì´í„°ë¥¼ ë“±ë¡
+    [SerializeField] private SkillData swordWaveSkill; // ê²€ê¸° ìŠ¤í‚¬ ë°ì´í„° ë“±ë¡ 
+    [SerializeField] private SkillData ultimateSkill;  // ê¶ê·¹ê¸° ìŠ¤í‚¬ ë°ì´í„° ë“±ë¡
     [SerializeField] private SkillData spinSkill;
 
-    [SerializeField] private Transform weaponPivot;    // 360µµ ¹«±â È¸ÀüÃà
-    [SerializeField] private SpriteRenderer bodySpriteRenderer; // idle »óÅÂÀÏ¶§ Ä³¸¯ÅÍ°¡ ¹Ù¶óº¸°íÀÖ´Â ¹æÇâ ÂüÁ¶
-    [SerializeField] private LayerMask enemyLayer;      // ±Ã±Ø±â Å¸°İ ´ë»ó ¸ó½ºÅÍ ·¹ÀÌ¾î
-    [SerializeField] private Collider2D spinHitbox;     // 360µµ È¸Àü ½ºÅ³¿¡¼­ »ç¿ëÇÒ °ËÀÇ Ãæµ¹ ¿µ¿ª
+    [SerializeField] private Transform weaponPivot;    // 360ë„ ë¬´ê¸° íšŒì „ì¶•
+    [SerializeField] private SpriteRenderer bodySpriteRenderer; // idle ìƒíƒœì¼ë•Œ ìºë¦­í„°ê°€ ë°”ë¼ë³´ê³ ìˆëŠ” ë°©í–¥ ì°¸ì¡°
+    [SerializeField] private LayerMask enemyLayer;      // ê¶ê·¹ê¸°Â·íšŒì „ ìŠ¤í‚¬ íƒ€ê²© ëŒ€ìƒ ëª¬ìŠ¤í„° ë ˆì´ì–´
 
-    // ÄÄÆ÷³ÍÆ® ÇÒ´çÇÒ º¯¼ö
+    // ì»´í¬ë„ŒíŠ¸ í• ë‹¹í•  ë³€ìˆ˜
     private Rigidbody2D rigid;              
     private PlayerStatus playerStatus;
 
-    private float currentCoolTime = 0f;     // ½Ç½Ã°£À¸·Î °¨¼ÒÇÒ ÇöÀç ³²¾ÆÀÖ´Â ½ºÅ³ ÄğÅ¸ÀÓ
-    private float swordWaveCoolTime = 0f;     // °Ë±â ½ºÅ³ ÄğÅ¸ÀÓ
-    private float ultimateCoolTime = 0f;   // ±Ã±Ø±â ½ºÅ³ ÄğÅ¸ÀÓ
+    private float currentCoolTime = 0f;     // ì‹¤ì‹œê°„ìœ¼ë¡œ ê°ì†Œí•  í˜„ì¬ ë‚¨ì•„ìˆëŠ” ìŠ¤í‚¬ ì¿¨íƒ€ì„
+    private float swordWaveCoolTime = 0f;     // ê²€ê¸° ìŠ¤í‚¬ ì¿¨íƒ€ì„
+    private float ultimateCoolTime = 0f;   // ê¶ê·¹ê¸° ìŠ¤í‚¬ ì¿¨íƒ€ì„
 
     private PlayerDashVisuals dashVisuals;
     private PlayerMove dashMovement;
@@ -39,27 +38,34 @@ public class PlayerSkillController : MonoBehaviour
     private float dashOriginalGravity;
     private Coroutine dashRoutine;
 
-    private bool isDashing = false;             // Ä³¸¯ÅÍ°¡ ÇöÀç ´ë½Ã¸¦ ¼öÇà ÁßÀÎÁö ¿©ºÎ¸¦ ÀúÀå
-    private bool isExecutingUltimate = false;   // ±Ã±Ø±â ½ÃÀü Áß ¿©ºÎ
+    private bool isDashing = false;             // ìºë¦­í„°ê°€ í˜„ì¬ ëŒ€ì‹œë¥¼ ìˆ˜í–‰ ì¤‘ì¸ì§€ ì—¬ë¶€ë¥¼ ì €ì¥
+    private bool isExecutingUltimate = false;   // ê¶ê·¹ê¸° ì‹œì „ ì¤‘ ì—¬ë¶€
 
-    private PlayerSwordWaveVisuals swordWaveVisuals; // °Ë±â ½ÃÀü ¸ğ¼Ç ¿¬Ãâ
+    private PlayerSwordWaveVisuals swordWaveVisuals; // ê²€ê¸° ì‹œì „ ëª¨ì…˜ ì—°ì¶œ
     private Coroutine swordWaveRoutine;
-    private bool isCastingSwordWave = false;        // °Ë±â ½ÃÀü ¸ğ¼Ç Áß ¿©ºÎ
+    private bool isCastingSwordWave = false;        // ê²€ê¸° ì‹œì „ ëª¨ì…˜ ì¤‘ ì—¬ë¶€
 
-    private float spinCoolTime = 0f;            // È¸Àü ½ºÅ³ ÄğÅ¸ÀÓ
-    private bool isSpinning = false;            // È¸Àü »óÅÂ
+    private float spinCoolTime = 0f;            // íšŒì „ ìŠ¤í‚¬ ì¿¨íƒ€ì„
+    private bool isSpinning = false;            // íšŒì „ ìƒíƒœ
+    private Coroutine spinRoutine;
+    private PlayerSpinVisuals spinVisuals;      // íšŒì „ ìŠ¤í‚¬ ì—°ì¶œ
 
-    private WeaponAim weaponAim;                // È¸Àü½ÃÅ³ °Ë ¿ÀºêÁ§Æ®ÀÇ ÄÄÆ÷³ÍÆ®
-    private Rigidbody2D weaponRigid;            // È¸Àü½ÃÅ³ °Ë ¿ÀºêÁ§Æ®ÀÇ ÄÄÆ÷³ÍÆ®
+    private WeaponAim weaponAim;                // íšŒì „ì‹œí‚¬ ê²€ ì˜¤ë¸Œì íŠ¸ì˜ ì»´í¬ë„ŒíŠ¸
+    private Rigidbody2D weaponRigid;            // íšŒì „ì‹œí‚¬ ê²€ ì˜¤ë¸Œì íŠ¸ì˜ ì»´í¬ë„ŒíŠ¸
 
-    // ÇöÀç °Ë°ú Ãæµ¹ ÁßÀÎ ColliderµéÀ» ÀúÀå
+    // íšŒì „ ë°˜ê²½ ì•ˆì— ë“¤ì–´ì˜¨ Colliderë“¤ì„ ì €ì¥
     private readonly List<Collider2D> spinOverlapResults = new List<Collider2D>();
-    // ÀÌ¹ø È¸Àü ½ºÅ³¿¡¼­ ÀÌ¹Ì ÇÇÇØ¸¦ ¹ŞÀº ½½¶óÀÓ ÀúÀå
-    private readonly HashSet<Slime> spinHitEnemies = new HashSet<Slime>();
+    // ì´ë²ˆ íšŒì „ ìŠ¤í‚¬ì—ì„œ ì´ë¯¸ í”¼í•´ë¥¼ ë°›ì€ ìŠ¬ë¼ì„ ì €ì¥
+    // (ëª‡ ë²ˆ ë§ì•˜ëŠ”ì§€, ë§ˆì§€ë§‰ìœ¼ë¡œ ë§ì„ ë•Œê¹Œì§€ ê²€ì´ ëˆ ëˆ„ì  ê°ë„) â€” ë°”í€´ë§ˆë‹¤ 1íšŒì”© íƒ€ê²©í•˜ê¸° ìœ„í•´ ê¸°ë¡
+    private readonly Dictionary<Slime, Vector2Int> spinHitEnemies = new Dictionary<Slime, Vector2Int>();
+    private const int SpinRehitAngle = 300;     // ê°™ì€ ì ì„ ë‹¤ì‹œ ë•Œë¦¬ë ¤ë©´ ê²€ì´ ìµœì†Œ ì´ë§Œí¼ ë” ëŒì•„ì•¼ í•¨
+    private int spinMaxHits = 1;                // ì  í•˜ë‚˜ê°€ ì´ë²ˆ ìŠ¤í‚¬ì—ì„œ ë§ì„ ìˆ˜ ìˆëŠ” ìµœëŒ€ íšŸìˆ˜ (= ë°”í€´ ìˆ˜)
+    private float spinTravel;                   // íŒì • êµ¬ê°„ì—ì„œ ê²€ì´ ì§€ê¸ˆê¹Œì§€ ëˆ ëˆ„ì  ê°ë„
+    private RigidbodyInterpolation2D weaponInterpolation; // íšŒì „ ì¤‘ ì ê¹ ë°”ê¾¼ ë³´ê°„ ì„¤ì • ë³µêµ¬ìš©
 
     void Start()
     {   
-        // ÄÄÆ÷³ÍÆ® ÇÒ´ç
+        // ì»´í¬ë„ŒíŠ¸ í• ë‹¹
         rigid = GetComponent<Rigidbody2D>();
         playerStatus = GetComponent<PlayerStatus>();
 
@@ -68,18 +74,18 @@ public class PlayerSkillController : MonoBehaviour
             bodySpriteRenderer = GetComponent<SpriteRenderer>();
         }
 
-        // weaponPivotÀ» ±âÁØÀ¸·Î WeaponAim Ã£±â
+        // weaponPivotì„ ê¸°ì¤€ìœ¼ë¡œ WeaponAim ì°¾ê¸°
         if (weaponPivot != null)
         {
             weaponAim = weaponPivot.GetComponent<WeaponAim>();
 
-            // weaponPivot ÀÚÃ¼¿¡ ¾ø´Ù¸é ÀÚ½Ä¿¡¼­µµ °Ë»ö
+            // weaponPivot ìì²´ì— ì—†ë‹¤ë©´ ìì‹ì—ì„œë„ ê²€ìƒ‰
             if (weaponAim == null)
             {
                 weaponAim = weaponPivot.GetComponentInChildren<WeaponAim>();
             }
 
-            // WeaponAimÀÌ ºÙ¾îÀÖ´Â ¿ÀºêÁ§Æ®ÀÇ Rigidbody2D °¡Á®¿À±â
+            // WeaponAimì´ ë¶™ì–´ìˆëŠ” ì˜¤ë¸Œì íŠ¸ì˜ Rigidbody2D ê°€ì ¸ì˜¤ê¸°
             if (weaponAim != null)
             {
                 weaponRigid = weaponAim.GetComponent<Rigidbody2D>();
@@ -89,65 +95,66 @@ public class PlayerSkillController : MonoBehaviour
 
     void Update()
     {
-        // ÄğÅ¸ÀÓ Å¸ÀÌ¸Ó Â÷°¨(ÄğÅ¸ÀÓÀÌ ³²¾ÆÀÖÀ¸¸é ¸Å ÇÁ·¹ÀÓ Èå¸¥ ½Ã°£¸¸Å­ Â÷°¨)
-        if (currentCoolTime > 0) currentCoolTime -= Time.deltaTime;     // ´ë½Ã ½ºÅ³ ÄğÅ¸ÀÓ °è»ê
-        if (swordWaveCoolTime > 0) swordWaveCoolTime -= Time.deltaTime; // °Ë±â ½ºÅ³ ÄğÅ¸ÀÓ °è»ê
-        if (ultimateCoolTime > 0) ultimateCoolTime -= Time.deltaTime;   // ±Ã±Ø±â ÄğÅ¸ÀÓ °è»ê
+        // ì¿¨íƒ€ì„ íƒ€ì´ë¨¸ ì°¨ê°(ì¿¨íƒ€ì„ì´ ë‚¨ì•„ìˆìœ¼ë©´ ë§¤ í”„ë ˆì„ íë¥¸ ì‹œê°„ë§Œí¼ ì°¨ê°)
+        if (currentCoolTime > 0) currentCoolTime -= Time.deltaTime;     // ëŒ€ì‹œ ìŠ¤í‚¬ ì¿¨íƒ€ì„ ê³„ì‚°
+        if (swordWaveCoolTime > 0) swordWaveCoolTime -= Time.deltaTime; // ê²€ê¸° ìŠ¤í‚¬ ì¿¨íƒ€ì„ ê³„ì‚°
+        if (ultimateCoolTime > 0) ultimateCoolTime -= Time.deltaTime;   // ê¶ê·¹ê¸° ì¿¨íƒ€ì„ ê³„ì‚°
         if (spinCoolTime > 0) spinCoolTime -= Time.deltaTime;
 
-        // ÁÂÃø Shift Å°¸¦ ´©¸£°í, ÄğÅ¸ÀÓÀÌ ³¡³µÀ¸¸ç, ÇöÀç ´ë½Ã ÁßÀÌ ¾Æ´Ò ¶§ ½ÇÇà
-        if (Input.GetKeyDown(KeyCode.LeftShift) && currentCoolTime <= 0 && !isDashing && !isCastingSwordWave)
+        // ì¢Œì¸¡ Shift í‚¤ë¥¼ ëˆ„ë¥´ê³ , ì¿¨íƒ€ì„ì´ ëë‚¬ìœ¼ë©°, í˜„ì¬ ëŒ€ì‹œ ì¤‘ì´ ì•„ë‹ ë•Œ ì‹¤í–‰
+        if (Input.GetKeyDown(KeyCode.LeftShift) && currentCoolTime <= 0 && !isDashing && !isCastingSwordWave && !isSpinning)
         {
-            // ´ë½Ã ½Ãµµ
+            // ëŒ€ì‹œ ì‹œë„
             TryExecuteDash(dashSlashSkill);
         }
 
-        // E Å° ¶Ç´Â ¸¶¿ì½º ¿ìÅ¬¸¯: °Ë±â ¹ß»ç ½ºÅ³ ½ÇÇà
+        // E í‚¤ ë˜ëŠ” ë§ˆìš°ìŠ¤ ìš°í´ë¦­: ê²€ê¸° ë°œì‚¬ ìŠ¤í‚¬ ì‹¤í–‰
         if ((Input.GetKeyDown(KeyCode.E) || Input.GetMouseButtonDown(1)) && swordWaveCoolTime <= 0 && !isCastingSwordWave && !isDashing && !isSpinning)
         {
             TryExecuteSwordWave(swordWaveSkill);
         }
 
-        // [R Å°] ±Ã±Ø±â ¹üÀ§ ¼øÂ÷ Å¸°İ ½ºÅ³
+        // [R í‚¤] ê¶ê·¹ê¸° ë²”ìœ„ ìˆœì°¨ íƒ€ê²© ìŠ¤í‚¬
         if (Input.GetKeyDown(KeyCode.R) && ultimateCoolTime <= 0 && !isExecutingUltimate)
         {
             TryExecuteUltimate(ultimateSkill);
         }
 
-        if (Input.GetKeyDown(KeyCode.Q) && spinCoolTime <= 0f && !isSpinning && !isCastingSwordWave)
+        // [Q í‚¤] 360ë„ íšŒì „ë² ê¸° (ëŒ€ì‹œÂ·ê²€ê¸°ì™€ëŠ” ëª¸ ì—°ì¶œì´ ê²¹ì¹˜ë¯€ë¡œ ë™ì‹œì— ì“°ì§€ ì•ŠìŒ)
+        if (Input.GetKeyDown(KeyCode.Q) && spinCoolTime <= 0f && !isSpinning && !isCastingSwordWave && !isDashing)
         {
             TryExecuteSpin(spinSkill);
         }
     }
 
-    #region 1. ´ë½Ã ½ºÅ³ ·ÎÁ÷
+    #region 1. ëŒ€ì‹œ ìŠ¤í‚¬ ë¡œì§
     private void TryExecuteDash(SkillData skill)
     {
-        // ¿¹¿Ü Ã³¸®(¿¡·¯ ¹æÁö)
+        // ì˜ˆì™¸ ì²˜ë¦¬(ì—ëŸ¬ ë°©ì§€)
         if (skill == null) return;
 
-        // PlayerStatus°¡ Á¦´ë·Î ºÙ¾îÀÖ´ÂÁö È®ÀÎ
+        // PlayerStatusê°€ ì œëŒ€ë¡œ ë¶™ì–´ìˆëŠ”ì§€ í™•ì¸
         if (playerStatus == null)
         {
-            Debug.LogError("¿À·ù: Player 1 ¿ÀºêÁ§Æ®¿¡ 'PlayerStatus' ½ºÅ©¸³Æ®°¡ ¾ø½À´Ï´Ù!");
+            Debug.LogError("ì˜¤ë¥˜: Player 1 ì˜¤ë¸Œì íŠ¸ì— 'PlayerStatus' ìŠ¤í¬ë¦½íŠ¸ê°€ ì—†ìŠµë‹ˆë‹¤!");
             return;
         }
 
-        // PlayerStatusÀÇ ¸¶³ª¸¦ È®ÀÎÇÏ°í Â÷°¨ (¸¶³ª°¡ ÃæºĞÇÑÁö Ã¼Å©)
+        // PlayerStatusì˜ ë§ˆë‚˜ë¥¼ í™•ì¸í•˜ê³  ì°¨ê° (ë§ˆë‚˜ê°€ ì¶©ë¶„í•œì§€ ì²´í¬)
         if (playerStatus.CurrentMp >= skill.manaCost)
         {
-            playerStatus.ConsumeMp(skill.manaCost); // ¸¶³ª ¼Ò¸ğ ÇÔ¼ö
+            playerStatus.ConsumeMp(skill.manaCost); // ë§ˆë‚˜ ì†Œëª¨ í•¨ìˆ˜
 
-            Debug.Log($"[´ë½Ã »ç¿ë] ¼Ò¸ğ ¸¶³ª: {skill.manaCost} | ³²Àº ¸¶³ª: {playerStatus.CurrentMp}/{playerStatus.MaxMp}");
+            Debug.Log($"[ëŒ€ì‹œ ì‚¬ìš©] ì†Œëª¨ ë§ˆë‚˜: {skill.manaCost} | ë‚¨ì€ ë§ˆë‚˜: {playerStatus.CurrentMp}/{playerStatus.MaxMp}");
 
-            currentCoolTime = skill.coolTime;       // ÄğÅ¸ÀÓ Àû¿ë
+            currentCoolTime = skill.coolTime;       // ì¿¨íƒ€ì„ ì ìš©
 
-            // ´ë½Ã ¹°¸® ¿¬»ê ÄÚ·çÆ¾ ½ÃÀÛ
+            // ëŒ€ì‹œ ë¬¼ë¦¬ ì—°ì‚° ì½”ë£¨í‹´ ì‹œì‘
             dashRoutine = StartCoroutine(DashCoroutine(skill));
         }
         else
         {
-            Debug.Log("¸¶³ª°¡ ºÎÁ·ÇÏ¿© ´ë½Ã¸¦ »ç¿ëÇÒ ¼ö ¾ø½À´Ï´Ù!");
+            Debug.Log("ë§ˆë‚˜ê°€ ë¶€ì¡±í•˜ì—¬ ëŒ€ì‹œë¥¼ ì‚¬ìš©í•  ìˆ˜ ì—†ìŠµë‹ˆë‹¤!");
         }
     }
 
@@ -213,36 +220,38 @@ public class PlayerSkillController : MonoBehaviour
         if (dashVisuals != null) dashVisuals.Cancel();
         if (swordWaveRoutine != null) StopCoroutine(swordWaveRoutine);
         FinishSwordWave();
+        if (spinRoutine != null) StopCoroutine(spinRoutine);
+        FinishSpin();
     }
     #endregion
 
-    #region 2. °Ë±â ½ºÅ³ ·ÎÁ÷
+    #region 2. ê²€ê¸° ìŠ¤í‚¬ ë¡œì§
     private void TryExecuteSwordWave(SkillData skill)
     {
         if (skill == null || skill.projectilePrefab == null) return;
 
         if (playerStatus == null)
         {
-            Debug.LogError("¿À·ù: Player 1 ¿ÀºêÁ§Æ®¿¡ 'PlayerStatus' ½ºÅ©¸³Æ®°¡ ¾ø½À´Ï´Ù!");
+            Debug.LogError("ì˜¤ë¥˜: Player 1 ì˜¤ë¸Œì íŠ¸ì— 'PlayerStatus' ìŠ¤í¬ë¦½íŠ¸ê°€ ì—†ìŠµë‹ˆë‹¤!");
             return;
         }
 
-        // ¸¶³ª °ËÁõ ¹× Â÷°¨
+        // ë§ˆë‚˜ ê²€ì¦ ë° ì°¨ê°
         if (playerStatus.CurrentMp >= skill.manaCost)
         {
             playerStatus.ConsumeMp(skill.manaCost);
-            Debug.Log($"[°Ë±â ¹ß»ç] ¼Ò¸ğ ¸¶³ª: {skill.manaCost} | ³²Àº ¸¶³ª: {playerStatus.CurrentMp}/{playerStatus.MaxMp}");
+            Debug.Log($"[ê²€ê¸° ë°œì‚¬] ì†Œëª¨ ë§ˆë‚˜: {skill.manaCost} | ë‚¨ì€ ë§ˆë‚˜: {playerStatus.CurrentMp}/{playerStatus.MaxMp}");
 
-            swordWaveCoolTime = skill.coolTime; // ÄğÅ¸ÀÓ Àû¿ë
-            swordWaveRoutine = StartCoroutine(SwordWaveCoroutine(skill)); // ³»·Áº£±â ¸ğ¼Ç ÈÄ ÀÓÆÑÆ® ÇÁ·¹ÀÓ¿¡¼­ ¹ß»ç
+            swordWaveCoolTime = skill.coolTime; // ì¿¨íƒ€ì„ ì ìš©
+            swordWaveRoutine = StartCoroutine(SwordWaveCoroutine(skill)); // ë‚´ë ¤ë² ê¸° ëª¨ì…˜ í›„ ì„íŒ©íŠ¸ í”„ë ˆì„ì—ì„œ ë°œì‚¬
         }
         else
         {
-            Debug.Log("¸¶³ª°¡ ºÎÁ·ÇÏ¿© °Ë±â¸¦ ¹ß»çÇÒ ¼ö ¾ø½À´Ï´Ù!");
+            Debug.Log("ë§ˆë‚˜ê°€ ë¶€ì¡±í•˜ì—¬ ê²€ê¸°ë¥¼ ë°œì‚¬í•  ìˆ˜ ì—†ìŠµë‹ˆë‹¤!");
         }
     }
 
-    // °Ë±â ½ÃÀü: Á¶ÁØ ¹æÇâÀ¸·Î ¸öÀ» µ¹¸®°í ³»·Áº£±â ¸ğ¼ÇÀ» Àç»ıÇÑ µÚ, ÀÓÆÑÆ® ÇÁ·¹ÀÓ¿¡¼­ °Ë±â ¹ß»ç
+    // ê²€ê¸° ì‹œì „: ì¡°ì¤€ ë°©í–¥ìœ¼ë¡œ ëª¸ì„ ëŒë¦¬ê³  ë‚´ë ¤ë² ê¸° ëª¨ì…˜ì„ ì¬ìƒí•œ ë’¤, ì„íŒ©íŠ¸ í”„ë ˆì„ì—ì„œ ê²€ê¸° ë°œì‚¬
     private IEnumerator SwordWaveCoroutine(SkillData skill)
     {
         isCastingSwordWave = true;
@@ -250,11 +259,11 @@ public class PlayerSkillController : MonoBehaviour
         {
             if (weaponPivot == null)
             {
-                Debug.LogWarning("Weapon PivotÀÌ ÀÎ½ºÆåÅÍ¿¡ ¿¬°áµÇÁö ¾Ê¾Ò½À´Ï´Ù!");
+                Debug.LogWarning("Weapon Pivotì´ ì¸ìŠ¤í™í„°ì— ì—°ê²°ë˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤!");
                 yield break;
             }
 
-            // Å°¸¦ ´©¸¥ ¼ø°£ ¸¶¿ì½º¸¦ ÇâÇÑ weaponPivot ¹æÇâÀ¸·Î ¹ß»ç ¹æÇâ °íÁ¤
+            // í‚¤ë¥¼ ëˆ„ë¥¸ ìˆœê°„ ë§ˆìš°ìŠ¤ë¥¼ í–¥í•œ weaponPivot ë°©í–¥ìœ¼ë¡œ ë°œì‚¬ ë°©í–¥ ê³ ì •
             Quaternion aim = weaponPivot.rotation;
             float facing = (aim * Vector3.right).x < 0f ? -1f : 1f;
             if (bodySpriteRenderer != null) bodySpriteRenderer.flipX = facing < 0f;
@@ -282,10 +291,10 @@ public class PlayerSkillController : MonoBehaviour
 
     private void ShootSwordWave(SkillData skill, Quaternion aim)
     {
-        // 1. weaponPivot À§Ä¡¿¡¼­ Á¶ÁØ ¹æÇâ(aim)À¸·Î °Ë±â »ı¼º
+        // 1. weaponPivot ìœ„ì¹˜ì—ì„œ ì¡°ì¤€ ë°©í–¥(aim)ìœ¼ë¡œ ê²€ê¸° ìƒì„±
         GameObject waveObj = Instantiate(skill.projectilePrefab, weaponPivot.position, aim);
 
-        // 2. ¹è°æ ¼ÒÇ°¿¡ °¡¸®Áö ¾Êµµ·Ï ÇÃ·¹ÀÌ¾î¿Í °°Àº Á¤·Ä ·¹ÀÌ¾îÀÇ ¾ÕÂÊ¿¡ ±×¸²
+        // 2. ë°°ê²½ ì†Œí’ˆì— ê°€ë¦¬ì§€ ì•Šë„ë¡ í”Œë ˆì´ì–´ì™€ ê°™ì€ ì •ë ¬ ë ˆì´ì–´ì˜ ì•ìª½ì— ê·¸ë¦¼
         SpriteRenderer waveRenderer = waveObj.GetComponent<SpriteRenderer>();
         if (waveRenderer != null && bodySpriteRenderer != null)
         {
@@ -293,7 +302,7 @@ public class PlayerSkillController : MonoBehaviour
             waveRenderer.sortingOrder = bodySpriteRenderer.sortingOrder + 5;
         }
 
-        // 3. °Ë±â ½ºÅ©¸³Æ®¿¡ ¼Óµµ, µ¥¹ÌÁö, Ä³¸¯ÅÍ ÇÈ¼¿ Å©±â Àü´Ş
+        // 3. ê²€ê¸° ìŠ¤í¬ë¦½íŠ¸ì— ì†ë„, ë°ë¯¸ì§€, ìºë¦­í„° í”½ì…€ í¬ê¸° ì „ë‹¬
         SwordWave swordWave = waveObj.GetComponent<SwordWave>();
         if (swordWave != null)
         {
@@ -303,45 +312,45 @@ public class PlayerSkillController : MonoBehaviour
     }
     #endregion
 
-    #region 3. ±Ã±Ø±â(È­¸é ÀüÃ¼ ¼øÂ÷ Å¸°İ) ·ÎÁ÷
+    #region 3. ê¶ê·¹ê¸°(í™”ë©´ ì „ì²´ ìˆœì°¨ íƒ€ê²©) ë¡œì§
     private void TryExecuteUltimate(SkillData skill)
     {
         if (skill == null) return;
 
         if (playerStatus == null)
         {
-            Debug.LogError("¿À·ù: Player 1 ¿ÀºêÁ§Æ®¿¡ 'PlayerStatus' ½ºÅ©¸³Æ®°¡ ¾ø½À´Ï´Ù!");
+            Debug.LogError("ì˜¤ë¥˜: Player 1 ì˜¤ë¸Œì íŠ¸ì— 'PlayerStatus' ìŠ¤í¬ë¦½íŠ¸ê°€ ì—†ìŠµë‹ˆë‹¤!");
             return;
         }
 
         if (playerStatus.CurrentMp >= skill.manaCost)
         {
             playerStatus.ConsumeMp(skill.manaCost);
-            Debug.Log($"[±Ã±Ø±â ¹ßµ¿] ¼Ò¸ğ ¸¶³ª: {skill.manaCost} | ³²Àº ¸¶³ª: {playerStatus.CurrentMp}/{playerStatus.MaxMp}");
+            Debug.Log($"[ê¶ê·¹ê¸° ë°œë™] ì†Œëª¨ ë§ˆë‚˜: {skill.manaCost} | ë‚¨ì€ ë§ˆë‚˜: {playerStatus.CurrentMp}/{playerStatus.MaxMp}");
 
             ultimateCoolTime = skill.coolTime;
 
-            // ¼ø¼ö ¼øÂ÷ Å¸°İ ±â´É ÄÚ·çÆ¾ ½ÃÀÛ
+            // ìˆœìˆ˜ ìˆœì°¨ íƒ€ê²© ê¸°ëŠ¥ ì½”ë£¨í‹´ ì‹œì‘
             StartCoroutine(ExecuteUltimateHitSequence());
         }
         else
         {
-            Debug.Log("¸¶³ª°¡ ºÎÁ·ÇÏ¿© ±Ã±Ø±â¸¦ »ç¿ëÇÒ ¼ö ¾ø½À´Ï´Ù!");
+            Debug.Log("ë§ˆë‚˜ê°€ ë¶€ì¡±í•˜ì—¬ ê¶ê·¹ê¸°ë¥¼ ì‚¬ìš©í•  ìˆ˜ ì—†ìŠµë‹ˆë‹¤!");
         }
     }
 
-    // Áö±İÀº RÅ°·Î ¹Ù·Î ÀÛµ¿ÇÏ¸ç, ³ªÁß¿¡ ¸ğ¼Ç ¿Ï¼º ½Ã ¾Ö´Ï¸ŞÀÌ¼Ç ÀÌº¥Æ®·Î È£ÃâÇÒ ÇÙ½É ±â´É
+    // ì§€ê¸ˆì€ Rí‚¤ë¡œ ë°”ë¡œ ì‘ë™í•˜ë©°, ë‚˜ì¤‘ì— ëª¨ì…˜ ì™„ì„± ì‹œ ì• ë‹ˆë©”ì´ì…˜ ì´ë²¤íŠ¸ë¡œ í˜¸ì¶œí•  í•µì‹¬ ê¸°ëŠ¥
     public IEnumerator ExecuteUltimateHitSequence()
     {
         if (ultimateSkill == null) yield break;
 
         isExecutingUltimate = true;
 
-        // 1. ÇöÀç È­¸é(¸ŞÀÎ Ä«¸Ş¶ó) ¿µ¿ª ÁÂÇ¥ ¹× Å©±â °è»ê
+        // 1. í˜„ì¬ í™”ë©´(ë©”ì¸ ì¹´ë©”ë¼) ì˜ì—­ ì¢Œí‘œ ë° í¬ê¸° ê³„ì‚°
         Camera mainCam = Camera.main;
         if (mainCam == null)
         {
-            Debug.LogWarning("Main Camera¸¦ Ã£À» ¼ö ¾ø½À´Ï´Ù!");
+            Debug.LogWarning("Main Cameraë¥¼ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤!");
             isExecutingUltimate = false;
             yield break;
         }
@@ -349,35 +358,35 @@ public class PlayerSkillController : MonoBehaviour
         Vector2 center = mainCam.transform.position;
         Vector2 size = new Vector2(mainCam.orthographicSize * 2 * mainCam.aspect, mainCam.orthographicSize * 2);
 
-        // 2. È­¸é ÀüÃ¼ ¿µ¿ª ¾ÈÀÇ ¸ğµç enemyLayer ¸ó½ºÅÍ ¼öÁı
+        // 2. í™”ë©´ ì „ì²´ ì˜ì—­ ì•ˆì˜ ëª¨ë“  enemyLayer ëª¬ìŠ¤í„° ìˆ˜ì§‘
         Collider2D[] hitEnemies = Physics2D.OverlapBoxAll(center, size, 0f, enemyLayer);
 
-        // 3. YÃà ±âÁØ ³»¸²Â÷¼ø Á¤·Ä (À§ÂÊ YÁÂÇ¥ -> ¾Æ·¡ÂÊ YÁÂÇ¥ ¼ø¼­)
+        // 3. Yì¶• ê¸°ì¤€ ë‚´ë¦¼ì°¨ìˆœ ì •ë ¬ (ìœ„ìª½ Yì¢Œí‘œ -> ì•„ë˜ìª½ Yì¢Œí‘œ ìˆœì„œ)
         List<Collider2D> sortedEnemies = hitEnemies
             .OrderByDescending(e => e.transform.position.y)
             .ToList();
 
-        // 4. À§ÂÊ ¸ó½ºÅÍºÎÅÍ ¼øÂ÷ÀûÀ¸·Î µ¥¹ÌÁö ¹× ÀÌÆåÆ® Ã³¸®
+        // 4. ìœ„ìª½ ëª¬ìŠ¤í„°ë¶€í„° ìˆœì°¨ì ìœ¼ë¡œ ë°ë¯¸ì§€ ë° ì´í™íŠ¸ ì²˜ë¦¬
         foreach (Collider2D enemy in sortedEnemies)
         {
             if (enemy == null) continue;
 
-            // ¸ó½ºÅÍ µ¥¹ÌÁö Àü´Ş Ã³¸® (ÇÁ·ÎÁ§Æ®ÀÇ ¸ó½ºÅÍ ½ºÅ©¸³Æ®¿¡ ¸ÂÃç È£Ãâ)
+            // ëª¬ìŠ¤í„° ë°ë¯¸ì§€ ì „ë‹¬ ì²˜ë¦¬ (í”„ë¡œì íŠ¸ì˜ ëª¬ìŠ¤í„° ìŠ¤í¬ë¦½íŠ¸ì— ë§ì¶° í˜¸ì¶œ)
             Slime monster = enemy.GetComponentInParent<Slime>();
             if (monster != null)
             {
                 monster.TakeDamage((int)ultimateSkill.damage);
             }
 
-            Debug.Log($"[±Ã±Ø±â ¼øÂ÷ ÇÇ°İ] {enemy.name} ÇÇ°İ! µ¥¹ÌÁö: {ultimateSkill.damage}");
+            Debug.Log($"[ê¶ê·¹ê¸° ìˆœì°¨ í”¼ê²©] {enemy.name} í”¼ê²©! ë°ë¯¸ì§€: {ultimateSkill.damage}");
 
-            // ÇÇ°İ ÁöÁ¡ ÀÌÆåÆ® »ı¼º
+            // í”¼ê²© ì§€ì  ì´í™íŠ¸ ìƒì„±
             if (ultimateSkill.ultimateHitEffectPrefab != null)
             {
                 Instantiate(ultimateSkill.ultimateHitEffectPrefab, enemy.transform.position, Quaternion.identity);
             }
 
-            // À§¿¡¼­ ¾Æ·¡·Î ¼øÂ÷Àû ÇÇ°İ ´À³¦À» ÁÖ´Â Áö¿¬ ½Ã°£ (SkillData.hitInterval)
+            // ìœ„ì—ì„œ ì•„ë˜ë¡œ ìˆœì°¨ì  í”¼ê²© ëŠë‚Œì„ ì£¼ëŠ” ì§€ì—° ì‹œê°„ (SkillData.hitInterval)
             yield return new WaitForSeconds(ultimateSkill.hitInterval);
         }
 
@@ -386,7 +395,7 @@ public class PlayerSkillController : MonoBehaviour
 
     private void OnDrawGizmosSelected()
     {
-        // Ä«¸Ş¶ó °¨Áö ¿µ¿ª Gizmo Ç¥½Ã
+        // ì¹´ë©”ë¼ ê°ì§€ ì˜ì—­ Gizmo í‘œì‹œ
         if (Camera.main != null)
         {
             Gizmos.color = Color.red;
@@ -395,195 +404,254 @@ public class PlayerSkillController : MonoBehaviour
             Vector3 size = new Vector3(mainCam.orthographicSize * 2 * mainCam.aspect, mainCam.orthographicSize * 2, 1);
             Gizmos.DrawWireCube(center, size);
         }
+
+        // íšŒì „ ìŠ¤í‚¬ íŒì • ë°˜ê²½ í‘œì‹œ
+        if (weaponPivot != null)
+        {
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawWireSphere(SpinCenter, GetSpinRadius(spinSkill));
+        }
     }
     #endregion
 
-    #region 4. 360µµ È¸Àü ½ºÅ³
+    #region 4. 360ë„ íšŒì „ ìŠ¤í‚¬
 
     private void TryExecuteSpin(SkillData skill)
     {
-        // ½ºÅ³ µ¥ÀÌÅÍ°¡ ¾øÀ¸¸é ½ÇÇà ¾È ÇÔ
+        // ìŠ¤í‚¬ ë°ì´í„°ê°€ ì—†ìœ¼ë©´ ì‹¤í–‰ ì•ˆ í•¨
         if (skill == null)
         {
-            Debug.LogWarning("Spin Skill µ¥ÀÌÅÍ°¡ ¾ø½À´Ï´Ù.");
+            Debug.LogWarning("Spin Skill ë°ì´í„°ê°€ ì—†ìŠµë‹ˆë‹¤.");
             return;
         }
 
-        // PlayerStatus È®ÀÎ
+        // PlayerStatus í™•ì¸
         if (playerStatus == null)
         {
-            Debug.LogWarning("PlayerStatus°¡ ¾ø½À´Ï´Ù.");
+            Debug.LogWarning("PlayerStatusê°€ ì—†ìŠµë‹ˆë‹¤.");
             return;
         }
 
-        // °Ë È®ÀÎ
+        // ê²€ í™•ì¸
         if (weaponAim == null || weaponRigid == null)
         {
-            Debug.LogWarning("WeaponAim ¶Ç´Â ¹«±âÀÇ Rigidbody2D¸¦ Ã£Áö ¸øÇß½À´Ï´Ù.");
+            Debug.LogWarning("WeaponAim ë˜ëŠ” ë¬´ê¸°ì˜ Rigidbody2Dë¥¼ ì°¾ì§€ ëª»í–ˆìŠµë‹ˆë‹¤.");
             return;
         }
 
-        if (spinHitbox == null)
-        {
-            Debug.LogWarning(
-                "Spin Hitbox°¡ ¿¬°áµÇÁö ¾Ê¾Ò½À´Ï´Ù."
-            );
-
-            return;
-        }
-
-        // ¸¶³ª°¡ ºÎÁ·ÇÏ¸é ½ÇÇà ¾È ÇÔ
+        // ë§ˆë‚˜ê°€ ë¶€ì¡±í•˜ë©´ ì‹¤í–‰ ì•ˆ í•¨
         if (playerStatus.CurrentMp < skill.manaCost)
         {
-            Debug.Log("¸¶³ª°¡ ºÎÁ·ÇØ¼­ È¸Àü ½ºÅ³À» »ç¿ëÇÒ ¼ö ¾ø½À´Ï´Ù.");
+            Debug.Log("ë§ˆë‚˜ê°€ ë¶€ì¡±í•´ì„œ íšŒì „ ìŠ¤í‚¬ì„ ì‚¬ìš©í•  ìˆ˜ ì—†ìŠµë‹ˆë‹¤.");
             return;
         }
 
-        // ¸¶³ª ¼Ò¸ğ
+        // ë§ˆë‚˜ ì†Œëª¨
         playerStatus.ConsumeMp(skill.manaCost);
 
-        // ÄğÅ¸ÀÓ Àû¿ë
+        // ì¿¨íƒ€ì„ ì ìš©
         spinCoolTime = skill.coolTime;
 
-        // ½ÇÁ¦ °Ë È¸Àü ½ÃÀÛ
-        StartCoroutine(SpinSwordCoroutine(skill));
+        // ì‹¤ì œ ê²€ íšŒì „ ì‹œì‘
+        spinRoutine = StartCoroutine(SpinSwordCoroutine(skill));
     }
 
 
+    // íšŒì „ ì¤‘ì‹¬ = ë¬´ê¸° íšŒì „ì¶• ìœ„ì¹˜
+    private Vector2 SpinCenter =>
+        weaponRigid != null ? weaponRigid.position :
+        (weaponAim != null ? (Vector2)weaponAim.transform.position : (Vector2)weaponPivot.position);
+
+    // â‘  ì¤€ë¹„ â†’ â‘¡ íšŒì „(íŒì •) â†’ â‘¢ ë§ˆë¬´ë¦¬
     private IEnumerator SpinSwordCoroutine(SkillData skill)
     {
         isSpinning = true;
 
-        // ÀÌÀü È¸Àü ½ºÅ³ÀÇ ÇÇ°İ ±â·Ï Á¦°Å
+        // ì´ì „ íšŒì „ ìŠ¤í‚¬ì˜ í”¼ê²© ê¸°ë¡ ì œê±°
         spinHitEnemies.Clear();
 
-        // ±âÁ¸ ÆòÅ¸ÀÇ ´©Àû È¸Àü°¢ ÃÊ±âÈ­
-        if (weaponAim != null)
+        // ê¸°ì¡´ í‰íƒ€ì˜ ëˆ„ì  íšŒì „ê° ì´ˆê¸°í™” í›„ ë§ˆìš°ìŠ¤ ë°©í–¥ ì¶”ì  ì¤‘ì§€
+        weaponAim.ConsumeSwing();
+        weaponAim.enabled = false;
+
+        // í˜„ì¬ ì¡°ì¤€ ê°ë„ì—ì„œ ì‹œì‘
+        // ì¡°ì¤€ì´ ì˜¤ë¥¸ìª½ì´ë©´ ì‹œê³„ ë°©í–¥(-), ì™¼ìª½ì´ë©´ ë°˜ì‹œê³„ ë°©í–¥(+)ìœ¼ë¡œ ëŒì•„ ì•ìª½ë¶€í„° ë²¤ë‹¤
+        float startAngle = weaponRigid.rotation;
+        float facing = Mathf.Cos(startAngle * Mathf.Deg2Rad) < 0f ? -1f : 1f;
+        float spinDirection = -facing;
+        float radius = GetSpinRadius(skill);
+
+        // ë‹¹ê¸´ ë§Œí¼ ë” ëŒì•„ì„œ ì›ë˜ ì¡°ì¤€ ê°ë„ì—ì„œ ëë‚¨ (ì˜ˆ: 1080Â° = 3ë°”í€´ + ì¤€ë¹„ ê°ë„)
+        float sweep = Mathf.Abs(skill.spinDegrees) + PlayerSpinVisuals.WindupAngle;
+        float spinSpeed = sweep / Mathf.Max(skill.spinDuration, 0.01f);
+
+        // ë°”í€´ ìˆ˜ë§Œí¼ ê°™ì€ ì ì„ ì—¬ëŸ¬ ë²ˆ ë•Œë¦´ ìˆ˜ ìˆìŒ (360Â° = 1íšŒ, 1080Â° = 3íšŒ)
+        spinMaxHits = Mathf.Max(1, Mathf.CeilToInt(Mathf.Abs(skill.spinDegrees) / 360f - 0.01f));
+        spinTravel = 0f;
+
+        // ì•„ì£¼ ë¹ ë¥´ê²Œ ëŒ ë•Œ ë¬¼ë¦¬ í”„ë ˆì„ ì‚¬ì´ì—ì„œ ê²€ì´ ëšëš ëŠê²¨ ë³´ì´ì§€ ì•Šë„ë¡ ë³´ê°„ ì‚¬ìš©
+        weaponInterpolation = weaponRigid.interpolation;
+        weaponRigid.interpolation = RigidbodyInterpolation2D.Interpolate;
+
+        if (spinVisuals == null)
+            spinVisuals = GetComponent<PlayerSpinVisuals>() ?? gameObject.AddComponent<PlayerSpinVisuals>();
+        spinVisuals.Begin(bodySpriteRenderer, weaponAim.transform, radius, facing, spinDirection, spinSpeed);
+
+        try
         {
-            weaponAim.ConsumeSwing();
+            // â‘  ì¤€ë¹„: ì§„í–‰ ë°˜ëŒ€ ë°©í–¥ìœ¼ë¡œ ê²€ì„ ì‚´ì§ ë‹¹ê¹€ (íŒì • ì—†ìŒ)
+            float windupAngle = startAngle - spinDirection * PlayerSpinVisuals.WindupAngle;
+            yield return RotateWeapon(startAngle, windupAngle, PlayerSpinVisuals.WindupTime, null, radius);
 
-            // ¸¶¿ì½º ¹æÇâ ÃßÀû ÁßÁö
-            weaponAim.enabled = false;
+            // â‘¡ íšŒì „
+            spinVisuals.BeginSpin();
+            CheckSpinDamage(skill, windupAngle, windupAngle, radius); // ê²€ì´ ì¶œë°œí•˜ëŠ” ìœ„ì¹˜ë„ íŒì •
+            yield return RotateWeapon(windupAngle, windupAngle + spinDirection * sweep, skill.spinDuration, skill, radius);
+
+            // â‘¢ ë§ˆë¬´ë¦¬: ì¡°ì¤€ì€ ë°”ë¡œ ëŒë ¤ì£¼ê³ , ì—°ì¶œì´ ëë‚  ë•Œê¹Œì§€ë§Œ ë‹¤ë¥¸ ìŠ¤í‚¬ê³¼ ê²¹ì¹˜ì§€ ì•Šê²Œ ëŒ€ê¸°
+            ReleaseWeapon();
+            spinVisuals.EndSpin();
+            yield return new WaitForSeconds(PlayerSpinVisuals.RecoverTime);
         }
-
-
-        // =========================================
-        // 2. È¸Àü Á¤º¸ °è»ê
-        // =========================================
-
-        float rotatedAngle = 0f;
-
-        float totalAngle = Mathf.Abs(skill.spinDegrees);
-
-        float duration = Mathf.Max(
-            skill.spinDuration,
-            0.01f
-        );
-
-        // ¿¹:
-        // 360µµ / 0.5ÃÊ = ÃÊ´ç 720µµ È¸Àü
-        float spinSpeed =
-            totalAngle / duration;
-
-
-        // =========================================
-        // 3. °ËÀ» ½ÇÁ¦·Î 360µµ È¸Àü
-        // =========================================
-
-        while (rotatedAngle < totalAngle)
+        finally
         {
-            float rotateAmount =
-                spinSpeed * Time.fixedDeltaTime;
-
-
-            // ¸¶Áö¸· ÇÁ·¹ÀÓ¿¡ 360µµ¸¦ ³Ñ¾î°¡´Â Çö»ó ¹æÁö
-            rotateAmount = Mathf.Min(
-                rotateAmount,
-                totalAngle - rotatedAngle
-            );
-
-
-            // ÇöÀç °ËÀÇ °¢µµ¿¡¼­ Á¶±İ¾¿ È¸Àü
-            float nextAngle =
-                weaponRigid.rotation + rotateAmount;
-
-
-            weaponRigid.MoveRotation(nextAngle);
-
-
-            // Áö±İ±îÁö ¾ó¸¶³ª µ¹¾Ò´ÂÁö ±â·Ï
-            rotatedAngle += rotateAmount;
-
-
-            // ´ÙÀ½ ¹°¸® ÇÁ·¹ÀÓ±îÁö ±â´Ù¸²
-            yield return new WaitForFixedUpdate();
-
-            // °Ë¿¡ ´êÀº ½½¶óÀÓ °ø°İ
-            CheckSpinDamage(skill);
+            FinishSpin();
         }
-
-
-        // ÆòÅ¸ÀÇ È¸Àü°¢ ±â·Ï ÃÊ±âÈ­ ÈÄ Á¶ÁØ º¹±¸
-        if (weaponAim != null)
-        {
-            weaponAim.ConsumeSwing();
-            weaponAim.enabled = true;
-        }
-
-        // ÀÌ¹ø ½ºÅ³ÀÇ ÇÇ°İ ±â·Ï ÃÊ±âÈ­
-        spinHitEnemies.Clear();
-
-        isSpinning = false;
     }
 
-    // È¸Àü ½ºÅ³ÀÇ ¸ó½ºÅÍ °ø°İ ÆÇÁ¤
-    private void CheckSpinDamage(SkillData skill)
+    // ë¬¼ë¦¬ í”„ë ˆì„ë§ˆë‹¤ ê²€ì„ from â†’ to ë¡œ ì¼ì •í•œ ì†ë„ë¡œ ëŒë¦¼. damageSkillì´ ìˆìœ¼ë©´ ì§€ë‚˜ê°„ êµ¬ê°„ì„ íŒì •
+    private IEnumerator RotateWeapon(float from, float to, float duration, SkillData damageSkill, float radius)
     {
-        // °ËÀÇ Ãæµ¹ ¿µ¿ªÀÌ ¾ø´Ù¸é ½ÇÇàÇÏÁö ¾ÊÀ½
-        if (spinHitbox == null)
-            return;
+        float speed = Mathf.Abs(to - from) / Mathf.Max(duration, 0.01f);
+        float angle = from;
 
-        // ÀÌÀü °Ë»ç °á°ú ÃÊ±âÈ­
+        while (angle != to)
+        {
+            float next = Mathf.MoveTowards(angle, to, speed * Time.fixedDeltaTime);
+            weaponRigid.MoveRotation(next);
+
+            // ë‹¤ìŒ ë¬¼ë¦¬ í”„ë ˆì„ê¹Œì§€ ê¸°ë‹¤ë¦¼
+            yield return new WaitForFixedUpdate();
+
+            if (damageSkill != null)
+            {
+                spinTravel += Mathf.Abs(next - angle);
+                CheckSpinDamage(damageSkill, angle, next, radius);
+            }
+
+            angle = next;
+        }
+    }
+
+    // ë§ˆìš°ìŠ¤ ì¡°ì¤€ ë³µêµ¬
+    private void ReleaseWeapon()
+    {
+        if (weaponRigid != null) weaponRigid.interpolation = weaponInterpolation;
+        if (weaponAim == null) return;
+        weaponAim.ConsumeSwing();
+        weaponAim.enabled = true;
+    }
+
+    private void FinishSpin()
+    {
+        if (!isSpinning) return;
+        ReleaseWeapon();
+        if (spinVisuals != null) spinVisuals.Cancel();
+        spinHitEnemies.Clear();
+        isSpinning = false;
+        spinRoutine = null;
+    }
+
+    // íŒì • ë°˜ê²½ = íšŒì „ì¶•ì—ì„œ ê²€ ìŠ¤í”„ë¼ì´íŠ¸ì˜ ê°€ì¥ ë¨¼ ê¼­ì§“ì ê¹Œì§€ ê±°ë¦¬ + ë³´ì •ê°’
+    private float GetSpinRadius(SkillData skill)
+    {
+        float bonus = skill != null ? skill.spinRadiusBonus : 0f;
+        if (weaponPivot == null) return Mathf.Max(0f, bonus);
+
+        Vector2 center = SpinCenter;
+        float reach = 0f;
+        foreach (SpriteRenderer r in weaponPivot.GetComponentsInChildren<SpriteRenderer>())
+        {
+            if (r.sprite == null) continue;
+            Bounds b = r.sprite.bounds;
+            for (int i = 0; i < 4; i++)
+            {
+                Vector3 corner = new Vector3(i % 2 == 0 ? b.min.x : b.max.x, i < 2 ? b.min.y : b.max.y, 0f);
+                reach = Mathf.Max(reach, Vector2.Distance(r.transform.TransformPoint(corner), center));
+            }
+        }
+        return Mathf.Max(0f, reach + bonus);
+    }
+
+    // íšŒì „ ìŠ¤í‚¬ì˜ ëª¬ìŠ¤í„° ê³µê²© íŒì •
+    // ë°˜ê²½ ì•ˆì˜ ì  ì¤‘ì—ì„œ ì´ë²ˆ ë¬¼ë¦¬ í”„ë ˆì„ì— ê²€ì´ ì§€ë‚˜ê°„ ê°ë„ êµ¬ê°„ [fromAngle, toAngle] ì•ˆì— ìˆëŠ” ì ì„ íƒ€ê²©
+    // ê°™ì€ ì ì€ ê²€ì´ í•œ ë°”í€´ ê°€ê¹Œì´(SpinRehitAngle) ë” ëŒì•„ ë‹¤ì‹œ ì§€ë‚˜ê°ˆ ë•Œë§Œ, ë°”í€´ ìˆ˜ë§Œí¼ê¹Œì§€ ë‹¤ì‹œ ë§ìŒ
+    private void CheckSpinDamage(SkillData skill, float fromAngle, float toAngle, float radius)
+    {
+        Vector2 center = SpinCenter;
+
+        // ì´ì „ ê²€ì‚¬ ê²°ê³¼ ì´ˆê¸°í™”
         spinOverlapResults.Clear();
 
-        // ¸ó½ºÅÍ ·¹ÀÌ¾î¸¸ °Ë»ç
+        // ëª¬ìŠ¤í„° ë ˆì´ì–´ë§Œ ê²€ì‚¬
         ContactFilter2D filter = new ContactFilter2D();
-
         filter.SetLayerMask(enemyLayer);
         filter.useTriggers = true;
 
-        // ÇöÀç °Ë°ú ½ÇÁ¦·Î °ãÃÄ ÀÖ´Â Collider °Ë»ö
-        Physics2D.OverlapCollider(
-            spinHitbox,
-            filter,
-            spinOverlapResults
-        );
+        // íšŒì „ ë°˜ê²½ ì•ˆì˜ Collider ê²€ìƒ‰
+        Physics2D.OverlapCircle(center, radius, filter, spinOverlapResults);
 
-        // °Ë¿¡ ´êÀº ¸ğµç Collider È®ÀÎ
+        float sweep = Mathf.Abs(toAngle - fromAngle);
+        float direction = toAngle >= fromAngle ? 1f : -1f;
+
         foreach (Collider2D hit in spinOverlapResults)
         {
             if (hit == null)
                 continue;
 
-            // ColliderÀÇ ºÎ¸ğ¿¡¼­ ½½¶óÀÓ °Ë»ö
-            Slime monster =
-                hit.GetComponentInParent<Slime>();
+            // Colliderì˜ ë¶€ëª¨ì—ì„œ ìŠ¬ë¼ì„ ê²€ìƒ‰
+            Slime monster = hit.GetComponentInParent<Slime>();
 
             if (monster == null)
                 continue;
 
-            // ÀÌ¹Ì ÇÇÇØ¸¦ ¹ŞÀº ½½¶óÀÓÀÌ¸é ¹«½Ã
-            if (!spinHitEnemies.Add(monster))
+            // ì´ë¯¸ ë°”í€´ ìˆ˜ë§Œí¼ ë§ì•˜ê±°ë‚˜, ì´ë²ˆ ë°”í€´ì— ì´ë¯¸ ë§ì€ ìŠ¬ë¼ì„ì´ë©´ ë¬´ì‹œ
+            int travel = Mathf.RoundToInt(spinTravel);
+            bool hitBefore = spinHitEnemies.TryGetValue(monster, out Vector2Int record);
+            if (hitBefore && (record.x >= spinMaxHits || travel - record.y < SpinRehitAngle))
                 continue;
 
-            // Ã³À½ ¸ÂÀº ½½¶óÀÓ¿¡°Ô¸¸ µ¥¹ÌÁö Àû¿ë
+            // ê²€ì´ ì•„ì§ ì§€ë‚˜ê°€ì§€ ì•Šì€ ìœ„ì¹˜ë©´ ë¬´ì‹œ
+            if (!IsInSweep(hit.bounds, center, fromAngle, direction, sweep))
+                continue;
+
+            spinHitEnemies[monster] = new Vector2Int(hitBefore ? record.x + 1 : 1, travel);
             monster.TakeDamage((int)skill.damage);
 
-            Debug.Log(
-                $"[È¸Àü ½ºÅ³ ÀûÁß] {monster.name} " +
-                $"µ¥¹ÌÁö: {skill.damage}"
-            );
+            if (spinVisuals != null)
+                spinVisuals.Spark(hit.bounds.center);
+
+            Debug.Log($"[íšŒì „ ìŠ¤í‚¬ ì ì¤‘] {monster.name} ë°ë¯¸ì§€: {skill.damage}");
         }
+    }
+
+    // ì ì´ ì´ë²ˆì— ê²€ì´ ì“¸ê³  ì§€ë‚˜ê°„ ë¶€ì±„ê¼´ ì•ˆì— ìˆëŠ”ì§€ (ì ì˜ í¬ê¸°ë§Œí¼ ê°ë„ ì—¬ìœ ë¥¼ ì¤Œ)
+    private static bool IsInSweep(Bounds bounds, Vector2 center, float fromAngle, float direction, float sweep)
+    {
+        Vector2 offset = (Vector2)bounds.center - center;
+        float distance = offset.magnitude;
+        float extent = ((Vector2)bounds.extents).magnitude;
+
+        // íšŒì „ì¶•ì´ ì  ëª¸ ì•ˆì— ìˆìœ¼ë©´ ë¬´ì¡°ê±´ ì ì¤‘
+        if (distance <= extent)
+            return true;
+
+        float halfWidth = Mathf.Asin(extent / distance) * Mathf.Rad2Deg;
+        float enemyAngle = Mathf.Atan2(offset.y, offset.x) * Mathf.Rad2Deg;
+
+        // íšŒì „ ë°©í–¥ ê¸°ì¤€ìœ¼ë¡œ ì‹œì‘ ê°ë„ì—ì„œ ì ê¹Œì§€ ëª‡ ë„ ë–¨ì–´ì ¸ ìˆëŠ”ì§€
+        float along = Mathf.Repeat((enemyAngle - fromAngle) * direction, 360f);
+        return along <= sweep + halfWidth || along >= 360f - halfWidth;
     }
 
     #endregion

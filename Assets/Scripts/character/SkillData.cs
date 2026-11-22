@@ -24,7 +24,6 @@ public class SkillData : ScriptableObject
     public float projectileSpeed = 15f;  // 검기 날아가는 속도
 
     // 궁극기 관련 스텟
-    public float hitInterval = 0.08f; // 몬스터 간 피격 지연 시간 (초)
     public GameObject ultimateHitEffectPrefab; // 몬스터 위치에 터질 피격 이펙트
 
     // 360도 회전 스킬

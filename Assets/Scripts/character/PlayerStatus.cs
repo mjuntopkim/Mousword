@@ -23,6 +23,7 @@ public class PlayerStatus : MonoBehaviour
     public float CurrentMp => currentMp;
     public float MaxMp => maxMp;
     public bool IsDead { get; private set; } = false;   // 사망 여부
+    public bool SkillInvincible { get; set; }           // 스킬 시전 중 무적 (궁극기 등)
 
     void Start()
     {
@@ -38,7 +39,7 @@ public class PlayerStatus : MonoBehaviour
     public void TakeDamage(float damage)
     {
         // 사망했거나 무적 상태라면 데미지를 받지 않음
-        if (IsDead || isInvincible) return;
+        if (IsDead || isInvincible || SkillInvincible) return;
 
         // 방어력을 계산한 최종 데미지 (최소 1의 데미지는 입도록 설정)
         float finalDamage = Mathf.Max(damage - defense, 1f);

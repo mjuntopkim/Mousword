@@ -31,6 +31,12 @@ public sealed class PlayerSwordWaveVisuals : MonoBehaviour
     /// <summary>Total length of the cast animation in seconds.</summary>
     public static readonly float Duration = Sum(FrameDurations, FrameDurations.Length);
 
+    // Ultimate: hold the raised-overhead pose until ReleaseHold().
+    private const int ApexFrame = 3;
+    private static readonly float ApexEnd = Sum(FrameDurations, ApexFrame + 1);
+    /// <summary>Seconds from ReleaseHold to the impact frame.</summary>
+    public static readonly float ReleaseLead = FrameDurations[ApexFrame + 1] + FrameDurations[ApexFrame + 2];
+
     private static float Sum(float[] values, int count)
     {
         float total = 0f;
@@ -52,15 +58,17 @@ public sealed class PlayerSwordWaveVisuals : MonoBehaviour
     private float spritePpu;
     private SpriteRenderer[] weaponRenderers = new SpriteRenderer[0];
     private bool[] weaponWasHidden = new bool[0];
-    private bool active, previousForceOff;
+    private bool active, previousForceOff, holding;
     private float elapsed;
     private int frame;
+    private int sortLayer, sortBase;
 
     public bool IsPlaying => active;
     /// <summary>World size of one character-sheet pixel during the current cast.</summary>
     public float PixelWorldSize { get; private set; }
 
-    public void Begin(SpriteRenderer body, Transform weaponRoot, float facing)
+    /// <param name="holdAtApex">Stop on the raised-overhead pose until ReleaseHold() is called (used by the ultimate).</param>
+    public void Begin(SpriteRenderer body, Transform weaponRoot, float facing, bool holdAtApex = false)
     {
         Cancel();
         if (body == null || body.sprite == null) return;
@@ -133,23 +141,50 @@ public sealed class PlayerSwordWaveVisuals : MonoBehaviour
         foreach (var r in new[] { pose, smear, sword, glint })
         {
             r.sharedMaterial = body.sharedMaterial;
-            r.sortingLayerID = body.sortingLayerID;
             r.maskInteraction = body.maskInteraction;
         }
-        smear.sortingOrder = body.sortingOrder + 1;
-        pose.sortingOrder = body.sortingOrder + 3;
-        glint.sortingOrder = body.sortingOrder + 5;
+        sortLayer = body.sortingLayerID;
+        sortBase = body.sortingOrder;
+        ApplySorting();
 
         previousForceOff = body.forceRenderingOff;
         body.forceRenderingOff = true;
         elapsed = 0f;
         frame = -1;
+        holding = holdAtApex;
         active = true;
         ApplyFrame(0);
     }
 
+    /// <summary>Draw the cast on another sorting layer/order (the ultimate keeps the player above its screen darkening).</summary>
+    public void SetSorting(int layerId, int baseOrder)
+    {
+        if (!active) return;
+        sortLayer = layerId;
+        sortBase = baseOrder;
+        ApplySorting();
+    }
+
+    /// <summary>Continue from the held overhead pose into the slam.</summary>
+    public void ReleaseHold()
+    {
+        if (!holding) return;
+        holding = false;
+        elapsed = Mathf.Max(elapsed, ApexEnd);
+    }
+
+    private void ApplySorting()
+    {
+        foreach (var r in new[] { pose, smear, sword, glint }) r.sortingLayerID = sortLayer;
+        smear.sortingOrder = sortBase + 1;
+        pose.sortingOrder = sortBase + 3;
+        glint.sortingOrder = sortBase + 5;
+        if (frame >= 0) sword.sortingOrder = sortBase + (frame <= ApexFrame ? 2 : 4);
+    }
+
     public void Cancel()
     {
+        holding = false;
         if (active && source != null) source.forceRenderingOff = previousForceOff;
         for (int i = 0; i < weaponRenderers.Length; i++)
             if (weaponRenderers[i] != null) weaponRenderers[i].forceRenderingOff = weaponWasHidden[i];
@@ -167,6 +202,7 @@ public sealed class PlayerSwordWaveVisuals : MonoBehaviour
         if (!active) return;
         if (source == null) { Cancel(); return; }
         elapsed += delta;
+        if (holding) elapsed = Mathf.Min(elapsed, ApexEnd - 0.0001f);
         float end = 0f;
         for (int i = 0; i < FrameDurations.Length; i++)
         {
@@ -197,7 +233,7 @@ public sealed class PlayerSwordWaveVisuals : MonoBehaviour
             glint.transform.localPosition = new Vector3(Mathf.Cos(rad), Mathf.Sin(rad), 0f) * tipDistance;
         }
         // Behind the body while raised, in front once it comes down.
-        sword.sortingOrder = source.sortingOrder + (index <= 3 ? 2 : 4);
+        sword.sortingOrder = sortBase + (index <= ApexFrame ? 2 : 4);
         sword.enabled = visible && sword.sprite != null;
         int s = SmearFrame[index];
         smear.enabled = visible && s >= 0;

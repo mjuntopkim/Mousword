@@ -1,7 +1,6 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq; // Y축 순서 정렬(LINQ)에 필수
 
 public class PlayerSkillController : MonoBehaviour
 {
@@ -39,7 +38,14 @@ public class PlayerSkillController : MonoBehaviour
     private Coroutine dashRoutine;
 
     private bool isDashing = false;             // 캐릭터가 현재 대시를 수행 중인지 여부를 저장
-    private bool isExecutingUltimate = false;   // 궁극기 시전 중 여부
+    private bool isExecutingUltimate = false;   // 궁극기 연출이 끝날 때까지 (재사용 방지)
+    private bool isCastingUltimate = false;     // 궁극기로 플레이어가 고정된 동안 (다른 스킬 사용 불가)
+    private bool ultimateLocked = false;
+    private Coroutine ultimateRoutine;
+    private PlayerUltimateVisuals ultimateVisuals;
+    private PlayerMove ultimateMove;
+    private bool ultimateMoveWasEnabled;
+    private RigidbodyConstraints2D ultimateConstraints;
 
     private PlayerSwordWaveVisuals swordWaveVisuals; // 검기 시전 모션 연출
     private Coroutine swordWaveRoutine;
@@ -102,26 +108,27 @@ public class PlayerSkillController : MonoBehaviour
         if (spinCoolTime > 0) spinCoolTime -= Time.deltaTime;
 
         // 좌측 Shift 키를 누르고, 쿨타임이 끝났으며, 현재 대시 중이 아닐 때 실행
-        if (Input.GetKeyDown(KeyCode.LeftShift) && currentCoolTime <= 0 && !isDashing && !isCastingSwordWave && !isSpinning)
+        if (Input.GetKeyDown(KeyCode.LeftShift) && currentCoolTime <= 0 && !isDashing && !isCastingSwordWave && !isSpinning && !isCastingUltimate)
         {
             // 대시 시도
             TryExecuteDash(dashSlashSkill);
         }
 
         // E 키 또는 마우스 우클릭: 검기 발사 스킬 실행
-        if ((Input.GetKeyDown(KeyCode.E) || Input.GetMouseButtonDown(1)) && swordWaveCoolTime <= 0 && !isCastingSwordWave && !isDashing && !isSpinning)
+        if ((Input.GetKeyDown(KeyCode.E) || Input.GetMouseButtonDown(1)) && swordWaveCoolTime <= 0 && !isCastingSwordWave && !isDashing && !isSpinning && !isCastingUltimate)
         {
             TryExecuteSwordWave(swordWaveSkill);
         }
 
-        // [R 키] 궁극기 범위 순차 타격 스킬
-        if (Input.GetKeyDown(KeyCode.R) && ultimateCoolTime <= 0 && !isExecutingUltimate)
+        // [R 키] 궁극기: 화면 전체 일괄 타격
+        // (검기 포즈를 함께 쓰므로 대시·검기·회전 중에는 쓰지 않음)
+        if (Input.GetKeyDown(KeyCode.R) && ultimateCoolTime <= 0 && !isExecutingUltimate && !isDashing && !isCastingSwordWave && !isSpinning)
         {
             TryExecuteUltimate(ultimateSkill);
         }
 
         // [Q 키] 360도 회전베기 (대시·검기와는 몸 연출이 겹치므로 동시에 쓰지 않음)
-        if (Input.GetKeyDown(KeyCode.Q) && spinCoolTime <= 0f && !isSpinning && !isCastingSwordWave && !isDashing)
+        if (Input.GetKeyDown(KeyCode.Q) && spinCoolTime <= 0f && !isSpinning && !isCastingSwordWave && !isDashing && !isCastingUltimate)
         {
             TryExecuteSpin(spinSkill);
         }
@@ -222,6 +229,11 @@ public class PlayerSkillController : MonoBehaviour
         FinishSwordWave();
         if (spinRoutine != null) StopCoroutine(spinRoutine);
         FinishSpin();
+        if (ultimateRoutine != null) StopCoroutine(ultimateRoutine);
+        ultimateRoutine = null;
+        if (ultimateVisuals != null) ultimateVisuals.Cancel();
+        UnlockForUltimate();
+        isExecutingUltimate = false;
     }
     #endregion
 
@@ -312,7 +324,7 @@ public class PlayerSkillController : MonoBehaviour
     }
     #endregion
 
-    #region 3. 궁극기(화면 전체 순차 타격) 로직
+    #region 3. 궁극기(화면 전체 일괄 타격) 로직
     private void TryExecuteUltimate(SkillData skill)
     {
         if (skill == null) return;
@@ -330,8 +342,7 @@ public class PlayerSkillController : MonoBehaviour
 
             ultimateCoolTime = skill.coolTime;
 
-            // 순수 순차 타격 기능 코루틴 시작
-            StartCoroutine(ExecuteUltimateHitSequence());
+            ultimateRoutine = StartCoroutine(UltimateCoroutine());
         }
         else
         {
@@ -339,58 +350,131 @@ public class PlayerSkillController : MonoBehaviour
         }
     }
 
-    // 지금은 R키로 바로 작동하며, 나중에 모션 완성 시 애니메이션 이벤트로 호출할 핵심 기능
-    public IEnumerator ExecuteUltimateHitSequence()
+    // 궁극기 시전 흐름 (연출 타이밍은 PlayerUltimateVisuals)
+    // ① 시전·② 예고·③ 낙하: 플레이어 제자리 고정 + 무적
+    // ④ 충돌: 화면 안의 모든 몬스터 일괄 타격
+    // 내려베기 동작이 끝나면 조작 복구, ⑤ 여파 연출은 계속 재생
+    private IEnumerator UltimateCoroutine()
     {
-        if (ultimateSkill == null) yield break;
-
         isExecutingUltimate = true;
+        isCastingUltimate = true;
+        LockForUltimate();
+        try
+        {
+            if (ultimateVisuals == null)
+            {
+                ultimateVisuals = GetComponent<PlayerUltimateVisuals>();
+                if (ultimateVisuals == null) ultimateVisuals = gameObject.AddComponent<PlayerUltimateVisuals>();
+            }
 
-        // 1. 현재 화면(메인 카메라) 영역 좌표 및 크기 계산
+            bool impacted = false;
+            bool started = ultimateVisuals.Begin(bodySpriteRenderer, weaponPivot, Camera.main, GetGroundMask(), () =>
+            {
+                impacted = true;
+                return ApplyUltimateDamage();
+            });
+
+            // 연출을 시작할 수 없으면(카메라 없음 등) 타격만 바로 적용
+            if (!started)
+            {
+                ApplyUltimateDamage();
+                yield break;
+            }
+
+            while (!impacted && ultimateVisuals.IsPlaying) yield return null;
+
+            // 내려베기 동작 마무리까지 고정 (히트스톱 동안에는 게임 시간이 멈춰 있으므로 그만큼 늦게 풀림)
+            yield return new WaitForSeconds(PlayerSwordWaveVisuals.Duration - PlayerSwordWaveVisuals.ReleaseTime);
+            UnlockForUltimate();
+
+            while (ultimateVisuals.IsPlaying) yield return null;
+        }
+        finally
+        {
+            UnlockForUltimate();
+            isExecutingUltimate = false;
+            ultimateRoutine = null;
+        }
+    }
+
+    private void LockForUltimate()
+    {
+        if (ultimateLocked) return;
+        ultimateLocked = true;
+        ultimateMove = GetComponent<PlayerMove>();
+        ultimateMoveWasEnabled = ultimateMove != null && ultimateMove.enabled;
+        if (ultimateMove != null) ultimateMove.enabled = false;
+        if (rigid != null)
+        {
+            ultimateConstraints = rigid.constraints;
+            rigid.linearVelocity = Vector2.zero;
+            rigid.constraints = RigidbodyConstraints2D.FreezeAll; // 공중에서 써도 그 자리에 멈춰 있음
+        }
+        if (playerStatus != null) playerStatus.SkillInvincible = true;
+    }
+
+    private void UnlockForUltimate()
+    {
+        isCastingUltimate = false;
+        if (!ultimateLocked) return;
+        ultimateLocked = false;
+        if (rigid != null)
+        {
+            rigid.constraints = ultimateConstraints;
+            // FreezeAll 동안 물리 바디가 잠들어서, 풀어줘도 깨우지 않으면 공중에 떠 있는 채로 남음
+            rigid.WakeUp();
+        }
+        if (ultimateMove != null) ultimateMove.enabled = ultimateMoveWasEnabled;
+        if (playerStatus != null) playerStatus.SkillInvincible = false;
+    }
+
+    // 거대한 검이 꽂힐 땅 = 플레이어가 밟는 땅 레이어
+    private LayerMask GetGroundMask()
+    {
+        PlayerMove move = GetComponent<PlayerMove>();
+        if (move != null && move.isLayer.value != 0) return move.isLayer;
+        return ~(enemyLayer.value | (1 << gameObject.layer));
+    }
+
+    // 검이 땅에 꽂히는 순간 호출: 화면 안의 모든 몬스터에게 동시에 한 번씩 피해
+    // 맞은 몬스터들의 위치(적중 이펙트용)를 돌려줌
+    public List<Vector3> ApplyUltimateDamage()
+    {
+        List<Vector3> hitPositions = new List<Vector3>();
+        if (ultimateSkill == null) return hitPositions;
+
         Camera mainCam = Camera.main;
         if (mainCam == null)
         {
             Debug.LogWarning("Main Camera를 찾을 수 없습니다!");
-            isExecutingUltimate = false;
-            yield break;
+            return hitPositions;
         }
 
+        // 현재 화면(메인 카메라) 영역 안의 enemyLayer 콜라이더 수집
         Vector2 center = mainCam.transform.position;
         Vector2 size = new Vector2(mainCam.orthographicSize * 2 * mainCam.aspect, mainCam.orthographicSize * 2);
+        Collider2D[] hits = Physics2D.OverlapBoxAll(center, size, 0f, enemyLayer);
 
-        // 2. 화면 전체 영역 안의 모든 enemyLayer 몬스터 수집
-        Collider2D[] hitEnemies = Physics2D.OverlapBoxAll(center, size, 0f, enemyLayer);
-
-        // 3. Y축 기준 내림차순 정렬 (위쪽 Y좌표 -> 아래쪽 Y좌표 순서)
-        List<Collider2D> sortedEnemies = hitEnemies
-            .OrderByDescending(e => e.transform.position.y)
-            .ToList();
-
-        // 4. 위쪽 몬스터부터 순차적으로 데미지 및 이펙트 처리
-        foreach (Collider2D enemy in sortedEnemies)
+        // 콜라이더가 여러 개 달린 몬스터도 한 번만 맞도록 몬스터 단위로 중복 제거
+        Dictionary<Monster, Vector3> targets = new Dictionary<Monster, Vector3>();
+        foreach (Collider2D hit in hits)
         {
-            if (enemy == null) continue;
-
-            // 몬스터 데미지 전달 처리 (프로젝트의 몬스터 스크립트에 맞춰 호출)
-            Slime monster = enemy.GetComponentInParent<Slime>();
-            if (monster != null)
-            {
-                monster.TakeDamage((int)ultimateSkill.damage);
-            }
-
-            Debug.Log($"[궁극기 순차 피격] {enemy.name} 피격! 데미지: {ultimateSkill.damage}");
-
-            // 피격 지점 이펙트 생성
-            if (ultimateSkill.ultimateHitEffectPrefab != null)
-            {
-                Instantiate(ultimateSkill.ultimateHitEffectPrefab, enemy.transform.position, Quaternion.identity);
-            }
-
-            // 위에서 아래로 순차적 피격 느낌을 주는 지연 시간 (SkillData.hitInterval)
-            yield return new WaitForSeconds(ultimateSkill.hitInterval);
+            if (hit == null) continue;
+            Monster monster = hit.GetComponentInParent<Monster>();
+            if (monster != null && !targets.ContainsKey(monster)) targets.Add(monster, hit.bounds.center);
         }
 
-        isExecutingUltimate = false;
+        foreach (KeyValuePair<Monster, Vector3> target in targets)
+        {
+            target.Key.TakeDamage(ultimateSkill.damage);
+            hitPositions.Add(target.Value);
+
+            if (ultimateSkill.ultimateHitEffectPrefab != null)
+                Instantiate(ultimateSkill.ultimateHitEffectPrefab, target.Value, Quaternion.identity);
+        }
+
+        Debug.Log($"[궁극기 일괄 타격] 적중 {targets.Count}마리 | 데미지: {ultimateSkill.damage}");
+        return hitPositions;
     }
 
     private void OnDrawGizmosSelected()

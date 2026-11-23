@@ -36886,9 +36886,9 @@ MonoBehaviour:
   - tileCount: 2
     monsterPrefab: {fileID: 409251086046084318, guid: 6eeabf9ce0cfecd4a9d5b3fb0dd3544c, type: 3}
   - tileCount: 3
-    monsterPrefab: {fileID: 409251086046084318, guid: 6eeabf9ce0cfecd4a9d5b3fb0dd3544c, type: 3}
+    monsterPrefab: {fileID: 6655781618141452378, guid: 9f2221758c30851438d93912e98712b3, type: 3}
   - tileCount: 4
-    monsterPrefab: {fileID: 409251086046084318, guid: 6eeabf9ce0cfecd4a9d5b3fb0dd3544c, type: 3}
+    monsterPrefab: {fileID: 5511428346649299835, guid: f963d555dbc7abd4ba7f54520efe66ba, type: 3}
   - tileCount: 5
     monsterPrefab: {fileID: 7065567155151807021, guid: bb45651f175990e40a48121e3e7c7de9, type: 3}
   spawnOnStart: 1

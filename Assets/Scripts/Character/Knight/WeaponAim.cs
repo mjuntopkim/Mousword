@@ -5,12 +5,12 @@ public class WeaponAim : MonoBehaviour
     Camera mainCam;
     Rigidbody2D rb;
 
-    public float maxAngularSpeed = 500f;   // ÃÖ´ë È¸Àü ¼Óµµ
-    public float angularAccel = 1000f;     // È¸Àü °¡¼Óµµ
-    public float angularDrag = 3000f;      // ¸ñÇ¥ ±ÙÃ³¿¡¼­ °¨¼ÓÇÏ´Â Èû
-    public float stopAngle = 10f;          // ÀÌ °¢µµ ÀÌ³»¸é Á¤Áö Ã³¸®
+    public float maxAngularSpeed = 500f;   // ìµœëŒ€ íšŒì „ ì†ë„
+    public float angularAccel = 1000f;     // íšŒì „ ê°€ì†ë„
+    public float angularDrag = 3000f;      // ëª©í‘œ ê·¼ì²˜ì—ì„œ ê°ì†í•˜ëŠ” í˜
+    public float stopAngle = 10f;          // ì´ ê°ë„ ì´ë‚´ë©´ ì •ì§€ ì²˜ë¦¬
 
-    public float requiredSwingAngle = 90f; // °ø°İ °¡´É¿¡ ÇÊ¿äÇÑ ÇÑ ¹æÇâ ´©Àû °¢µµ
+    public float requiredSwingAngle = 90f; // ê³µê²© ê°€ëŠ¥ì— í•„ìš”í•œ í•œ ë°©í–¥ ëˆ„ì  ê°ë„
 
     float targetAngle;
     float currentAngularSpeed;
@@ -32,9 +32,9 @@ public class WeaponAim : MonoBehaviour
         lastAngle = rb.rotation;
     }
 
-    void Update() // ¸Å ÇÁ·¹ÀÓ¸¶´Ù ¸¶¿ì½º À§Ä¡¸¦ ÀĞ¾î ¸ñÇ¥ °¢µµ¸¦ °»½Å
+    void Update() // ë§¤ í”„ë ˆì„ë§ˆë‹¤ ë§ˆìš°ìŠ¤ ìœ„ì¹˜ë¥¼ ì½ì–´ ëª©í‘œ ê°ë„ë¥¼ ê°±ì‹ 
     {
-        Vector3 mousePos = mainCam.ScreenToWorldPoint(Input.mousePosition); // ¸¶¿ì½º À§Ä¡¸¦ ¿ùµå ÁÂÇ¥·Î º¯È¯
+        Vector3 mousePos = mainCam.ScreenToWorldPoint(Input.mousePosition); // ë§ˆìš°ìŠ¤ ìœ„ì¹˜ë¥¼ ì›”ë“œ ì¢Œí‘œë¡œ ë³€í™˜
         mousePos.z = 0f;
 
         Vector2 dir = mousePos - transform.position;
@@ -42,13 +42,13 @@ public class WeaponAim : MonoBehaviour
         targetAngle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
     }
 
-    void FixedUpdate() // ¹°¸® ½ºÅÜ¸¶´Ù È¸Àü ¼Óµµ¸¦ °è»êÇÏ°í Àû¿ë
+    void FixedUpdate() // ë¬¼ë¦¬ ìŠ¤í…ë§ˆë‹¤ íšŒì „ ì†ë„ë¥¼ ê³„ì‚°í•˜ê³  ì ìš©
     {
         float currentAngle = rb.rotation;
 
         float delta = Mathf.DeltaAngle(currentAngle, targetAngle);
 
-        if (Mathf.Abs(delta) <= stopAngle) // ÇöÀç °¢µµ°¡ ¸ñÇ¥ °¢µµ¿¡ ÃæºĞÈ÷ °¡±î¿ì¸é °¨¼Ó
+        if (Mathf.Abs(delta) <= stopAngle) // í˜„ì¬ ê°ë„ê°€ ëª©í‘œ ê°ë„ì— ì¶©ë¶„íˆ ê°€ê¹Œìš°ë©´ ê°ì†
         {
             currentAngularSpeed = Mathf.MoveTowards(
                 currentAngularSpeed,
@@ -56,7 +56,7 @@ public class WeaponAim : MonoBehaviour
                 angularDrag * Time.fixedDeltaTime
             );
         }
-        else // ¸ñÇ¥ °¢µµ¿Í ÃæºĞÈ÷ ¶³¾îÁ® ÀÖÀ¸¸é °¡¼Ó
+        else // ëª©í‘œ ê°ë„ì™€ ì¶©ë¶„íˆ ë–¨ì–´ì ¸ ìˆìœ¼ë©´ ê°€ì†
         {
             float desiredDirection = Mathf.Sign(delta);
 
@@ -76,12 +76,15 @@ public class WeaponAim : MonoBehaviour
         AddSwingAngle(currentAngle, nextAngle);
     }
 
-    void AddSwingAngle(float fromAngle, float toAngle) // È¸ÀüÇÑ °¢µµ ´©Àû ÇÔ¼ö
+    void AddSwingAngle(float fromAngle, float toAngle) // íšŒì „í•œ ê°ë„ ëˆ„ì  í•¨ìˆ˜
     {
-        float movedDelta = Mathf.DeltaAngle(fromAngle, toAngle); // DeltaAngle Àº -180~180 ¹üÀ§·Î ¹İÈ¯µÇ¹Ç·Î, ÀÌµ¿ÇÑ °¢µµ´Â Àı´ë°ªÀ¸·Î ´©Àû
+        float movedDelta = Mathf.DeltaAngle(fromAngle, toAngle); // DeltaAngle ì€ -180~180 ë²”ìœ„ë¡œ ë°˜í™˜ë˜ë¯€ë¡œ, ì´ë™í•œ ê°ë„ëŠ” ì ˆëŒ€ê°’ìœ¼ë¡œ ëˆ„ì 
 
-        if (Mathf.Abs(movedDelta) < 1f)
+        if (Mathf.Abs(movedDelta) < 1f) // ê²€ì´ ê±°ì˜ ë©ˆì¶¤ (í•œ ìŠ¤í… 1ë„ ë¯¸ë§Œ = ì´ˆë‹¹ 50ë„ ë¯¸ë§Œ)
+        {
+            ConsumeSwing(); // ë©ˆì¶”ë©´ ëˆ„ì ê°’ ì¦‰ì‹œ ì´ˆê¸°í™” â†’ íœ˜ë‘ë¥¸ ë’¤ ë©ˆì¶° ìˆë‹¤ê°€ ë‹¿ì•„ë„ ê³µê²© ë¶ˆê°€
             return;
+        }
 
         float movedDirection = Mathf.Sign(movedDelta);
 
@@ -105,7 +108,7 @@ public class WeaponAim : MonoBehaviour
         lastAngle = toAngle;
     }
 
-    public void ConsumeSwing() // °ø°İÀÌ ¼º°øÀûÀ¸·Î ÀûÁßÇßÀ» ¶§ ´©Àû °¢µµ¸¦ ÃÊ±âÈ­
+    public void ConsumeSwing() // ê³µê²©ì´ ì„±ê³µì ìœ¼ë¡œ ì ì¤‘í–ˆì„ ë•Œ ëˆ„ì  ê°ë„ë¥¼ ì´ˆê¸°í™”
     {
         accumulatedSwingAngle = 0f;
         swingDirection = 0f;

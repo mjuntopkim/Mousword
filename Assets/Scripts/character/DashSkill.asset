@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SkillData
   skillName: Dash
   damageMultiplier: 0
-  manaCost: 1
-  coolTime: 1
+  manaCost: 5
+  coolTime: 1.2
   effectPrefab: {fileID: 0}
   damage: 10
   dashForce: 50

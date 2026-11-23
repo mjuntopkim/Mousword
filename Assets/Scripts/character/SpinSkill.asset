@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SkillData
   skillName: Spin Slash
   damageMultiplier: 1
-  manaCost: 1
-  coolTime: 3
+  manaCost: 15
+  coolTime: 4
   effectPrefab: {fileID: 0}
-  damage: 10
+  damage: 20
   dashForce: 0
   dashDuration: 0
   projectilePrefab: {fileID: 0}

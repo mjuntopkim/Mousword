@@ -222,17 +222,28 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Slime
   HPSlider: {fileID: 5743656099069938345}
-  maxHP: 40
-  currentHP: 40
+  maxHP: 36
+  currentHP: 36
   moveSpeed: 4
+  constMoveSpeed: 0
   damage: 10
   player: {fileID: 9176715121401992591, guid: 827bfade240a89c47bd0be19baa596b8, type: 3}
   recognizeRadius: 6
   attackRadius: 2
+  distanceToPlayer: 0
   groundCheck: {fileID: 3263154770193855425}
+  monsterAttackHitbox: {fileID: 0}
+  isWait: 0
   maxWaitTime: 2
+  curWaitTime: 0
+  anim: {fileID: 0}
+  isAnimeEnd: 1
   maxIdleMoveDistance: 3
   noticeMoveDistance: 1
+  startPosition: {x: 0, y: 0}
+  curMoveDistance: 0
+  moveDirection: 1
+  isGround: 0
 --- !u!212 &6416824537247204623
 SpriteRenderer:
   serializedVersion: 2

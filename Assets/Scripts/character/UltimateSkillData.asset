@@ -14,13 +14,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SkillData
   skillName: Ultimate
   damageMultiplier: 1
-  manaCost: 1
-  coolTime: 1
+  manaCost: 50
+  coolTime: 30
   effectPrefab: {fileID: 0}
-  damage: 100
+  damage: 40
   dashForce: 0
   dashDuration: 0
   projectilePrefab: {fileID: 0}
   projectileSpeed: 0
   hitInterval: 0.04
   ultimateHitEffectPrefab: {fileID: 0}
+  spinDegrees: 360
+  spinDuration: 0.5

@@ -99,8 +99,10 @@ public class Wisp : Monster
             case state.die:
                 isDead = true; // 위습이 죽었음을 표시
                 fsm.changeState(new CommonState.DieState(this));
+                Debug.Log("상태 변환됨");
 
                 if (playerStatus != null) {
+                    Debug.Log("회복 호출됨");
                     playerStatus.RecoverHp(recoveryHPAmount); // HP 회복
                     playerStatus.RecoverMp(recoveryManaAmount); // 마나 회복
                 }
@@ -110,20 +112,5 @@ public class Wisp : Monster
 
                 break;
         }
-    }
-
-    // 씬 뷰에서 위습을 선택하면 활공 구간을 표시
-    void OnDrawGizmosSelected()
-    {
-        Vector2 center = Application.isPlaying
-            ? anchorPosition
-            : (Vector2)transform.position + (spawnIsCenter ? Vector2.zero : Vector2.right * HalfGlideDistance);
-
-        Gizmos.color = new Color(0.6f, 0.9f, 1f, 0.8f);
-        Vector2 left = center + Vector2.left * HalfGlideDistance;
-        Vector2 right = center + Vector2.right * HalfGlideDistance;
-        Gizmos.DrawLine(left, right);
-        Gizmos.DrawWireSphere(left, 0.1f);
-        Gizmos.DrawWireSphere(right, 0.1f);
     }
 }

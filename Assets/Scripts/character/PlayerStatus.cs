@@ -3,50 +3,51 @@ using System.Collections;
 
 public class PlayerStatus : MonoBehaviour
 {
-    // ���� ����
-    [SerializeField] private float maxHp = 100f;       // �ִ� ü��
-    [SerializeField] private float currentHp;          //���� ü��
+    // 생존 스텟
+    [SerializeField] private float maxHp = 100f;       // 최대 체력
+    [SerializeField] private float currentHp;          //현재 체력
 
-    [SerializeField] private float maxMp = 50f;        // �ִ� ����
-    [SerializeField] private float currentMp;          // ���� ����
+    [SerializeField] private float maxMp = 50f;        // 최대 마나
+    [SerializeField] private float currentMp;          // 현재 마나
 
-    //��� ����
-    [SerializeField] private float defense = 5f;       // ����(������ ����)
-    [SerializeField] private float invincibleTime = 0.5f; // �ǰ� ���� �ð�
+    //방어 스텟
+    [SerializeField] private float defense = 5f;       // 방어력(데미지 감소)
+    [SerializeField] private float invincibleTime = 0.5f; // 피격 무적 시간
 
-    private bool isInvincible = false;                 // ���� ���� ���� ����
+    private bool isInvincible = false;                 // 현재 무적 상태 여부
     private SpriteRenderer spriteRenderer;
 
-    // �ٸ� ��ũ��Ʈ���� ������ �����ϰ� ���� �� �ֵ��� ������Ƽ(Property) ����
+    // 다른 스크립트에서 스텟을 안전하게 읽을 수 있도록 프로퍼티(Property) 제공
     public float CurrentHp => currentHp;
     public float MaxHp => maxHp;
     public float CurrentMp => currentMp;
     public float MaxMp => maxMp;
-    public bool IsDead { get; private set; } = false;   // ��� ����
+    public bool IsDead { get; private set; } = false;   // 사망 여부
+    public bool SkillInvincible { get; set; }           // 스킬 시전 중 무적 (궁극기 등)
 
     void Start()
     {
-        // ���� ���� �� ü�°� ������ �ִ�ġ�� �ʱ�ȭ
+        // 게임 시작 시 체력과 마나를 최대치로 초기화
         currentHp = maxHp;
         currentMp = maxMp;
 
-        // �ǰ� ���� ������ ���� ��������Ʈ ������ ������Ʈ
+        // 피격 무적 연출을 위한 스프라이트 렌더러 컴포넌트
         spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
-    // �÷��̾ �������� ���� �� ȣ���ϴ� �޼���
+    // 플레이어가 데미지를 입을 때 호출하는 메서드
     public void TakeDamage(float damage)
     {
-        // ����߰ų� ���� ���¶�� �������� ���� ����
-        if (IsDead || isInvincible) return;
+        // 사망했거나 무적 상태라면 데미지를 받지 않음
+        if (IsDead || isInvincible || SkillInvincible) return;
 
-        // ������ ����� ���� ������ (�ּ� 1�� �������� �Ե��� ����)
+        // 방어력을 계산한 최종 데미지 (최소 1의 데미지는 입도록 설정)
         float finalDamage = Mathf.Max(damage - defense, 1f);
 
         currentHp -= finalDamage;
-        currentHp = Mathf.Clamp(currentHp, 0f, maxHp); // ü���� 0 �̸�, �ִ�ġ �ʰ����� �ʰ� ����
+        currentHp = Mathf.Clamp(currentHp, 0f, maxHp); // 체력이 0 미만, 최대치 초과되지 않게 방지
 
-        Debug.Log($"�÷��̾ {finalDamage}�� �������� �Ծ����ϴ�. ���� ü��: {currentHp}");
+        Debug.Log($"플레이어가 {finalDamage}의 데미지를 입었습니다. 남은 체력: {currentHp}");
 
         if (currentHp <= 0)
         {
@@ -54,22 +55,22 @@ public class PlayerStatus : MonoBehaviour
         }
         else
         {
-            // ���� �ð� �� �ǰ� ���� ���� ����
+            // 무적 시간 및 피격 연출 연출 시작
             StartCoroutine(InvincibleCooldown());
         }
     }
 
-    // �ǰ� �� ���� �ð� ���� ���·� ����� �����̴� ����
+    // 피격 시 일정 시간 무적 상태로 만들고 깜빡이는 연출
     private IEnumerator InvincibleCooldown()
     {
-        // ���� ���·� ��ȯ
+        // 무적 상태로 전환
         isInvincible = true;
 
-        // ���� �ð� ���� ĳ���͸� �����Ÿ��� ���� (�ǰ� �ð� ȿ��)
+        // 무적 시간 동안 캐릭터를 깜빡거리게 만듦 (피격 시각 효과)
         float timer = 0f;
         while (timer < invincibleTime)
         {
-            // ���İ��� 0.2�� 1.0 ���̷� ��ȯ
+            // 알파값을 0.2와 1.0 사이로 변환
             float alpha = spriteRenderer.color.a == 1f ? 0.2f : 1f;
             spriteRenderer.color = new Color(1f, 1f, 1f, alpha);
 
@@ -77,32 +78,32 @@ public class PlayerStatus : MonoBehaviour
             timer += 0.1f;
         }
 
-        // ���� ���� �� ���� �������� ����
+        // 무적 종료 후 원래 투명도로 복귀
         spriteRenderer.color = new Color(1f, 1f, 1f, 1f);
-        isInvincible = false;       // ���� ���� ����
+        isInvincible = false;       // 무적 상태 해제
     }
 
-    // ���� / ���¹̳� �Һ� �޼���
+    // 마나 / 스태미나 소비 메서드
     public bool ConsumeMp(float amount)
     {
         if (currentMp >= amount)
         {
             currentMp -= amount;
-            return true; // �Һ� ����
+            return true; // 소비 성공
         }
 
-        Debug.Log("����/���¹̳��� �����մϴ�.");
-        return false; // �Һ� ����
+        Debug.Log("마나/스태미나가 부족합니다.");
+        return false; // 소비 실패
     }
 
-    // ����  ȸ�� �޼��� (�����̳� �ڿ� ȸ����)
+    // 마나  회복 메서드 (포션이나 자연 회복용)
     public void RecoverMp(float amount)
     {
         currentMp += amount;
         currentMp = Mathf.Clamp(currentMp, 0f, maxMp);
     }
 
-    // ü�� ȸ�� �޼��� (�����̳� ���ǿ�)
+    // 체력 회복 메서드 (흡혈이나 포션용)
     public void RecoverHp(float amount)
     {
         if (IsDead) return;
@@ -111,13 +112,13 @@ public class PlayerStatus : MonoBehaviour
         currentHp = Mathf.Clamp(currentHp, 0f, maxHp);
     }
 
-    // �÷��̾� ��� ó��
+    // 플레이어 사망 처리
     private void Die()
     {
         IsDead = true;
-        Debug.Log("�÷��̾ ����߽��ϴ�.");
+        Debug.Log("플레이어가 사망했습니다.");
 
-        // TODO: �ִϸ����Ϳ��� ��� �ִϸ��̼� ����, ���� ��ũ��Ʈ ��Ȱ��ȭ ���� ������ ���⿡ �߰�
-        // ��: GetComponent<PlayerMove>().enabled = false;
+        // TODO: 애니메이터에게 사망 애니메이션 전달, 조작 스크립트 비활성화 등의 로직을 여기에 추가
+        // 예: GetComponent<PlayerMove>().enabled = false;
     }
 }

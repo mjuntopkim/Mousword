@@ -24,5 +24,6 @@ MonoBehaviour:
   projectileSpeed: 0
   hitInterval: 0
   ultimateHitEffectPrefab: {fileID: 0}
-  spinDegrees: 360
-  spinDuration: 0.5
+  spinDegrees: 1080
+  spinDuration: 0.36
+  spinRadiusBonus: 0

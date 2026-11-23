@@ -58,8 +58,9 @@ public class StagePortal : MonoBehaviour
         playerStatus = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerStatus>();
         if(playerStatus != null)
         {
-            playerStatus.TakeDamage(-recoveryHPAmount); // HP 회복
-            playerStatus.TakeDamage(-recoveryManaAmount); // 마나 회복
+            Debug.Log("회복 호출됨");
+            playerStatus.RecoverHp(recoveryHPAmount); // HP 회복
+            playerStatus.RecoverMp(recoveryManaAmount); // 마나 회복
         }
 
         GameManager.Instance.TransitionToNextScene(nextSceneName, targetSpawnPointName);

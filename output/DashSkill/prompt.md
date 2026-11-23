@@ -1,0 +1,7 @@
+Built-in imagegen, transparent background enabled.
+
+Reference: `mousword_character-Sheet.png` in the project root.
+
+Create a production pixel-art sprite sheet for a Unity 2D game, using attached sheet as character design reference. Preserve character identity exactly: tiny dark hooded knight, golden yellow face rim, two turquoise vertical eyes, muted grey dark outfit, maroon red cape, boots. No weapon. Four distinct side-view DASH animation poses, ALL FACING RIGHT, evenly spaced horizontally in ONE row, identical cell widths and consistent character scale and foot baseline. Frame1 crouch and forward lean; frame2 low streamlined dash with hood/head forward at right, cape and legs stretched behind to left; frame3 same fast lunge with fluttering cape and tucked leg variation; frame4 braking step rising slightly, head still at right. True coarse low-resolution pixel art matching reference approximately 24 pixels character height, crisp square pixels, nearest-neighbor aesthetic. Each cell conceptual 48x40 native pixels. No outlines outside original style, no text, no labels, no shadows, no scenery, no floor, no effects, no motion trails. Entire background transparent, sufficient empty gutters between poses. Keep face rim yellow and eyes turquoise legible in each pose. Four poses only.
+
+Production export maps the generated colors back to the provided original sheet's palette, including its green eye accent, and aligns the foot line at native y=36.

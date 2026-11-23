@@ -169,6 +169,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e529eaf2f99756146a1286b2aebfa813, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMove
+  coyoteTime: 0.1
+  jumpBufferTime: 0.15
   moveSpeed: 7
   jumpForce: 9
   fallMultiplier: 2.5
@@ -360,6 +362,26 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5290469402604778504, guid: b3a33afbeddd08342bb8403259ff5266, type: 3}
       propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6365034329157632363, guid: b3a33afbeddd08342bb8403259ff5266, type: 3}
+      propertyPath: m_Size.x
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6365034329157632363, guid: b3a33afbeddd08342bb8403259ff5266, type: 3}
+      propertyPath: m_Size.y
+      value: 1.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6365034329157632363, guid: b3a33afbeddd08342bb8403259ff5266, type: 3}
+      propertyPath: m_Offset.x
+      value: 1.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6365034329157632363, guid: b3a33afbeddd08342bb8403259ff5266, type: 3}
+      propertyPath: m_Offset.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6365034329157632363, guid: b3a33afbeddd08342bb8403259ff5266, type: 3}
+      propertyPath: m_IsTrigger
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6365034329157632363, guid: b3a33afbeddd08342bb8403259ff5266, type: 3}

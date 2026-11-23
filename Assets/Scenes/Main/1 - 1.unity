@@ -1301,9 +1301,21 @@ PrefabInstance:
       propertyPath: BoundingShape2D
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 7215639051898149984, guid: 827bfade240a89c47bd0be19baa596b8, type: 3}
+      propertyPath: coyoteTime
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7215639051898149984, guid: 827bfade240a89c47bd0be19baa596b8, type: 3}
+      propertyPath: jumpBufferTime
+      value: 0.1
+      objectReference: {fileID: 0}
     - target: {fileID: 7424087069261895125, guid: 827bfade240a89c47bd0be19baa596b8, type: 3}
       propertyPath: m_Name
       value: Player 1(MapScene Test) (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 7424087069261895125, guid: 827bfade240a89c47bd0be19baa596b8, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8105220491312927496, guid: 827bfade240a89c47bd0be19baa596b8, type: 3}
       propertyPath: spinSkill
@@ -30501,6 +30513,8 @@ MonoBehaviour:
   doorAnimator: {fileID: 2020923422}
   dustParticle: {fileID: 1336250696}
   impulseSource: {fileID: 0}
+  recoveryHPAmount: 100
+  recoveryManaAmount: 100
   doorDropDuration: 0.25
   waitAfterHit: 0.5
 --- !u!4 &1442561038
@@ -51670,7 +51684,7 @@ Transform:
   m_GameObject: {fileID: 2083914032}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -6.762317, y: -0.06305912, z: -10}
+  m_LocalPosition: {x: -6.7653427, y: -0.06305909, z: -10}
   m_LocalScale: {x: 0.727144, y: 0.727144, z: 0.727144}
   m_ConstrainProportionsScale: 0
   m_Children: []

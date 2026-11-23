@@ -1,0 +1,2 @@
+PASS: 30 dash checks.
+Validated production prefab/coroutine, both directions, air/ground effects, recovery, interrupted cleanup, bounded pool, and pause.

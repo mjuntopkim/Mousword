@@ -7,7 +7,6 @@ public class StagePortal : MonoBehaviour
     [SerializeField] private string nextSceneName;
     [SerializeField] private string targetSpawnPointName;
     [SerializeField] private Animator doorAnimator;
-    [SerializeField] private ParticleSystem dustParticle;
     [SerializeField] private CinemachineImpulseSource impulseSource;
     [SerializeField] private float recoveryHPAmount = 100f;  //HP 회복량
     [SerializeField] private float recoveryManaAmount = 100f;    //마나 회복량
@@ -19,7 +18,22 @@ public class StagePortal : MonoBehaviour
 
     private bool isActivated = false;
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void Awake(){
+        playerStatus = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerStatus>();
+    }
+
+    public void Nextstage(){
+        if(playerStatus != null)
+        {
+            Debug.Log("회복 호출됨");
+            playerStatus.RecoverHp(recoveryHPAmount); // HP 회복
+            playerStatus.RecoverMp(recoveryManaAmount); // 마나 회복
+
+            GameManager.Instance.TransitionToNextScene(nextSceneName, targetSpawnPointName);
+        }
+    }
+
+    /*private void OnTriggerEnter2D(Collider2D collision)
     {
         if(GameManager.Instance != null && GameManager.Instance.IsTransitioning)
         {
@@ -31,9 +45,9 @@ public class StagePortal : MonoBehaviour
             isActivated = true;
             StartCoroutine(CinematicDoorSequence());
         }
-    }
+    }*/
 
-    private IEnumerator CinematicDoorSequence()
+    /*private IEnumerator CinematicDoorSequence()
     {
         if(doorAnimator != null)
         {
@@ -48,21 +62,6 @@ public class StagePortal : MonoBehaviour
             impulseSource.GenerateImpulse();
         }
 
-        if(dustParticle != null)
-        {
-            dustParticle.Play();
-        }
-
         yield return new WaitForSeconds(waitAfterHit);
-
-        playerStatus = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerStatus>();
-        if(playerStatus != null)
-        {
-            Debug.Log("회복 호출됨");
-            playerStatus.RecoverHp(recoveryHPAmount); // HP 회복
-            playerStatus.RecoverMp(recoveryManaAmount); // 마나 회복
-        }
-
-        GameManager.Instance.TransitionToNextScene(nextSceneName, targetSpawnPointName);
-    }
+    }*/
 }

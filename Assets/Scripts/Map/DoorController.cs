@@ -6,12 +6,14 @@ public class DoorController : MonoBehaviour
 {
     [SerializeField] private Animator doorAnimator;
     [SerializeField] private Collider2D doorCollider;
+    [SerializeField] private ParticleSystem dustParticle;
 
     [SerializeField] private string dropTriggerName = "Drop";
     [SerializeField] private string dropStateName = "RockDrop";
     [SerializeField] private string speedParameterName = "Speed";
 
     [SerializeField] private float openDuration = 0.5f;
+    [SerializeField] private float doorDropDuration = 0.25f;
 
     private List<GameObject> trackedMonsters = new List<GameObject>();
     private bool isClose = false;
@@ -29,8 +31,6 @@ public class DoorController : MonoBehaviour
         }
     }
 
-
-
     public void CloseDoor()
     {
         if (isClose)
@@ -40,10 +40,22 @@ public class DoorController : MonoBehaviour
 
         isClose = true;
 
+        StartCoroutine(ParticleStart());
+    }
+
+    private IEnumerator ParticleStart()
+    {
         if (doorAnimator != null)
         {
             doorAnimator.SetFloat(speedParameterName, 1f);
             doorAnimator.Play(dropStateName, 0, 0.0f);
+        }
+
+        yield return new WaitForSeconds(doorDropDuration);
+
+        if(dustParticle != null)
+        {
+            dustParticle.Play();
         }
 
         if (doorCollider != null)

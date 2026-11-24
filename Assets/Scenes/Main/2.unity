@@ -1321,18 +1321,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 1091643282}
-        m_TargetAssemblyTypeName: StagePortal, Assembly-CSharp
-        m_MethodName: Nextstage
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
 --- !u!61 &403180025
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -6648,6 +6636,22 @@ MonoBehaviour:
   speedParameterName: Speed
   openDuration: 0.5
   doorDropDuration: 0.25
+  afterCloseDelay: 0
+  onDoorClosed:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1091643282}
+        m_TargetAssemblyTypeName: StagePortal, Assembly-CSharp
+        m_MethodName: Nextstage
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!95 &769704077
 Animator:
   serializedVersion: 7
@@ -58743,12 +58747,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::StagePortal
   nextSceneName: Boss
   targetSpawnPointName: SpawnPoint
-  doorAnimator: {fileID: 0}
-  impulseSource: {fileID: 0}
   recoveryHPAmount: 100
   recoveryManaAmount: 100
-  doorDropDuration: 0.25
-  waitAfterHit: 0.5
 --- !u!4 &1091643283
 Transform:
   m_ObjectHideFlags: 0

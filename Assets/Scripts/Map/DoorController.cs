@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Events;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -14,6 +15,10 @@ public class DoorController : MonoBehaviour
 
     [SerializeField] private float openDuration = 0.5f;
     [SerializeField] private float doorDropDuration = 0.25f;
+    [SerializeField] private float afterCloseDelay = 0f; // 닫힘 애니메이션 종료 후 추가 대기 시간
+
+    // 문 닫힘 애니메이션이 완전히 끝난 뒤 호출 (예: StagePortal.Nextstage 연결)
+    public UnityEvent onDoorClosed;
 
     private List<GameObject> trackedMonsters = new List<GameObject>();
     private bool isClose = false;
@@ -62,6 +67,28 @@ public class DoorController : MonoBehaviour
         {
             doorCollider.enabled = true;
         }
+
+        // 문 닫힘 애니메이션이 끝까지 재생될 때까지 대기
+        if (doorAnimator != null)
+        {
+            yield return null; // Play() 적용 대기
+            while (true)
+            {
+                AnimatorStateInfo info = doorAnimator.GetCurrentAnimatorStateInfo(0);
+                if (!info.IsName(dropStateName) || info.normalizedTime >= 1f)
+                {
+                    break;
+                }
+                yield return null;
+            }
+        }
+
+        if (afterCloseDelay > 0f)
+        {
+            yield return new WaitForSeconds(afterCloseDelay);
+        }
+
+        onDoorClosed?.Invoke();
     }
 
     public void TrackMonsters(List<GameObject> monsters)

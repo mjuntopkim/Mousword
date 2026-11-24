@@ -3005,30 +3005,6 @@ PrefabInstance:
       propertyPath: m_WasSpriteAssigned
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 904742356284374831, guid: 827bfade240a89c47bd0be19baa596b8, type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 904742356284374831, guid: 827bfade240a89c47bd0be19baa596b8, type: 3}
-      propertyPath: m_IsTrigger
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5330016094060691589, guid: 827bfade240a89c47bd0be19baa596b8, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5330016094060691589, guid: 827bfade240a89c47bd0be19baa596b8, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -1.100195
-      objectReference: {fileID: 0}
-    - target: {fileID: 5844795847524736531, guid: 827bfade240a89c47bd0be19baa596b8, type: 3}
-      propertyPath: BoundingShape2D
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 7215639051898149984, guid: 827bfade240a89c47bd0be19baa596b8, type: 3}
-      propertyPath: coyoteTime
-      value: 0.1
-      objectReference: {fileID: 0}
     - target: {fileID: 7215639051898149984, guid: 827bfade240a89c47bd0be19baa596b8, type: 3}
       propertyPath: jumpBufferTime
       value: 0.1
@@ -3036,26 +3012,6 @@ PrefabInstance:
     - target: {fileID: 7424087069261895125, guid: 827bfade240a89c47bd0be19baa596b8, type: 3}
       propertyPath: m_Name
       value: Player 1(MapScene Test) (1)
-      objectReference: {fileID: 0}
-    - target: {fileID: 7424087069261895125, guid: 827bfade240a89c47bd0be19baa596b8, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8105220491312927496, guid: 827bfade240a89c47bd0be19baa596b8, type: 3}
-      propertyPath: spinSkill
-      value: 
-      objectReference: {fileID: 11400000, guid: 148ba0efa5d4b1d4eaae15bd5b1c4098, type: 2}
-    - target: {fileID: 8105220491312927496, guid: 827bfade240a89c47bd0be19baa596b8, type: 3}
-      propertyPath: spinHitbox
-      value: 
-      objectReference: {fileID: 993071121}
-    - target: {fileID: 8105220491312927496, guid: 827bfade240a89c47bd0be19baa596b8, type: 3}
-      propertyPath: ultimateSkill
-      value: 
-      objectReference: {fileID: 11400000, guid: 3d16dc696e9fca44e81425452a5ce6a6, type: 2}
-    - target: {fileID: 8105220491312927496, guid: 827bfade240a89c47bd0be19baa596b8, type: 3}
-      propertyPath: enemyLayer.m_Bits
-      value: 64
       objectReference: {fileID: 0}
     - target: {fileID: 9176715121401992591, guid: 827bfade240a89c47bd0be19baa596b8, type: 3}
       propertyPath: m_LocalPosition.x
@@ -25233,11 +25189,6 @@ Sprite:
   m_Bones: []
   m_ScriptableObjects: []
   m_SpriteID: 
---- !u!61 &993071121 stripped
-BoxCollider2D:
-  m_CorrespondingSourceObject: {fileID: 904742356284374831, guid: 827bfade240a89c47bd0be19baa596b8, type: 3}
-  m_PrefabInstance: {fileID: 686589266}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1010903786
 GameObject:
   m_ObjectHideFlags: 0

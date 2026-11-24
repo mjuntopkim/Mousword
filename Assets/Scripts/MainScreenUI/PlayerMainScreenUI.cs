@@ -16,6 +16,7 @@ namespace Mousword.MainScreenUI
         private Vector2Int lastScreen;
         private float lastHp = float.NaN, lastMp = float.NaN;
         private float lastMaxHp = float.NaN, lastMaxMp = float.NaN;
+        private float nextLookup;
 
         public void Configure(PlayerStatus target, RectTransform hp, RectTransform mp,
             Text hpLabel, Text mpLabel, RectTransform safe)
@@ -31,6 +32,11 @@ namespace Mousword.MainScreenUI
         private void LateUpdate()
         {
             ApplySafeArea();
+            if (player == null && PlayerLookup.TryFind(ref nextLookup, out PlayerStatus found))
+            {
+                player = found;
+                lastHp = lastMp = lastMaxHp = lastMaxMp = float.NaN;
+            }
             if (player == null)
             {
                 SetGauge(healthFill, healthText, "HP", 0, 0);

@@ -24,6 +24,17 @@ public class WeaponAim : MonoBehaviour
         get { return accumulatedSwingAngle >= requiredSwingAngle; }
     }
 
+    // 지금 검이 휘둘러지는 방향 (검 끝이 움직이는 접선 방향, 단위 벡터). 멈춰 있으면 zero
+    public Vector2 SwingTangent
+    {
+        get
+        {
+            if (rb == null || swingDirection == 0f) return Vector2.zero;
+            float a = rb.rotation * Mathf.Deg2Rad;
+            return new Vector2(-Mathf.Sin(a), Mathf.Cos(a)) * swingDirection;
+        }
+    }
+
     void Start()
     {
         mainCam = Camera.main;

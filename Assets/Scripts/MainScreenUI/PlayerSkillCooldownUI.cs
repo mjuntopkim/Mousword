@@ -8,6 +8,7 @@ namespace Mousword.MainScreenUI
         [SerializeField] private SkillCooldownUI[] slots = new SkillCooldownUI[4];
         private readonly float[] previous = new float[4];
         private readonly float[] durations = new float[4];
+        private float nextLookup;
 
         public void Configure(PlayerSkillController target, SkillCooldownUI[] views)
         {
@@ -17,6 +18,8 @@ namespace Mousword.MainScreenUI
 
         private void LateUpdate()
         {
+            if (player == null && PlayerLookup.TryFind(ref nextLookup, out PlayerSkillController found))
+                player = found;
             if (player == null)
             {
                 foreach (var slot in slots) if (slot != null) slot.SetCooldown(0, 0);

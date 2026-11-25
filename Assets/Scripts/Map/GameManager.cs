@@ -9,6 +9,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private string targetSpawnPointName;
     [SerializeField] private Animator fadeAnimator;
     [SerializeField] private float fadeTime = 1f;
+    [SerializeField] private float fadeHoldTime = 1f;
 
     public bool IsTransitioning { get; private set; } = false;
 
@@ -54,6 +55,8 @@ public class GameManager : MonoBehaviour
 
         MovePlayerToSpawn();
 
+        yield return new WaitForSeconds(fadeHoldTime);
+
         if(fadeAnimator != null)
         {
             fadeAnimator.SetTrigger("StartFadeIn");
@@ -65,13 +68,16 @@ public class GameManager : MonoBehaviour
     private void MovePlayerToSpawn()
     {
         GameObject spawnPoint = GameObject.Find(targetSpawnPointName);
+        GameObject player = GameObject.FindWithTag("Player");
         if(spawnPoint != null)
         {
-            GameObject player = GameObject.FindWithTag("Player");
             if(player != null)
             {
                 player.transform.position = spawnPoint.transform.position;
             }
         }
+
+        var move = player.GetComponent<PlayerMove>();
+        move.IsMovementLocked = false;
     }
 }

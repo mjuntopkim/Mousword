@@ -169,18 +169,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e529eaf2f99756146a1286b2aebfa813, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMove
-  coyoteTime: 0.1
-  jumpBufferTime: 0.1
   moveSpeed: 7
   jumpForce: 9
+  coyoteTime: 0.1
+  jumpBufferTime: 0.12
+  jumpGroundIgnoreTime: 0.1
+  groundGraceTime: 0.06
   fallMultiplier: 2.5
   lowJumpMultiplier: 2
   isGrounded: 0
+  maxSlopeAngle: 50
   groundCheck: {fileID: 8498560359872172645}
   checkRadius: 0.2
   isLayer:
     serializedVersion: 2
     m_Bits: 256
+  groundStickSpeed: 1
 --- !u!95 &2055473911930156831
 Animator:
   serializedVersion: 7
@@ -237,8 +241,8 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0.02764661, y: -0.027646651}
-  m_Size: {x: 1.3213143, y: 2.4935343}
+  m_Offset: {x: 0.2, y: 0}
+  m_Size: {x: 1, y: 1.7}
   m_Direction: 0
 --- !u!114 &8105220491312927496
 MonoBehaviour:
@@ -261,6 +265,20 @@ MonoBehaviour:
   enemyLayer:
     serializedVersion: 2
     m_Bits: 64
+  dashCameraKick: 0.003
+  dashCameraKickTime: 0.2
+  swordWaveCameraKick: 0.003
+  swordWaveCameraKickTime: 0.2
+  swordWaveAirHold: 0.08
+  swordWaveRecoil: 0.3
+  spinHitStop: 0.03
+  spinShakeStrength: 0.004
+  spinShakeTime: 0.08
+  spinFinishHitStop: 0.06
+  spinFinishShakeStrength: 0.008
+  spinFinishShakeTime: 0.14
+  spinFlashTime: 0.06
+  spinKillMultiplier: 1.5
 --- !u!114 &3193737103370860514
 MonoBehaviour:
   m_ObjectHideFlags: 0

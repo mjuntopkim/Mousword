@@ -22,7 +22,6 @@ public class DoorController : MonoBehaviour
     // 문 닫힘 애니메이션이 완전히 끝난 뒤 호출 (예: StagePortal.Nextstage 연결)
     public UnityEvent onDoorClosed;
 
-    private List<GameObject> trackedMonsters = new List<GameObject>();
     private bool isClose = false;
 
     private void Awake()
@@ -93,24 +92,7 @@ public class DoorController : MonoBehaviour
         onDoorClosed?.Invoke();
     }
 
-    public void TrackMonsters(List<GameObject> monsters)
-    {
-        trackedMonsters.AddRange(monsters);
-        StartCoroutine(MonitorMonsterRoutine());
-    }
-
-    private IEnumerator MonitorMonsterRoutine()
-    {
-        while (trackedMonsters.Count > 0)
-        {
-            yield return new WaitForSeconds(0.3f);
-
-            trackedMonsters.RemoveAll(monster => monster == null);
-        }
-
-        OpenDoor();
-    }
-
+    //MonsterSpawner.onAllMonstersDead 또는 MonsterSpawnTimer.onCleared에 연결해서 사용
     public void OpenDoor()
     {
         isClose = false;

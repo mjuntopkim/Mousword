@@ -35,7 +35,6 @@ public class Skeleton : Monster
         {
             isWait = true; //대기상태 갱신
         }
-        Debug.Log(curState);
         anim.SetBool("Idle", isWait); //대기 애니메이션 상태 전환
         fsm.stateUpdate();
     }
@@ -83,8 +82,8 @@ public class Skeleton : Monster
             GameObject arrow = Instantiate(Arrow, arrowSpawnPoint.position, Quaternion.identity);
 
             // 생성된 화살의 투명도를 1(불투명)로 변경
-            GameObject Body = arrow.transform.Find("ArrowBody").gameObject;
-            SpriteRenderer sr = Body.GetComponent<SpriteRenderer>();
+            GameObject ArrowBody = arrow.transform.Find("ArrowBody").gameObject;
+            SpriteRenderer sr = ArrowBody.GetComponent<SpriteRenderer>();
             Color color = sr.color;
             color.a = 1.0f;
             sr.color = color;

@@ -83,19 +83,11 @@ public class Goblin : Monster
         {
             GameObject knife = Instantiate(Knife, knifeSpawnPoint.position, Quaternion.identity);
 
-            // 생성된 칼의 투명도를 1(불투명)로 변경
-            GameObject Body = knife.transform.Find("KnifeBody").gameObject;
-            SpriteRenderer sr = Body.GetComponent<SpriteRenderer>();
-            Color color = sr.color;
-            color.a = 1.0f;
-            sr.color = color;
-
             MonsterHitBox hitBox = knife.GetComponentInChildren<MonsterHitBox>();
             if (hitBox != null)
             {
                 hitBox.SetMonster(this);
             }
-
             knife.GetComponent<Knife>().setSpeed(speed);
             knife.GetComponent<Knife>().setDirection(moveDirection);
             knife.GetComponent<Knife>().setGoblin(this);

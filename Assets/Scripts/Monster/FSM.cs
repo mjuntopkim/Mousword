@@ -14,7 +14,7 @@ public class FSM
     {
         if (newState.GetType() == curState.GetType()) { return; }
 
-        if (curState != null) { curState.stateExit(); }
+        if (curState != null) {curState.stateExit();}
 
         curState = newState;
         curState.stateEnter();

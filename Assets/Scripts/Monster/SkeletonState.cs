@@ -40,7 +40,7 @@ public static class SkeletonState
                 else if (skeleton.curWaitTime >= skeleton.maxWaitTime || !skeleton.isGround)
                 {
                     skeleton.moveDirection = (int)(skeleton.startPosition.x) <= (int)(skeleton.transform.position.x) ? -1 : 1; //이동 방향 반전
-                    skeleton.flip(-skeleton.moveDirection);                                             //좌우 반전
+                    skeleton.flip(skeleton.moveDirection);                                             //좌우 반전
                     skeleton.isWait = false;
                     skeleton.curWaitTime = 0f;
                     skeleton.anim.SetBool("Run", true);
@@ -75,7 +75,7 @@ public static class SkeletonState
             {
                 skeleton.isWait = true;
                 skeleton.moveDirection = skeleton.player.position.x > skeleton.transform.position.x ? 1 : -1; //플레이어 방향으로 회전
-                skeleton.flip(-skeleton.moveDirection);
+                skeleton.flip(skeleton.moveDirection);
 
                 //쿨타임 중
                 if (skeleton.isAttack)

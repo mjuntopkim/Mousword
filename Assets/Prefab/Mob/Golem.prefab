@@ -443,6 +443,8 @@ MonoBehaviour:
   MiniGolem: {fileID: 8930221365032169408, guid: cad8d79ece63a404e95ff77e1a8f1d5e, type: 3}
   SummonSpawnPoint1: {fileID: 513605326788190701}
   SummonSpawnPoint2: {fileID: 2085296038700302641}
+  floorHeightThreshold: 1.5
+  isBlockedByEdge: 0
 --- !u!1 &1840258403143735667
 GameObject:
   m_ObjectHideFlags: 0
@@ -653,8 +655,8 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 320608523
+  m_SortingLayer: 1
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: -8564037883367681607, guid: e24cc8360b1c6e6468a20faeafdc0ef0, type: 3}

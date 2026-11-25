@@ -27,6 +27,10 @@ public class Golem : Monster
     [SerializeField] private float floorHeightThreshold = 1.5f; // [추가] 골렘과 플레이어의 바닥 높이 차이가 이보다 크면 다른 층으로 판정
     [HideInInspector] public bool isBlockedByEdge = false;     // [추가] 추적 중 발판 끝에 막혀 멈췄는지
 
+    // [추가] 보스 사망 알림 (골렘은 MonsterSpawner가 런타임에 생성하므로 Inspector 연결 대신 static 이벤트 사용)
+    public static event System.Action OnBossDead;
+    private bool isDead = false; // [추가] 사망 처리 중복 방지
+
     protected override void Start()
     {
         base.Start();
@@ -178,7 +182,13 @@ public class Golem : Monster
                 fsm.changeState(new GolemState.SummonState(this));
                 break;
             case state.die:
+                // [기존 코드]
+                // fsm.changeState(new CommonState.DieState(this));
+                // [수정] 죽은 뒤 다시 맞아도 사망 처리와 알림이 한 번만 일어나도록
+                if (isDead) break;
+                isDead = true;
                 fsm.changeState(new CommonState.DieState(this));
+                OnBossDead?.Invoke();
                 break;
         }
     }

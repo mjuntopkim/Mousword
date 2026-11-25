@@ -232,7 +232,7 @@ MonoBehaviour:
   attackRadius: 2
   distanceToPlayer: 0
   groundCheck: {fileID: 3263154770193855425}
-  monsterAttackHitbox: {fileID: 0}
+  monsterAttackHitbox: {fileID: 6835985751117998250}
   isWait: 0
   maxWaitTime: 2
   curWaitTime: 0

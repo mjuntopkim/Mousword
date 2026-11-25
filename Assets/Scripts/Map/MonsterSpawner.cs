@@ -1,4 +1,6 @@
 using UnityEngine;
+using UnityEngine.Events;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.Tilemaps;
 
@@ -21,13 +23,47 @@ public class MonsterSpawner : MonoBehaviour
     //소환 타이밍
     [SerializeField] private bool spawnOnStart = false;
 
-    //문 연동
-    [SerializeField] private DoorController doorController;
+    //살아있는 몬스터 확인 간격 (초)
+    [SerializeField] private float aliveCheckInterval = 0.3f;
+
+    //실제로 1마리 이상 소환되었을 때 호출
+    public UnityEvent onMonstersSpawned;
+
+    //살아있는 몬스터가 1마리 이상 → 0마리가 되었을 때 호출 (예: DoorController.OpenDoor 연결)
+    public UnityEvent onAllMonstersDead;
 
     //플레이어 참조 (씬이 시작될 때마다 씬에 있는 플레이어를 자동으로 찾음)
     private Transform player;
 
     private bool hasSpawned = false;
+
+    //타일 클러스터(소환 위치) 캐시와 클러스터별로 소환된 몬스터
+    private List<List<Vector3Int>> clusters;
+    private GameObject[] spawnedPerCluster;
+
+    private Coroutine aliveCheckRoutine;
+
+    //현재 살아있는 몬스터 수
+    public int AliveCount
+    {
+        get
+        {
+            if (spawnedPerCluster == null)
+            {
+                return 0;
+            }
+
+            int count = 0;
+            foreach (var monster in spawnedPerCluster)
+            {
+                if (monster != null)
+                {
+                    count++;
+                }
+            }
+            return count;
+        }
+    }
 
     private void Start()
     {
@@ -48,6 +84,7 @@ public class MonsterSpawner : MonoBehaviour
         }
     }
 
+    //1회만 소환 (기존 방식)
     public void SpawnMonsters()
     {
         if (hasSpawned)
@@ -56,7 +93,18 @@ public class MonsterSpawner : MonoBehaviour
         }
 
         hasSpawned = true;
+        SpawnInEmptySlots();
+    }
 
+    //죽어서 비어있는 위치에만 다시 소환 (횟수 제한 없음, MonsterSpawnTimer에서 사용)
+    public void RespawnDeadMonsters()
+    {
+        hasSpawned = true;
+        SpawnInEmptySlots();
+    }
+
+    private void SpawnInEmptySlots()
+    {
         if (monsterTilemap == null)
         {
             return;
@@ -68,35 +116,64 @@ public class MonsterSpawner : MonoBehaviour
             FindPlayer();
         }
 
-        List<List<Vector3Int>> clusters = FindTileClusters();
-        List<GameObject> spawnedMonsters = new List<GameObject>();
-
-        foreach (var cluster in clusters)
+        //타일맵은 게임 중 바뀌지 않으므로 클러스터는 한 번만 계산
+        if (clusters == null)
         {
-            int count = cluster.Count;
-            GameObject prefab = GetPrefabForTileCount(count);
+            clusters = FindTileClusters();
+            spawnedPerCluster = new GameObject[clusters.Count];
+        }
 
-            if (prefab != null)
+        int spawnedCount = 0;
+
+        for (int i = 0; i < clusters.Count; i++)
+        {
+            //아직 살아있는 몬스터가 있는 위치는 건너뜀
+            if (spawnedPerCluster[i] != null)
             {
-                Vector3 spawnPos = CalculateClusterCenter(cluster);
-                GameObject monster = Instantiate(prefab, spawnPos, Quaternion.identity);
+                continue;
+            }
 
-                //소환된 몬스터에 씬의 플레이어 등록 (몬스터의 Start보다 먼저 실행됨)
-                Monster monsterComponent = monster.GetComponent<Monster>();
-                if (monsterComponent != null && player != null)
-                {
-                    monsterComponent.player = player;
-                }
+            GameObject prefab = GetPrefabForTileCount(clusters[i].Count);
+            if (prefab == null)
+            {
+                continue;
+            }
 
-                spawnedMonsters.Add(monster);
+            Vector3 spawnPos = CalculateClusterCenter(clusters[i]);
+            GameObject monster = Instantiate(prefab, spawnPos, Quaternion.identity);
+
+            //소환된 몬스터에 씬의 플레이어 등록 (몬스터의 Start보다 먼저 실행됨)
+            Monster monsterComponent = monster.GetComponent<Monster>();
+            if (monsterComponent != null && player != null)
+            {
+                monsterComponent.player = player;
+            }
+
+            spawnedPerCluster[i] = monster;
+            spawnedCount++;
+        }
+
+        if (spawnedCount > 0)
+        {
+            onMonstersSpawned?.Invoke();
+
+            if (aliveCheckRoutine == null)
+            {
+                aliveCheckRoutine = StartCoroutine(AliveCheckRoutine());
             }
         }
+    }
 
-        if (doorController != null && spawnedMonsters.Count > 0)
+    //살아있는 몬스터가 0마리가 될 때까지 감시
+    private IEnumerator AliveCheckRoutine()
+    {
+        while (AliveCount > 0)
         {
-            
-            doorController.TrackMonsters(spawnedMonsters);
+            yield return new WaitForSeconds(aliveCheckInterval);
         }
+
+        aliveCheckRoutine = null;
+        onAllMonstersDead?.Invoke();
     }
 
     //씬에 있는 'Player' 태그 오브젝트를 찾아 플레이어로 등록
@@ -181,4 +258,3 @@ public class MonsterSpawner : MonoBehaviour
         return null;
     }
 }
-

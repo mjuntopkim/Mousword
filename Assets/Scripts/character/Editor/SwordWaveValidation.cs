@@ -52,8 +52,14 @@ public static class SwordWaveValidation
 
             // ---------- Facing right, aiming slightly up ----------
             pivot.rotation = Quaternion.Euler(0f, 0f, 15f);
+            var move = controller.GetComponent<PlayerMove>();
+            var playerRigid = controller.GetComponent<Rigidbody2D>();
+            float gravity = playerRigid.gravityScale;
+            bool moveEnabled = move != null && move.enabled;
             var routine = (IEnumerator)Call(controller, "SwordWaveCoroutine", skill);
             Check(routine.MoveNext(), "Cast enters the wind-up");
+            bool stalled = (bool)Field(controller, "airStalling");
+            if (stalled) Check(playerRigid.gravityScale == 0f && !move.enabled, "Air cast holds the player in place");
             var visuals = controller.GetComponent<PlayerSwordWaveVisuals>();
             Check(visuals != null && visuals.IsPlaying, "Cast visuals start");
             Check((bool)Field(controller, "isCastingSwordWave"), "Controller marks the cast as active");
@@ -91,8 +97,13 @@ public static class SwordWaveValidation
             Check(Quaternion.Angle(wave.transform.rotation, Quaternion.Euler(0f, 0f, 15f)) < 0.1f, "Wave flies toward the mouse aim");
             var waveRenderer = wave.GetComponent<SpriteRenderer>();
             Check(waveRenderer.sprite != null && waveRenderer.sprite.name == "SwordWaveProjectile_0", "Wave plays the pixel crescent");
-            Check(Mathf.Abs(waveRenderer.sprite.bounds.size.y * Mathf.Abs(wave.transform.lossyScale.y) - 80f * visuals.PixelWorldSize) < 0.001f,
+            float pop = (float)Field(wave, "currentPop");
+            Check(pop > 1.2f, "Wave pops out larger on release");
+            Check(Mathf.Abs(waveRenderer.sprite.bounds.size.y * Mathf.Abs(wave.transform.lossyScale.y) / pop - 80f * visuals.PixelWorldSize) < 0.001f,
                 "Wave pixels match the character pixel size");
+            Check(Vector2.Dot(wave.GetComponent<Rigidbody2D>().linearVelocity, wave.transform.right) > skill.projectileSpeed * 1.9f,
+                "Wave launches at boosted speed");
+            Call(wave, "SetPop", 1f); // 리뷰 캡처는 원래 크기로
             var box = wave.GetComponent<BoxCollider2D>();
             Check(box == null || box.size.y * Mathf.Abs(wave.transform.lossyScale.y) > 40f * visuals.PixelWorldSize, "Wave hit box covers the crescent");
             for (int f = 0; f < 4; f++)
@@ -107,6 +118,8 @@ public static class SwordWaveValidation
             Check(!visuals.IsPlaying && !body.forceRenderingOff && !weapon.forceRenderingOff, "Body and sword return after the cast");
             Check(!routine.MoveNext(), "Cast coroutine finishes");
             Check(!(bool)Field(controller, "isCastingSwordWave"), "Controller allows the next cast");
+            Check(!(bool)Field(controller, "airStalling") && playerRigid.gravityScale == gravity && (move == null || move.enabled == moveEnabled),
+                "Air stall releases gravity and movement after the cast");
 
             // ---------- Facing left ----------
             pivot.rotation = Quaternion.Euler(0f, 0f, 170f);
@@ -135,8 +148,7 @@ public static class SwordWaveValidation
             foreach (var w in UnityEngine.Object.FindObjectsByType<SwordWave>(FindObjectsSortMode.None)) UnityEngine.Object.DestroyImmediate(w.gameObject);
             Check(!body.forceRenderingOff, "Body visible before the dash sequence");
             var dashRoutine = (IEnumerator)Call(controller, "DashCoroutine", controller.DashSkillData);
-            dashRoutine.MoveNext();
-            dashRoutine.MoveNext();
+            while (dashRoutine.MoveNext()) { } // 대시는 물리 스텝마다 멈추므로 끝까지 돌려 착지 포즈 상태로
             var dashVisuals = controller.GetComponent<PlayerDashVisuals>();
             Check(body.forceRenderingOff, "Dash landing pose still hides the body");
             routine = (IEnumerator)Call(controller, "SwordWaveCoroutine", skill);
@@ -164,6 +176,7 @@ public static class SwordWaveValidation
             Call(controller, "OnDisable");
             Check(!visuals.IsPlaying && !body.forceRenderingOff && !weapon.forceRenderingOff, "Interrupted cast restores visibility");
             Check(!(bool)Field(controller, "isCastingSwordWave"), "Interrupted cast clears the casting flag");
+            Check(!(bool)Field(controller, "airStalling") && playerRigid.gravityScale == gravity, "Interrupted cast releases the air stall");
 
             File.WriteAllText(OutDir + "/validation.txt", "PASS: " + assertions + " sword wave checks.\n");
             Debug.Log("SWORD WAVE VALIDATION PASS: " + assertions + " checks");

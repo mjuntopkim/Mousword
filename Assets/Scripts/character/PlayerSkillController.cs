@@ -38,6 +38,33 @@ public class PlayerSkillController : MonoBehaviour
     private Coroutine dashRoutine;
 
     private bool isDashing = false;             // 캐릭터가 현재 대시를 수행 중인지 여부를 저장
+
+    // 대시 속도 곡선: v = 평균속도 × (DashStartSpeed - DashEaseAmount + DashEaseAmount × (1-u)²)
+    // (1-u)² 의 평균이 1/3 이므로 DashEaseAmount = (DashStartSpeed - 1) × 1.5 일 때 평균 배율이 정확히 1
+    private const float DashStartSpeed = 1.8f;
+    private const float DashEaseAmount = (DashStartSpeed - 1f) * 1.5f;
+
+    [Header("대시 연출")]
+    [Tooltip("출발 순간 화면이 진행 반대쪽으로 밀리는 폭 (화면 높이 대비)")]
+    [SerializeField] private float dashCameraKick = 0.003f;
+    [SerializeField] private float dashCameraKickTime = 0.2f;
+
+    [Header("검기 연출")]
+    [Tooltip("발사 순간 화면이 조준 방향으로 밀리는 폭 (화면 높이 대비)")]
+    [SerializeField] private float swordWaveCameraKick = 0.003f;
+    [SerializeField] private float swordWaveCameraKickTime = 0.2f;
+    [Tooltip("공중 시전: 발사 후 멈춘 채로 유지하는 시간 (초)")]
+    [SerializeField] private float swordWaveAirHold = 0.08f;
+    [Tooltip("공중 시전: 발사 반동으로 조준 반대쪽으로 밀리는 거리 (월드 단위, 위로는 밀리지 않음)")]
+    [SerializeField] private float swordWaveRecoil = 0.3f;
+
+    // 공중 검기 시전 중 허공에 멈춤 (에어 스톨)
+    private bool airStalling;
+    private PlayerMove airStallMove;
+    private bool airStallMoveWasEnabled;
+    private float airStallGravity;
+    private float airStallRecoilTime = -1f;     // 발사 후 지난 시간 (발사 전 < 0)
+    private Vector2 airStallRecoilDir;
     private bool isExecutingUltimate = false;   // 궁극기 연출이 끝날 때까지 (재사용 방지)
     private bool isCastingUltimate = false;     // 궁극기로 플레이어가 고정된 동안 (다른 스킬 사용 불가)
     private bool ultimateLocked = false;
@@ -61,12 +88,29 @@ public class PlayerSkillController : MonoBehaviour
 
     // 회전 반경 안에 들어온 Collider들을 저장
     private readonly List<Collider2D> spinOverlapResults = new List<Collider2D>();
-    // 이번 회전 스킬에서 이미 피해를 받은 슬라임 저장
+    // 이번 회전 스킬에서 이미 피해를 받은 몬스터 저장
     // (몇 번 맞았는지, 마지막으로 맞을 때까지 검이 돈 누적 각도) — 바퀴마다 1회씩 타격하기 위해 기록
-    private readonly Dictionary<Slime, Vector2Int> spinHitEnemies = new Dictionary<Slime, Vector2Int>();
+    private readonly Dictionary<Monster, Vector2Int> spinHitEnemies = new Dictionary<Monster, Vector2Int>();
     private const int SpinRehitAngle = 300;     // 같은 적을 다시 때리려면 검이 최소 이만큼 더 돌아야 함
     private int spinMaxHits = 1;                // 적 하나가 이번 스킬에서 맞을 수 있는 최대 횟수 (= 바퀴 수)
     private float spinTravel;                   // 판정 구간에서 검이 지금까지 돈 누적 각도
+    private int spinStoppedLap;                 // 히트스톱을 이미 넣은 마지막 바퀴 (바퀴당 한 번만)
+
+    [Header("회전베기 타격감")]
+    [Tooltip("1·2바퀴 적중: 히트스톱 (초, 바퀴당 한 번)")]
+    [SerializeField] private float spinHitStop = 0.03f;
+    [Tooltip("1·2바퀴 적중: 화면 흔들림 세기 (화면 높이 대비)")]
+    [SerializeField] private float spinShakeStrength = 0.004f;
+    [SerializeField] private float spinShakeTime = 0.08f;
+    [Tooltip("마지막 바퀴 적중(피니시): 히트스톱 (초)")]
+    [SerializeField] private float spinFinishHitStop = 0.06f;
+    [Tooltip("마지막 바퀴 적중(피니시): 화면 흔들림 세기 (화면 높이 대비)")]
+    [SerializeField] private float spinFinishShakeStrength = 0.008f;
+    [SerializeField] private float spinFinishShakeTime = 0.14f;
+    [Tooltip("적이 하얗게 번쩍이는 시간 (초)")]
+    [SerializeField] private float spinFlashTime = 0.06f;
+    [Tooltip("처치 타격일 때 흔들림 세기·히트스톱에 곱하는 값")]
+    [SerializeField] private float spinKillMultiplier = 1.5f;
     private RigidbodyInterpolation2D weaponInterpolation; // 회전 중 잠깐 바꾼 보간 설정 복구용
 
     void Start()
@@ -184,7 +228,6 @@ public class PlayerSkillController : MonoBehaviour
         try
         {
             dashVisuals.Begin(bodySpriteRenderer, facing, skill.dashDuration, IsDashGrounded());
-            rigid.linearVelocity = Vector2.right * facing * skill.dashForce;
             if (skill.effectPrefab != null)
             {
                 var effect = Instantiate(skill.effectPrefab, transform.position, Quaternion.identity);
@@ -192,7 +235,19 @@ public class PlayerSkillController : MonoBehaviour
                 scale.x *= facing;
                 effect.transform.localScale = scale;
             }
-            yield return new WaitForSeconds(Mathf.Max(0.01f, skill.dashDuration));
+
+            // 출발 순간 화면이 진행 반대쪽으로 한 번 살짝 밀림 (떨림 없음)
+            HitFeedback.Kick(Vector2.left * facing, dashCameraKick, dashCameraKickTime);
+
+            // 속도 곡선: 출발 순간 가장 빠르게 튀어나간 뒤 감속. 평균 속도 = dashForce 라서 이동 거리는 이전과 같음
+            int steps = DashPhysicsSteps(skill.dashDuration);
+            for (int i = 0; i < steps; i++)
+            {
+                // 각 물리 스텝 구간의 중간 시점 속도 사용 → 총 이동 거리가 곡선 적분값(= 평균속도 × 시간)과 거의 같음
+                float u = (i + 0.5f) / steps;
+                rigid.linearVelocity = Vector2.right * facing * skill.dashForce * DashSpeedCurve(u);
+                yield return new WaitForFixedUpdate();
+            }
         }
         finally
         {
@@ -200,10 +255,25 @@ public class PlayerSkillController : MonoBehaviour
         }
     }
 
-    private bool IsDashGrounded()
+    // 대시가 이어지는 물리 스텝 수 (0.18초 / 0.02초 = 9스텝)
+    public static int DashPhysicsSteps(float dashDuration)
     {
-        return dashMovement != null && dashMovement.groundCheck != null &&
-            Physics2D.OverlapCircle(dashMovement.groundCheck.position, dashMovement.checkRadius, dashMovement.isLayer) != null;
+        return Mathf.Max(1, Mathf.RoundToInt(Mathf.Max(0.01f, dashDuration) / Time.fixedDeltaTime));
+    }
+
+    // 평균 속도 대비 배율. 1.8배로 출발해 0.6배까지 감속 (0~1 구간 평균 = 1)
+    private static float DashSpeedCurve(float u)
+    {
+        float r = 1f - Mathf.Clamp01(u);
+        return DashStartSpeed - DashEaseAmount + DashEaseAmount * r * r;
+    }
+
+    private bool IsDashGrounded() => IsGroundedFor(dashMovement);
+
+    private static bool IsGroundedFor(PlayerMove move)
+    {
+        return move != null && move.groundCheck != null &&
+            Physics2D.OverlapCircle(move.groundCheck.position, move.checkRadius, move.isLayer) != null;
     }
 
     private void FinishDash()
@@ -283,9 +353,11 @@ public class PlayerSkillController : MonoBehaviour
             if (swordWaveVisuals == null)
                 swordWaveVisuals = GetComponent<PlayerSwordWaveVisuals>() ?? gameObject.AddComponent<PlayerSwordWaveVisuals>();
             swordWaveVisuals.Begin(bodySpriteRenderer, weaponPivot, facing);
+            BeginAirStall(); // 공중이면 시전 동안 허공에 멈춤 (땅에서는 아무 일 없음)
 
             yield return new WaitForSeconds(PlayerSwordWaveVisuals.ReleaseTime);
             ShootSwordWave(skill, aim);
+            StartAirStallRecoil(aim * Vector3.right);
             yield return new WaitForSeconds(PlayerSwordWaveVisuals.Duration - PlayerSwordWaveVisuals.ReleaseTime);
         }
         finally
@@ -298,7 +370,74 @@ public class PlayerSkillController : MonoBehaviour
     {
         isCastingSwordWave = false;
         swordWaveRoutine = null;
+        EndAirStall();
         if (swordWaveVisuals != null) swordWaveVisuals.Cancel();
+    }
+
+    // 공중 시전: 낙하·점프·좌우 이동을 멈추고 그 자리에 고정
+    private void BeginAirStall()
+    {
+        if (airStalling || rigid == null) return;
+        PlayerMove move = GetComponent<PlayerMove>();
+        if (move == null || IsGroundedFor(move)) return;
+
+        airStalling = true;
+        airStallMove = move;
+        airStallMoveWasEnabled = move.enabled;
+        move.enabled = false;
+        airStallGravity = rigid.gravityScale;
+        rigid.gravityScale = 0f;
+        rigid.linearVelocity = Vector2.zero;
+        airStallRecoilTime = -1f;
+    }
+
+    // 발사 순간: 조준 반대쪽으로 반동 (위로는 밀리지 않음). 이후 FixedUpdate 가 감속시키고 swordWaveAirHold 뒤 해제
+    private void StartAirStallRecoil(Vector2 aimDirection)
+    {
+        if (!airStalling) return;
+        Vector2 back = -aimDirection.normalized;
+        if (back.y > 0f) back.y = 0f;
+        airStallRecoilDir = back;
+        airStallRecoilTime = 0f;
+        ApplyAirStallRecoil();
+        if (swordWaveAirHold <= 0f) EndAirStall();
+    }
+
+    // 반동 속도: 0.08초 동안 선형 감속 → 이동 거리 = 초기속도 × 유지시간 / 2 = swordWaveRecoil
+    private void ApplyAirStallRecoil()
+    {
+        float hold = Mathf.Max(0.0001f, swordWaveAirHold);
+        float v0 = swordWaveRecoil * 2f / hold;
+        float k = 1f - Mathf.Clamp01((airStallRecoilTime + Time.fixedDeltaTime * 0.5f) / hold);
+        rigid.linearVelocity = airStallRecoilDir * v0 * k;
+    }
+
+    private void EndAirStall()
+    {
+        if (!airStalling) return;
+        airStalling = false;
+        airStallRecoilTime = -1f;
+        if (rigid != null)
+        {
+            rigid.gravityScale = airStallGravity;
+            rigid.linearVelocity = Vector2.zero;
+        }
+        if (airStallMove != null) airStallMove.enabled = airStallMoveWasEnabled;
+        airStallMove = null;
+    }
+
+    void FixedUpdate()
+    {
+        if (!airStalling) return;
+        if (airStallRecoilTime < 0f)
+        {
+            rigid.linearVelocity = Vector2.zero; // 발사 전: 허공에 고정
+            return;
+        }
+        // 이번 물리 스텝에 쓸 속도를 넣고 나서 시간을 진행 (물리 계산은 FixedUpdate 직후에 일어남)
+        if (airStallRecoilTime >= swordWaveAirHold - 1e-4f) { EndAirStall(); return; }
+        ApplyAirStallRecoil();
+        airStallRecoilTime += Time.fixedDeltaTime;
     }
 
     private void ShootSwordWave(SkillData skill, Quaternion aim)
@@ -321,6 +460,9 @@ public class PlayerSkillController : MonoBehaviour
             float pixel = swordWaveVisuals != null ? swordWaveVisuals.PixelWorldSize : 0f;
             swordWave.Initialize(skill.projectileSpeed, skill.damage, pixel);
         }
+
+        // 4. 발사 순간 화면이 조준 방향으로 한 번 살짝 밀림 (떨림 없음)
+        HitFeedback.Kick(aim * Vector3.right, swordWaveCameraKick, swordWaveCameraKickTime);
     }
     #endregion
 
@@ -553,6 +695,7 @@ public class PlayerSkillController : MonoBehaviour
 
         // 이전 회전 스킬의 피격 기록 제거
         spinHitEnemies.Clear();
+        spinStoppedLap = 0;
 
         // 기존 평타의 누적 회전각 초기화 후 마우스 방향 추적 중지
         weaponAim.ConsumeSwing();
@@ -693,13 +836,13 @@ public class PlayerSkillController : MonoBehaviour
             if (hit == null)
                 continue;
 
-            // Collider의 부모에서 슬라임 검색
-            Slime monster = hit.GetComponentInParent<Slime>();
+            // Collider의 부모에서 몬스터 검색
+            Monster monster = hit.GetComponentInParent<Monster>();
 
             if (monster == null)
                 continue;
 
-            // 이미 바퀴 수만큼 맞았거나, 이번 바퀴에 이미 맞은 슬라임이면 무시
+            // 이미 바퀴 수만큼 맞았거나, 이번 바퀴에 이미 맞은 몬스터면 무시
             int travel = Mathf.RoundToInt(spinTravel);
             bool hitBefore = spinHitEnemies.TryGetValue(monster, out Vector2Int record);
             if (hitBefore && (record.x >= spinMaxHits || travel - record.y < SpinRehitAngle))
@@ -709,14 +852,46 @@ public class PlayerSkillController : MonoBehaviour
             if (!IsInSweep(hit.bounds, center, fromAngle, direction, sweep))
                 continue;
 
-            spinHitEnemies[monster] = new Vector2Int(hitBefore ? record.x + 1 : 1, travel);
+            int lap = hitBefore ? record.x + 1 : 1; // 이 적이 몇 번째로 맞는지 = 몇 바퀴째 적중인지
+            spinHitEnemies[monster] = new Vector2Int(lap, travel);
+
+            bool wasAlive = monster.currentHP > 0f;
             monster.TakeDamage((int)skill.damage);
 
             if (spinVisuals != null)
                 spinVisuals.Spark(hit.bounds.center);
 
+            if (wasAlive) // 이미 쓰러진 몬스터를 다시 친 경우엔 연출 없음
+            {
+                // 화면은 검이 도는 방향(적 위치에서의 접선)으로 밀림
+                Vector2 offset = (Vector2)hit.bounds.center - center;
+                Vector2 tangent = new Vector2(-offset.y, offset.x) * direction;
+                PlaySpinHitFeedback(monster, tangent, lap, monster.currentHP <= 0f);
+            }
+
             Debug.Log($"[회전 스킬 적중] {monster.name} 데미지: {skill.damage}");
         }
+    }
+
+    // 회전베기 타격감: 흰 플래시는 적중마다, 히트스톱은 바퀴당 한 번, 마지막 바퀴는 피니시로 더 강하게
+    // (같은 프레임에 여러 마리가 맞아도 HitFeedback 이 더 센 흔들림·더 긴 히트스톱 하나로 합침)
+    private void PlaySpinHitFeedback(Monster monster, Vector2 swingDir, int lap, bool killed)
+    {
+        bool finisher = lap >= spinMaxHits;
+        float mul = killed ? spinKillMultiplier : 1f;
+
+        HitFlash.Play(monster, spinFlashTime);
+
+        if (lap > spinStoppedLap)
+        {
+            spinStoppedLap = lap;
+            HitFeedback.HitStop((finisher ? spinFinishHitStop : spinHitStop) * mul);
+        }
+
+        if (finisher)
+            HitFeedback.Shake(swingDir, spinFinishShakeStrength * mul, spinFinishShakeTime);
+        else
+            HitFeedback.Shake(swingDir, spinShakeStrength * mul, spinShakeTime);
     }
 
     // 적이 이번에 검이 쓸고 지나간 부채꼴 안에 있는지 (적의 크기만큼 각도 여유를 줌)

@@ -16,7 +16,7 @@ public abstract class Monster : MonoBehaviour
     protected bool isRecognzed = false;                             //몬스터가 플레이어를 인식했는지 확인
     [HideInInspector] public float distanceToPlayer;                                  //몬스터와 플레이어 사이의 거리
     public enum state{idle, notice, attack, die, smash, jump, throwRock, tornado, summon}                            //몬스터의 상태
-    protected state curState;                                       //현재 몬스터의 상태
+    protected state curState;                                     //현재 몬스터의 상태
 
     public Transform groundCheck;                                   // 발밑 위치를 정할 오브젝트
     [SerializeField] private GameObject monsterAttackHitbox;                         //몬스터 공격 동작의 공격 범위 오브젝트
@@ -31,6 +31,7 @@ public abstract class Monster : MonoBehaviour
     [HideInInspector] public bool isAnimeEnd = true;                        //애니메이션이 끝났는지 확인하는 변수
     protected FSM fsm;                                   //상태 전환을 위한 FSM 객체
 
+    public bool IsDead { get; private set; } = false;
     GameObject Body;
 
 
@@ -92,6 +93,8 @@ public abstract class Monster : MonoBehaviour
 
     public void TakeDamage(float damage)
     {
+        if(IsDead) return; // 이미 죽은 몬스터는 데미지를 받지 않음
+        
         currentHP -= damage;
 
         if (HPSlider != null)
@@ -101,6 +104,7 @@ public abstract class Monster : MonoBehaviour
 
         if (currentHP <= 0)
         {
+            IsDead = true;
             curState = state.die;
             changeState(curState);
             Destroy(gameObject, 2.0f);

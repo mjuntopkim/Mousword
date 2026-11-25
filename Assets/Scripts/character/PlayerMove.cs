@@ -89,6 +89,7 @@ public class PlayerMove : MonoBehaviour
         
     void ApplyJumpGravity() // 떨어질 때 묵직하게(캐릭터가 최고점을 찍고 아래로 떨어지는 중일때 작동)
     {
+        if (isGrounded) return;
         // 떨어질 때 묵직하게 (최고점을 찍고 아래로 떨어지는 중)
         if (rigid.linearVelocity.y < 0)
         {

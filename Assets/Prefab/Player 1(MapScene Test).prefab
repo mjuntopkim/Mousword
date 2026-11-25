@@ -120,12 +120,12 @@ SpriteRenderer:
   m_SortingLayer: 1
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -3759438304851422995, guid: e1d2ae5d81c89944e8ba8cd42ae9a504, type: 3}
+  m_Sprite: {fileID: 3739415124199943703, guid: a80aeb0abf556c6489256153ed0a8951, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 2.2857144, y: 2.2857144}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -155,7 +155,7 @@ Rigidbody2D:
     m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 4
 --- !u!114 &7215639051898149984
 MonoBehaviour:
@@ -170,7 +170,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMove
   coyoteTime: 0.1
-  jumpBufferTime: 0.15
+  jumpBufferTime: 0.1
   moveSpeed: 7
   jumpForce: 9
   fallMultiplier: 2.5
@@ -261,7 +261,6 @@ MonoBehaviour:
   enemyLayer:
     serializedVersion: 2
     m_Bits: 64
-  spinHitbox: {fileID: 904742356284374831}
 --- !u!114 &3193737103370860514
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -299,6 +298,10 @@ PrefabInstance:
     - target: {fileID: 1757502443262723210, guid: b3a33afbeddd08342bb8403259ff5266, type: 3}
       propertyPath: m_SortingLayerID
       value: 320608523
+      objectReference: {fileID: 0}
+    - target: {fileID: 1757502443262723210, guid: b3a33afbeddd08342bb8403259ff5266, type: 3}
+      propertyPath: m_WasSpriteAssigned
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2382758603708226184, guid: b3a33afbeddd08342bb8403259ff5266, type: 3}
       propertyPath: damage
@@ -393,6 +396,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9171875464971516690, guid: b3a33afbeddd08342bb8403259ff5266, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 1.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 9171875464971516690, guid: b3a33afbeddd08342bb8403259ff5266, type: 3}
       propertyPath: m_LocalRotation.w
       value: 1
       objectReference: {fileID: 0}
@@ -420,11 +427,6 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 6617027106530281794}
   m_SourcePrefab: {fileID: 100100000, guid: b3a33afbeddd08342bb8403259ff5266, type: 3}
---- !u!61 &904742356284374831 stripped
-BoxCollider2D:
-  m_CorrespondingSourceObject: {fileID: 6365034329157632363, guid: b3a33afbeddd08342bb8403259ff5266, type: 3}
-  m_PrefabInstance: {fileID: 6114602546570985028}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1647138323510087782 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4755978273371958818, guid: b3a33afbeddd08342bb8403259ff5266, type: 3}

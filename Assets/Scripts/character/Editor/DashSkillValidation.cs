@@ -54,9 +54,27 @@ public static class DashSkillValidation
             var visuals = player.GetComponent<PlayerDashVisuals>();
             Check(visuals != null && body.forceRenderingOff, "Dedicated dash pose replaces only the body renderer");
             Check(!movement.enabled && rigid.gravityScale == 0f, "Normal movement yields to dash physics");
-            Check(rigid.linearVelocity.x == skill.dashForce, "Right dash keeps existing speed");
+            Check(rigid.linearVelocity.x > skill.dashForce * 1.5f, "Right dash bursts out faster than its average speed");
             Check(rigid.collisionDetectionMode == collision, "Dash preserves the existing collision detection mode");
-            Check(!routine.MoveNext(), "Dash finishes after the active interval");
+            var pose = player.transform.Find("Dash Pose");
+            Check(pose.localScale.x > pose.localScale.y, "Dash pose starts stretched along the dash");
+            // Drain the per-physics-step speed curve: it decelerates and keeps the old travel distance.
+            float travelled = 0f, previousSpeed = float.MaxValue;
+            bool decelerating = true;
+            int steps = 0;
+            do
+            {
+                float speed = rigid.linearVelocity.x;
+                travelled += speed * Time.fixedDeltaTime;
+                decelerating &= speed <= previousSpeed + 1e-4f;
+                previousSpeed = speed;
+                steps++;
+            } while (routine.MoveNext() && steps < 1000);
+            Check(steps < 1000, "Dash finishes after the active interval");
+            Check(decelerating && previousSpeed > 0f, "Dash speed eases out without stopping early");
+            float expected = skill.dashForce * PlayerSkillController.DashPhysicsSteps(skill.dashDuration) * Time.fixedDeltaTime;
+            Check(steps == PlayerSkillController.DashPhysicsSteps(skill.dashDuration), "Dash lasts its physics steps");
+            Check(Mathf.Abs(travelled - expected) <= expected * 0.02f, "Dash keeps its previous travel distance");
             Check(movement.enabled && rigid.gravityScale == gravity && rigid.collisionDetectionMode == collision, "Movement and physics restore after dash");
             Call(visuals, "Tick", 0.08f);
             Check(!body.forceRenderingOff, "Recovery restores normal sprite visibility");
@@ -65,7 +83,7 @@ public static class DashSkillValidation
             movement.enabled = false;
             routine = (IEnumerator)Call(controller, "DashCoroutine", skill);
             routine.MoveNext();
-            Check(rigid.linearVelocity.x == -skill.dashForce, "Left dash follows facing direction");
+            Check(rigid.linearVelocity.x < -skill.dashForce, "Left dash follows facing direction");
             Check(player.transform.Find("Dash Pose").GetComponent<SpriteRenderer>().flipX, "Left dash mirrors its dedicated pose");
             ((IDisposable)routine).Dispose();
             Check(!movement.enabled, "Cleanup preserves an already disabled movement component");
@@ -75,7 +93,7 @@ public static class DashSkillValidation
             // Air dash emits wind, with no ground-only dust.
             Call(visuals, "OnDisable");
             visuals.Begin(body, 1f, 0.18f, false);
-            Check(ActiveParticles(player) == 3, "Air dash starts with three wind lines and no dust");
+            Check(ActiveParticles(player) == 3 + 12, "Air dash starts with three wind lines and a wind ring, no dust");
             Call(visuals, "OnDisable");
             Check(ActiveParticles(player) == 0 && !body.forceRenderingOff, "Disabling visuals clears every pooled effect");
 
@@ -91,7 +109,7 @@ public static class DashSkillValidation
                 player.transform.position += Vector3.right * 0.65f;
                 Call(visuals, "Tick", 0.041f);
             }
-            Check(ActiveParticles(player) <= 32, "Effect pool stays bounded");
+            Check(ActiveParticles(player) <= 64, "Effect pool stays bounded");
             Check(ActiveParticles(player) >= 6, "Moving dash leaves visible wind and ghost particles");
             File.WriteAllLines("output/DashSkill/particle-review.txt", player.GetComponentsInChildren<SpriteRenderer>()
                 .Where(r => r.name.StartsWith("Dash Particle ") && r.enabled)

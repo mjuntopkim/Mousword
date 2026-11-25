@@ -1281,6 +1281,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 179106190179413510, guid: 827bfade240a89c47bd0be19baa596b8, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 3739415124199943703, guid: a80aeb0abf556c6489256153ed0a8951, type: 3}
     - target: {fileID: 904742356284374831, guid: 827bfade240a89c47bd0be19baa596b8, type: 3}
       propertyPath: m_Enabled
       value: 1
@@ -51645,6 +51649,20 @@ MonoBehaviour:
   enemyLayer:
     serializedVersion: 2
     m_Bits: 0
+  dashCameraKick: 0.003
+  dashCameraKickTime: 0.2
+  swordWaveCameraKick: 0.003
+  swordWaveCameraKickTime: 0.2
+  swordWaveAirHold: 0.08
+  swordWaveRecoil: 0.3
+  spinHitStop: 0.03
+  spinShakeStrength: 0.004
+  spinShakeTime: 0.08
+  spinFinishHitStop: 0.06
+  spinFinishShakeStrength: 0.008
+  spinFinishShakeTime: 0.14
+  spinFlashTime: 0.06
+  spinKillMultiplier: 1.5
 --- !u!1 &2083914032
 GameObject:
   m_ObjectHideFlags: 0
@@ -51810,7 +51828,7 @@ Transform:
   m_GameObject: {fileID: 2083914032}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -6.7653427, y: -0.06305909, z: -10}
+  m_LocalPosition: {x: -8.652236, y: -0.06530833, z: -10}
   m_LocalScale: {x: 0.727144, y: 0.727144, z: 0.727144}
   m_ConstrainProportionsScale: 0
   m_Children: []

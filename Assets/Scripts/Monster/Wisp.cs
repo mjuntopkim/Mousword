@@ -32,15 +32,10 @@ public class Wisp : Monster
 
     protected override void Start()
     {
-        GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
-        if (playerObj != null)
+        // 플레이어는 MonsterSpawner가 소환할 때 등록해 줌
+        if (player != null)
         {
-            if (player == null) player = playerObj.transform;
-            playerStatus = playerObj.GetComponent<PlayerStatus>(); // 플레이어 상태 참조
-        }
-        else
-        {
-            Debug.LogWarning("Wisp: 'Player' 태그를 가진 오브젝트를 찾지 못했습니다.");
+            playerStatus = player.GetComponent<PlayerStatus>(); // 플레이어 상태 참조
         }
 
         base.Start();

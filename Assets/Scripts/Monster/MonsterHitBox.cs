@@ -21,7 +21,6 @@ public class MonsterHitBox : MonoBehaviour
         if (collision.CompareTag("Player"))
         {
             PlayerStatus playerStatus = collision.GetComponent<PlayerStatus>();
-
             if (monster == null || playerStatus == null)
             {
                 return;

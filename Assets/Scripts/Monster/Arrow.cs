@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 public class Arrow : MonoBehaviour
 {
@@ -31,7 +30,7 @@ public class Arrow : MonoBehaviour
     }
     public void setDirection(float direction, Vector2 vector)
     {
-        transform.rotation = Quaternion.Euler(0, 0, direction + 180f); //박쥐의 회전 적용
+        transform.rotation = Quaternion.Euler(0, 0, direction + 180f); //회전 적용
 
         if (vector.x < 0)
         {

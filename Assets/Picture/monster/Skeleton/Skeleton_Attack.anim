@@ -96,7 +96,7 @@ AnimationClip:
     floatParameter: 0
     intParameter: 1
     messageOptions: 0
-  - time: 0.31666666
+  - time: 0.3
     functionName: animeClosing
     data: 
     objectReferenceParameter: {fileID: 0}

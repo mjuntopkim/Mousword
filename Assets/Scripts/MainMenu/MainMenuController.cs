@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class MainMenuController : MonoBehaviour
 {
-    public const string FirstStagePath = "Assets/Scenes/Main/1 - 1.unity";
+    public const string FirstStagePath = "Assets/Scenes/Main/1.unity";
     private const string VolumePreference = "MasterVolume";
 
     [SerializeField] private GameObject mainPanel;
@@ -45,7 +45,7 @@ public class MainMenuController : MonoBehaviour
 
         if (!Application.CanStreamedLevelBeLoaded(FirstStagePath))
         {
-            Debug.LogError("1-1 씬이 빌드 씬 목록에 없습니다: " + FirstStagePath, this);
+            Debug.LogError("1 씬이 빌드 씬 목록에 없습니다: " + FirstStagePath, this);
             return;
         }
 

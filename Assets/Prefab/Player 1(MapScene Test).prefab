@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8498560359872172645}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: GroundCheck
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -47,7 +47,7 @@ GameObject:
   - component: {fileID: 1277328150107297060}
   - component: {fileID: 8105220491312927496}
   - component: {fileID: 3193737103370860514}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Player 1(MapScene Test)
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -377,9 +377,17 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5182329603942265724, guid: b3a33afbeddd08342bb8403259ff5266, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 5290469402604778504, guid: b3a33afbeddd08342bb8403259ff5266, type: 3}
       propertyPath: m_Name
       value: WeaponPivot
+      objectReference: {fileID: 0}
+    - target: {fileID: 5290469402604778504, guid: b3a33afbeddd08342bb8403259ff5266, type: 3}
+      propertyPath: m_Layer
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 5290469402604778504, guid: b3a33afbeddd08342bb8403259ff5266, type: 3}
       propertyPath: m_IsActive

@@ -47,7 +47,7 @@ public class BossRoomEffect : MonoBehaviour
 
         // 4. 실제 보스로 교체 (MonsterSpawner가 생성 + 문 추적까지 처리)
         introBoss.SetActive(false);
-        //bossSpawner.SpawnMonsters();
+        bossSpawner.SpawnMonsters();
 
         // 5. 카메라 복귀
         introCam.SetActive(false);

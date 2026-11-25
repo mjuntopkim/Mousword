@@ -7754,6 +7754,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player 1(MapScene Test) (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 7424087069261895125, guid: 827bfade240a89c47bd0be19baa596b8, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 9176715121401992591, guid: 827bfade240a89c47bd0be19baa596b8, type: 3}
       propertyPath: m_LocalPosition.x
       value: 42.6
@@ -12924,7 +12928,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &745256821
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13114,7 +13118,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 3, y: 3, z: 3}
+  m_LocalScale: {x: 1.5, y: 1.5, z: 3}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 979113939}
@@ -13168,7 +13172,7 @@ SpriteRenderer:
   m_SortingLayer: 1
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -4744010996067663375, guid: 16d946eccbd4a014b999b613061af952, type: 3}
+  m_Sprite: {fileID: -8564037883367681607, guid: e24cc8360b1c6e6468a20faeafdc0ef0, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -13295,8 +13299,8 @@ Transform:
   m_GameObject: {fileID: 979113935}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.54, y: -20.56, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 3.46, y: -20.53, z: 0}
+  m_LocalScale: {x: 1.0707, y: 1.0707, z: 1.0707}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 760029668}
@@ -13853,18 +13857,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 321330947}
-        m_TargetAssemblyTypeName: MonsterSpawner, Assembly-CSharp
-        m_MethodName: SpawnMonsters
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
       - m_Target: {fileID: 1057684929}
         m_TargetAssemblyTypeName: MonsterSpawnTimer, Assembly-CSharp
         m_MethodName: StartTimer
@@ -14300,6 +14292,52 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 29.98, y: -19.5, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1426419342
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1426419344}
+  - component: {fileID: 1426419343}
+  m_Layer: 0
+  m_Name: BossClearEnding
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1426419343
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1426419342}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 54a412d2426fc074ea0ffddb3c8f86f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BossClearToEnding
+  endingSceneName: Ending
+  delayAfterBossDeath: 2.5
+--- !u!4 &1426419344
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1426419342}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 19.85823, y: -13.48378, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -23080,7 +23118,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ae400c4227f52742a6b933afe2f6198, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BossRoomEffect
-  bossSpawner: {fileID: 0}
+  bossSpawner: {fileID: 321330947}
   doorWait: 0.6
   introCam: {fileID: 79253294}
   cameraBlendTime: 2
@@ -23126,3 +23164,4 @@ SceneRoots:
   - {fileID: 321330948}
   - {fileID: 1332648399}
   - {fileID: 1057684928}
+  - {fileID: 1426419344}

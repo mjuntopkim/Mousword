@@ -42,12 +42,14 @@ public class PlayerStatus : MonoBehaviour
         if (IsDead || isInvincible || SkillInvincible) return;
 
         // 방어력을 계산한 최종 데미지 (최소 1의 데미지는 입도록 설정)
-        float finalDamage = Mathf.Max(damage - defense, 1f);
+        float finalDamage = Mathf.Max(damage - defense, 0f);
 
         currentHp -= finalDamage;
         currentHp = Mathf.Clamp(currentHp, 0f, maxHp); // 체력이 0 미만, 최대치 초과되지 않게 방지
 
         Debug.Log($"플레이어가 {finalDamage}의 데미지를 입었습니다. 남은 체력: {currentHp}");
+
+        if (finalDamage <= 0f) return;
 
         if (currentHp <= 0)
         {

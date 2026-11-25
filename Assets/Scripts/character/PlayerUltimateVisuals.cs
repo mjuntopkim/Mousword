@@ -238,7 +238,7 @@ public sealed class PlayerUltimateVisuals : MonoBehaviour
     private int layerId, objectLayer;
 
     private bool active, impacted, shattered, poseHolding, hitStopActive, hasGround;
-    private float t, freeze, sinceImpact, prevTimeScale, fallingAccum;
+    private float t, freeze, sinceImpact, fallingAccum;
     private float P, H, W, impactX, groundY, screenTop, screenBottom, screenLeft, swordLength, swordWidth, z;
     private float originX, originY; // 화면 캔버스 (0,0) 텍셀의 월드 좌표
     private int markerRx, drawnMarkerRx = -1, impactIx, impactIy;
@@ -254,8 +254,8 @@ public sealed class PlayerUltimateVisuals : MonoBehaviour
     private readonly RaycastHit2D[] rayHits = new RaycastHit2D[1];
     private readonly Collider2D[] overlapHits = new Collider2D[1];
 
-    private Vector3 shakeOffset, savedCamPos;
-    private bool shakeApplied, hooked;
+    private Vector3 shakeOffset;
+    private bool hooked;
 
     public bool IsPlaying => active;
     public bool HasImpacted => impacted;
@@ -904,14 +904,10 @@ public sealed class PlayerUltimateVisuals : MonoBehaviour
         impacted = true;
         sinceImpact = 0f;
 
-        // 히트스톱: 게임 전체를 잠깐 멈춤 (연출은 실제 시간으로 계속)
+        // 히트스톱: 게임 전체를 잠깐 멈춤 (연출은 실제 시간으로 계속). timeScale 은 공용 HitFeedback 이 관리
         freeze = HitStopTime;
-        if (Time.timeScale > 0f)
-        {
-            prevTimeScale = Time.timeScale;
-            Time.timeScale = 0f;
-            hitStopActive = true;
-        }
+        hitStopActive = true;
+        HitFeedback.HitStop(HitStopTime);
 
         List<Vector3> hits = null;
         try { hits = impactCallback?.Invoke(); }
@@ -965,8 +961,7 @@ public sealed class PlayerUltimateVisuals : MonoBehaviour
     {
         if (!hitStopActive) return;
         hitStopActive = false;
-        freeze = 0f;
-        if (Time.timeScale == 0f) Time.timeScale = prevTimeScale; // 그 사이 다른 곳에서 바꿨다면 건드리지 않음
+        freeze = 0f; // timeScale 복구는 HitFeedback 이 실제 시간으로 알아서 처리
     }
 
     private void Finish()
@@ -1054,59 +1049,40 @@ public sealed class PlayerUltimateVisuals : MonoBehaviour
 
     #endregion
 
-    #region 화면 흔들림 (Cinemachine이 카메라를 옮긴 뒤, 그리는 순간에만 살짝 밀었다가 되돌림)
+    #region 화면 흔들림 (카메라 적용은 공용 HitFeedback 이 담당 — 기본 공격 흔들림과 겹쳐도 안전하게 합산)
 
     private void UpdateShake(float e)
     {
         shakeOffset = Vector3.zero;
-        if (!impacted) return;
-        float amp = 0f;
-        if (sinceImpact < ShakeTime)
+        if (impacted)
         {
-            float k = 1f - sinceImpact / ShakeTime;
-            amp += ShakeStrength * H * k * k;
+            float amp = 0f;
+            if (sinceImpact < ShakeTime)
+            {
+                float k = 1f - sinceImpact / ShakeTime;
+                amp += ShakeStrength * H * k * k;
+            }
+            if (e < RumbleTime) amp += RumbleStrength * H * (1f - Mathf.Max(0f, e) / RumbleTime);
+            if (amp > 0f)
+            {
+                Vector2 r = Random.insideUnitCircle * amp;
+                float step = P * 0.5f;
+                shakeOffset = new Vector3(Mathf.Round(r.x / step) * step, Mathf.Round(r.y / step) * step, 0f);
+            }
         }
-        if (e < RumbleTime) amp += RumbleStrength * H * (1f - Mathf.Max(0f, e) / RumbleTime);
-        if (amp <= 0f) return;
-        Vector2 r = Random.insideUnitCircle * amp;
-        float step = P * 0.5f;
-        shakeOffset = new Vector3(Mathf.Round(r.x / step) * step, Mathf.Round(r.y / step) * step, 0f);
+        if (hooked) HitFeedback.SetShakeOffset(this, shakeOffset);
     }
 
     private void Hook()
     {
-        if (hooked) return;
-        RenderPipelineManager.beginCameraRendering += OnBeginCameraRendering;
-        RenderPipelineManager.endCameraRendering += OnEndCameraRendering;
         hooked = true;
     }
 
     private void Unhook()
     {
-        if (hooked)
-        {
-            RenderPipelineManager.beginCameraRendering -= OnBeginCameraRendering;
-            RenderPipelineManager.endCameraRendering -= OnEndCameraRendering;
-            hooked = false;
-        }
-        if (shakeApplied && cam != null) cam.transform.position = savedCamPos;
-        shakeApplied = false;
+        if (hooked) HitFeedback.ClearShakeOffset(this);
+        hooked = false;
         shakeOffset = Vector3.zero;
-    }
-
-    private void OnBeginCameraRendering(ScriptableRenderContext context, Camera camera)
-    {
-        if (camera != cam || shakeApplied || shakeOffset == Vector3.zero) return;
-        savedCamPos = camera.transform.position;
-        camera.transform.position = savedCamPos + shakeOffset;
-        shakeApplied = true;
-    }
-
-    private void OnEndCameraRendering(ScriptableRenderContext context, Camera camera)
-    {
-        if (camera != cam || !shakeApplied) return;
-        camera.transform.position = savedCamPos;
-        shakeApplied = false;
     }
 
     #endregion

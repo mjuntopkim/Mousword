@@ -11,23 +11,28 @@ public class MonsterSpawner : MonoBehaviour
         public GameObject monsterPrefab;
     }
 
-    //Ÿ�ϸ� ����
+    //타일맵 설정
     [SerializeField] private Tilemap monsterTilemap;
     [SerializeField] private bool hideTilemap = true;
 
-    //��ȯ ��Ģ ���
+    //소환 규칙 목록
     [SerializeField] private List<MonsterSpawnRule> spawnRules = new List<MonsterSpawnRule>();
 
-    //��ȯ Ÿ�̹�
+    //소환 타이밍
     [SerializeField] private bool spawnOnStart = false;
 
-    //�� ����
+    //문 연동
     [SerializeField] private DoorController doorController;
+
+    //플레이어 참조 (씬이 시작될 때마다 씬에 있는 플레이어를 자동으로 찾음)
+    private Transform player;
 
     private bool hasSpawned = false;
 
     private void Start()
     {
+        FindPlayer();
+
         if (hideTilemap && monsterTilemap != null)
         {
             TilemapRenderer tr = monsterTilemap.GetComponent<TilemapRenderer>();
@@ -57,6 +62,12 @@ public class MonsterSpawner : MonoBehaviour
             return;
         }
 
+        //Start 이전에 소환이 호출되었거나 플레이어가 바뀐 경우 대비
+        if (player == null)
+        {
+            FindPlayer();
+        }
+
         List<List<Vector3Int>> clusters = FindTileClusters();
         List<GameObject> spawnedMonsters = new List<GameObject>();
 
@@ -69,6 +80,14 @@ public class MonsterSpawner : MonoBehaviour
             {
                 Vector3 spawnPos = CalculateClusterCenter(cluster);
                 GameObject monster = Instantiate(prefab, spawnPos, Quaternion.identity);
+
+                //소환된 몬스터에 씬의 플레이어 등록 (몬스터의 Start보다 먼저 실행됨)
+                Monster monsterComponent = monster.GetComponent<Monster>();
+                if (monsterComponent != null && player != null)
+                {
+                    monsterComponent.player = player;
+                }
+
                 spawnedMonsters.Add(monster);
             }
         }
@@ -77,6 +96,20 @@ public class MonsterSpawner : MonoBehaviour
         {
             
             doorController.TrackMonsters(spawnedMonsters);
+        }
+    }
+
+    //씬에 있는 'Player' 태그 오브젝트를 찾아 플레이어로 등록
+    private void FindPlayer()
+    {
+        GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+        if (playerObj != null)
+        {
+            player = playerObj.transform;
+        }
+        else
+        {
+            Debug.LogWarning("MonsterSpawner: 'Player' 태그를 가진 오브젝트를 찾지 못했습니다.");
         }
     }
 

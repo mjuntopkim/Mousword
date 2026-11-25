@@ -132,6 +132,7 @@ GameObject:
   - component: {fileID: 30816533}
   - component: {fileID: 30816532}
   - component: {fileID: 30816531}
+  - component: {fileID: 30816535}
   m_Layer: 0
   m_Name: Door
   m_TagString: Untagged
@@ -169,11 +170,16 @@ MonoBehaviour:
   doorAnimator: {fileID: 30816532}
   doorCollider: {fileID: 1379529536}
   dustParticle: {fileID: 665569534}
+  doorImpulseSource: {fileID: 30816535}
   dropTriggerName: Drop
   dropStateName: RockDrop
   speedParameterName: Speed
   openDuration: 0.5
   doorDropDuration: 0.25
+  afterCloseDelay: 0
+  onDoorClosed:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!95 &30816532
 Animator:
   serializedVersion: 7
@@ -534,6 +540,59 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
+--- !u!114 &30816535
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 30816529}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 180ecf9b41d478f468eb3e9083753217, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineImpulseSource
+  ImpulseDefinition:
+    ImpulseChannel: 1
+    ImpulseShape: 4
+    CustomImpulseShape:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    ImpulseDuration: 0.5
+    ImpulseType: 0
+    DissipationRate: 0.25
+    RawSignal: {fileID: 0}
+    AmplitudeGain: 1
+    FrequencyGain: 1
+    RepeatMode: 0
+    Randomize: 1
+    TimeEnvelope:
+      AttackShape:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      DecayShape:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      AttackTime: 0
+      SustainTime: 0.2
+      DecayTime: 0.7
+      ScaleWithImpact: 1
+      HoldForever: 0
+    ImpactRadius: 100
+    DirectionMode: 0
+    DissipationMode: 2
+    DissipationDistance: 100
+    PropagationSpeed: 343
+  DefaultVelocity: {x: 0.5, y: 0.5, z: 0}
 --- !u!1 &79253294
 GameObject:
   m_ObjectHideFlags: 0

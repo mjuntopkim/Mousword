@@ -1382,11 +1382,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9176715121401992591, guid: 827bfade240a89c47bd0be19baa596b8, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -6.75
+      value: -6.97
       objectReference: {fileID: 0}
     - target: {fileID: 9176715121401992591, guid: 827bfade240a89c47bd0be19baa596b8, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -1.84
+      value: -1.96
       objectReference: {fileID: 0}
     - target: {fileID: 9176715121401992591, guid: 827bfade240a89c47bd0be19baa596b8, type: 3}
       propertyPath: m_LocalPosition.z
@@ -25077,6 +25077,7 @@ GameObject:
   - component: {fileID: 1081430072}
   - component: {fileID: 1081430071}
   - component: {fileID: 1081430075}
+  - component: {fileID: 1081430076}
   m_Layer: 0
   m_Name: CinemachineCamera
   m_TagString: Untagged
@@ -25187,7 +25188,7 @@ Transform:
   m_GameObject: {fileID: 1081430070}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -6.75, y: -2.6400003, z: -10}
+  m_LocalPosition: {x: -6.97, y: -2.7600002, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -25205,6 +25206,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9078582a796e354ea9104500ca8bfdb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AutoTargetPlayer
+--- !u!114 &1081430076
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1081430070}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00b2d199b96b516448144ab30fb26aed, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineImpulseListener
+  ApplyAfter: 2
+  ChannelMask: 1
+  Gain: 1
+  Use2DDistance: 0
+  UseCameraSpace: 1
+  SignalCombinationMode: 0
+  ReactionSettings:
+    m_SecondaryNoise: {fileID: 0}
+    AmplitudeGain: 1
+    FrequencyGain: 1
+    Duration: 1
+    m_NoiseOffsets: {x: 0, y: 0, z: 0}
 --- !u!1 &1100450614
 GameObject:
   m_ObjectHideFlags: 0
@@ -53834,6 +53859,7 @@ GameObject:
   - component: {fileID: 2020923423}
   - component: {fileID: 2020923422}
   - component: {fileID: 2020923425}
+  - component: {fileID: 2020923426}
   m_Layer: 0
   m_Name: Door
   m_TagString: Untagged
@@ -54143,6 +54169,7 @@ MonoBehaviour:
   doorAnimator: {fileID: 2020923422}
   doorCollider: {fileID: 0}
   dustParticle: {fileID: 1336250696}
+  doorImpulseSource: {fileID: 2020923426}
   dropTriggerName: Drop
   dropStateName: RockDrop
   speedParameterName: Speed
@@ -54164,6 +54191,59 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &2020923426
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2020923420}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 180ecf9b41d478f468eb3e9083753217, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineImpulseSource
+  ImpulseDefinition:
+    ImpulseChannel: 1
+    ImpulseShape: 4
+    CustomImpulseShape:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    ImpulseDuration: 0.5
+    ImpulseType: 0
+    DissipationRate: 0.25
+    RawSignal: {fileID: 0}
+    AmplitudeGain: 1
+    FrequencyGain: 1
+    RepeatMode: 0
+    Randomize: 1
+    TimeEnvelope:
+      AttackShape:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      DecayShape:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      AttackTime: 0
+      SustainTime: 0.2
+      DecayTime: 0.7
+      ScaleWithImpact: 1
+      HoldForever: 0
+    ImpactRadius: 100
+    DirectionMode: 0
+    DissipationMode: 2
+    DissipationDistance: 100
+    PropagationSpeed: 343
+  DefaultVelocity: {x: 0.5, y: 0.5, z: 0}
 --- !u!1 &2051910500
 GameObject:
   m_ObjectHideFlags: 0
@@ -54989,7 +55069,7 @@ Transform:
   m_GameObject: {fileID: 2083914032}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -2.6375577, y: -0.05812311, z: -10}
+  m_LocalPosition: {x: -6.762317, y: -0.06305909, z: -10}
   m_LocalScale: {x: 0.727144, y: 0.727144, z: 0.727144}
   m_ConstrainProportionsScale: 0
   m_Children: []

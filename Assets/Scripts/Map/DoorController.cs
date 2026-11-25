@@ -2,12 +2,14 @@ using UnityEngine;
 using UnityEngine.Events;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Cinemachine;
 
 public class DoorController : MonoBehaviour
 {
     [SerializeField] private Animator doorAnimator;
     [SerializeField] private Collider2D doorCollider;
     [SerializeField] private ParticleSystem dustParticle;
+    [SerializeField] private CinemachineImpulseSource doorImpulseSource;
 
     [SerializeField] private string dropTriggerName = "Drop";
     [SerializeField] private string dropStateName = "RockDrop";
@@ -134,5 +136,9 @@ public class DoorController : MonoBehaviour
         {
             doorCollider.enabled = false;
         }
+    }
+
+    public void Impulse(){
+        doorImpulseSource.GenerateImpulse();
     }
 }

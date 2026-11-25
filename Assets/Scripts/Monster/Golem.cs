@@ -24,6 +24,9 @@ public class Golem : Monster
 
     private bool isPase2 = false;
 
+    [SerializeField] private float floorHeightThreshold = 1.5f; // [추가] 골렘과 플레이어의 바닥 높이 차이가 이보다 크면 다른 층으로 판정
+    [HideInInspector] public bool isBlockedByEdge = false;     // [추가] 추적 중 발판 끝에 막혀 멈췄는지
+
     protected override void Start()
     {
         base.Start();
@@ -38,6 +41,7 @@ public class Golem : Monster
     protected override void setState()
     {
         if (curState == state.die || !isAnimeEnd) return;
+        if (isJumping) return; // [추가] 점프 중에는 상태 전환 판단 안 함 (점프 종료는 JumpState.OnLand()에서 결정)
         if (curState == state.throwRock || curState == state.jump || curState == state.smash || curState == state.notice || curState == state.summon) //공격 스킬이 방금 끝났다면 Idle로 복귀하고 후딜레이 타이머 시작
         {
             curWaitTime = 0f;
@@ -50,14 +54,21 @@ public class Golem : Monster
             curWaitTime += Time.deltaTime;
             return;
         }
+        bool isDifferentFloor = IsPlayerOnDifferentFloor(); // [추가]
+        bool blockedByEdge = isBlockedByEdge;               // [추가]
+        isBlockedByEdge = false;                            // [추가]
         if (currentHP>maxHP/2) //1페이지
         {
-            if (!isRecognzed && !isJumping) //플레이어가 멀리 있을 때
+            // [기존 코드]
+            // if (!isRecognzed && !isJumping) //플레이어가 멀리 있을 때
+            if ((!isRecognzed || isDifferentFloor || blockedByEdge) && !isJumping) //[수정] 플레이어가 멀리 있거나 다른 층에 있거나 발판 끝에 막혔을 때
             {
                 float randnum = Random.Range(0, 1f);
-                curState = randnum > 0.3f ? state.throwRock : state.jump;
+                curState = randnum > 0.6f ? state.throwRock : state.jump;
             }
-            else if (distanceToPlayer <= attackRadius && !isJumping) //현재 일반 공격 범위에 들었을때
+            // [기존 코드]
+            // else if (distanceToPlayer <= attackRadius && !isJumping) //현재 일반 공격 범위에 들었을때
+            else if (distanceToPlayer <= attackRadius && !isDifferentFloor && !isJumping) //[수정] 같은 층에서 일반 공격 범위에 들었을때
             {
                 curState = state.smash;
             }
@@ -69,14 +80,18 @@ public class Golem : Monster
         else                   //2페이지
         {
             if (!isPase2) { isPase2 = true; maxWaitTime /= 1.5f; rockSpeed +=2; }
-            if (distanceToPlayer > attackRadius && !isJumping) //플레이어가 멀리 있을 때
+            // [기존 코드]
+            // if (distanceToPlayer > attackRadius && !isJumping) //플레이어가 멀리 있을 때
+            if ((distanceToPlayer > attackRadius || isDifferentFloor || blockedByEdge) && !isJumping) //[수정] 플레이어가 멀리 있거나 다른 층에 있거나 발판 끝에 막혔을 때
             {
                 float randnum = Random.Range(0, 1f);
                 if(randnum > 0.5f) { curState = state.throwRock; }
                 else if (randnum > 0.2f) { curState = state.jump; }
                 else { curState = state.summon; }
             }
-            else if (distanceToPlayer <= attackRadius && !isJumping) //현재 일반 공격 범위에 들었을때
+            // [기존 코드]
+            // else if (distanceToPlayer <= attackRadius && !isJumping) //현재 일반 공격 범위에 들었을때
+            else if (distanceToPlayer <= attackRadius && !isDifferentFloor && !isJumping) //[수정] 같은 층에서 일반 공격 범위에 들었을때
             {
                 curState = state.smash;
             }
@@ -86,6 +101,23 @@ public class Golem : Monster
             }
         }
         changeState(curState);
+    }
+
+    // [추가] 플레이어가 골렘과 다른 층(위/아래 발판)에 있는지 판정
+    // 플레이어가 같은 층에서 점프만 해도 다른 층으로 판정되지 않도록, 플레이어 Y가 아니라 플레이어가 서 있는 바닥 높이로 비교
+    public bool IsPlayerOnDifferentFloor()
+    {
+        float golemFeetY = groundCheck != null ? groundCheck.position.y : transform.position.y;
+
+        RaycastHit2D hit = Physics2D.Raycast(
+            new Vector2(player.position.x, player.position.y + 0.5f),
+            Vector2.down,
+            20f,
+            LayerMask.GetMask("Ground")
+        );
+        float playerFloorY = hit.collider != null ? hit.point.y : player.position.y;
+
+        return Mathf.Abs(playerFloorY - golemFeetY) > floorHeightThreshold;
     }
 
     protected override void Update()

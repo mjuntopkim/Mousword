@@ -8,10 +8,10 @@ using UnityEngine.SceneManagement;
 namespace Mousword.MainScreenUI.Editor
 {
     /// <summary>
-    /// Turns Player_test5's HUD into a prefab and places it in Main/1 - 1 and Main/2.
-    /// The HUD in 1 - 1 is bound to that scene's player and survives the transition to 2
+    /// Turns Player_test5's HUD into a prefab and places it in Main/1 and Main/2.
+    /// The HUD in 1 is bound to that scene's player and survives the transition to 2
     /// (PersistentHud). The copy in 2 only exists so the scene can be played on its own;
-    /// at runtime it removes itself when the HUD from 1 - 1 is already present.
+    /// at runtime it removes itself when the HUD from 1 is already present.
     /// Player_test5 itself is left unchanged.
     /// </summary>
     public static class MainScreenUIMainScenes
@@ -19,10 +19,10 @@ namespace Mousword.MainScreenUI.Editor
         private const string HudName = "Main Screen UI";
         private const string SourceScene = "Assets/Scenes/Player_test/Player_test5.unity";
         private const string PrefabPath = "Assets/Prefab/Main Screen UI.prefab";
-        private const string FirstScene = "Assets/Scenes/Main/1 - 1.unity";
+        private const string FirstScene = "Assets/Scenes/Main/1.unity";
         private const string SecondScene = "Assets/Scenes/Main/2.unity";
 
-        [MenuItem("Tools/Mousword/Apply HUD To Main Scenes (1-1, 2)")]
+        [MenuItem("Tools/Mousword/Apply HUD To Main Scenes (1, 2)")]
         public static void Apply()
         {
             if (Application.isPlaying) throw new InvalidOperationException("Exit play mode first.");
@@ -32,7 +32,7 @@ namespace Mousword.MainScreenUI.Editor
             // The fade screen lives on GameManager's overlay canvas; keep the HUD underneath it.
             var first = EditorSceneManager.OpenScene(FirstScene, OpenSceneMode.Single);
             var fadeCanvas = Root(first, "GameManager").GetComponentInChildren<Canvas>(true);
-            if (fadeCanvas == null) throw new InvalidOperationException("1 - 1 GameManager has no Canvas.");
+            if (fadeCanvas == null) throw new InvalidOperationException("1 GameManager has no Canvas.");
             int hudOrder = fadeCanvas.sortingOrder - 1;
 
             var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath);
@@ -47,7 +47,7 @@ namespace Mousword.MainScreenUI.Editor
             if (!string.IsNullOrEmpty(previousScene))
                 EditorSceneManager.OpenScene(previousScene, OpenSceneMode.Single);
             Selection.activeObject = prefab;
-            Debug.Log($"MAIN_SCENES_HUD_OK: prefab={PrefabPath}, sortingOrder={hudOrder}, placed in 1 - 1 (bound) and 2.");
+            Debug.Log($"MAIN_SCENES_HUD_OK: prefab={PrefabPath}, sortingOrder={hudOrder}, placed in 1 (bound) and 2.");
         }
 
         private static GameObject CreatePrefab(int sortingOrder)

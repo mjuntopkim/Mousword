@@ -32562,6 +32562,7 @@ MonoBehaviour:
   targetSpawnPointName: SpawnPoint
   fadeAnimator: {fileID: 0}
   fadeTime: 1
+  fadeHoldTime: 1
 --- !u!114 &1342289870
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -33681,13 +33682,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::StagePortal
   nextSceneName: 2
   targetSpawnPointName: SpawnPoint
-  doorAnimator: {fileID: 2020923422}
-  dustParticle: {fileID: 1336250696}
-  impulseSource: {fileID: 0}
   recoveryHPAmount: 100
   recoveryManaAmount: 100
-  doorDropDuration: 0.25
-  waitAfterHit: 0.5
 --- !u!4 &1442561038
 Transform:
   m_ObjectHideFlags: 0
@@ -54277,21 +54273,13 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1277328150107297060, guid: 827bfade240a89c47bd0be19baa596b8, type: 3}
-      propertyPath: m_Size.x
+    - target: {fileID: 7215639051898149984, guid: 827bfade240a89c47bd0be19baa596b8, type: 3}
+      propertyPath: jumpBufferTime
+      value: 0.12
+      objectReference: {fileID: 0}
+    - target: {fileID: 7215639051898149984, guid: 827bfade240a89c47bd0be19baa596b8, type: 3}
+      propertyPath: groundStickSpeed
       value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1277328150107297060, guid: 827bfade240a89c47bd0be19baa596b8, type: 3}
-      propertyPath: m_Size.y
-      value: 1.7
-      objectReference: {fileID: 0}
-    - target: {fileID: 1277328150107297060, guid: 827bfade240a89c47bd0be19baa596b8, type: 3}
-      propertyPath: m_Offset.x
-      value: 0.2
-      objectReference: {fileID: 0}
-    - target: {fileID: 1277328150107297060, guid: 827bfade240a89c47bd0be19baa596b8, type: 3}
-      propertyPath: m_Offset.y
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7424087069261895125, guid: 827bfade240a89c47bd0be19baa596b8, type: 3}
       propertyPath: m_Name
@@ -54299,11 +54287,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9176715121401992591, guid: 827bfade240a89c47bd0be19baa596b8, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -12.43
+      value: 116.6
       objectReference: {fileID: 0}
     - target: {fileID: 9176715121401992591, guid: 827bfade240a89c47bd0be19baa596b8, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.37
+      value: 19.7
       objectReference: {fileID: 0}
     - target: {fileID: 9176715121401992591, guid: 827bfade240a89c47bd0be19baa596b8, type: 3}
       propertyPath: m_LocalPosition.z
@@ -56228,6 +56216,20 @@ MonoBehaviour:
   enemyLayer:
     serializedVersion: 2
     m_Bits: 0
+  dashCameraKick: 0.003
+  dashCameraKickTime: 0.2
+  swordWaveCameraKick: 0.003
+  swordWaveCameraKickTime: 0.2
+  swordWaveAirHold: 0.08
+  swordWaveRecoil: 0.3
+  spinHitStop: 0.03
+  spinShakeStrength: 0.004
+  spinShakeTime: 0.08
+  spinFinishHitStop: 0.06
+  spinFinishShakeStrength: 0.008
+  spinFinishShakeTime: 0.14
+  spinFlashTime: 0.06
+  spinKillMultiplier: 1.5
 --- !u!1 &2083914032
 GameObject:
   m_ObjectHideFlags: 0

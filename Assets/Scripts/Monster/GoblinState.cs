@@ -42,7 +42,7 @@ public static class GoblinState
         public override void stateEnter() //상태에 들어갈 때 실행되는 코드
         {
             goblin.moveDirection = goblin.player.position.x > goblin.transform.position.x ? 1 : -1; //플레이어 방향으로
-            goblin.flip(-goblin.moveDirection);
+            goblin.flip(goblin.moveDirection);
             goblin.startPosition = goblin.transform.position;
             goblin.moveSpeed = goblin.constMoveSpeed;
             goblin.anim.SetBool("Run", true);
@@ -64,7 +64,7 @@ public static class GoblinState
             {
                 goblin.moveDirection = goblin.player.position.x > goblin.transform.position.x ? 1 : -1; //플레이어 방향으로 이동
                 goblin.startPosition = goblin.transform.position;
-                goblin.flip(-goblin.moveDirection);
+                goblin.flip(goblin.moveDirection);
                 if (goblin.isGround) { goblin.isWait = false; }
             }
         }
@@ -105,14 +105,14 @@ public static class GoblinState
                         goblin.isWait = false;
                         goblin.moveSpeed = goblin.constMoveSpeed;
                         goblin.moveDirection = goblin.player.position.x > goblin.transform.position.x ? -1 : 1; //플레이어 반대 방향으로 카이팅
-                        goblin.flip(-goblin.moveDirection);
+                        goblin.flip(goblin.moveDirection);
                         goblin.anim.SetBool("Run", true);
                     }
                     else if (goblin.distanceToPlayer > goblin.attackRadius - 0.5f || !goblin.isGround)
                     {
                         goblin.isWait = true;
                         goblin.moveDirection = goblin.player.position.x > goblin.transform.position.x ? 1 : -1; //플레이어 방향으로 회전
-                        goblin.flip(-goblin.moveDirection);
+                        goblin.flip(goblin.moveDirection);
                         goblin.anim.SetBool("Run", false);
                     }
                 }
@@ -120,7 +120,7 @@ public static class GoblinState
                 {
                     goblin.isWait = true;
                     goblin.moveDirection = goblin.player.position.x > goblin.transform.position.x ? 1 : -1; //플레이어 방향으로 회전
-                    goblin.flip(-goblin.moveDirection);
+                    goblin.flip(goblin.moveDirection);
                     goblin.isAnimeEnd = false;
                     goblin.anim.SetBool("Attack", true);       //에니메이션에 히트박스 이벤트 설정이 되어있어서 별도로 히트박스 이벤트 작성할 필요 없음
                     goblin.isAttack = true;

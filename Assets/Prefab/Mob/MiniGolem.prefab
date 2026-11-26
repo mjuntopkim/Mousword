@@ -1009,11 +1009,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MiniGolem
   HPSlider: {fileID: 7859047539810521779}
-  maxHP: 50
-  currentHP: 0
-  moveSpeed: 8
+  maxHP: 30
+  currentHP: 30
+  moveSpeed: 6
   constMoveSpeed: 0
-  damage: 15
+  damage: 10
   player: {fileID: 0}
   recognizeRadius: 8
   attackRadius: 2
@@ -1025,6 +1025,7 @@ MonoBehaviour:
   curWaitTime: 0
   anim: {fileID: 0}
   isAnimeEnd: 1
+  dieAnimTime: 1
   rigid: {fileID: 0}
   traceMoveDistance: 1
   startPosition: {x: 0, y: 0}

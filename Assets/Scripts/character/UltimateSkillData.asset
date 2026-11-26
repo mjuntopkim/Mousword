@@ -15,14 +15,14 @@ MonoBehaviour:
   skillName: Ultimate
   damageMultiplier: 1
   manaCost: 50
-  coolTime: 30
+  coolTime: 20
   effectPrefab: {fileID: 0}
-  damage: 40
+  damage: 50
   dashForce: 0
   dashDuration: 0
   projectilePrefab: {fileID: 0}
   projectileSpeed: 0
-  hitInterval: 0.04
   ultimateHitEffectPrefab: {fileID: 0}
   spinDegrees: 360
   spinDuration: 0.5
+  spinRadiusBonus: 0

@@ -234,8 +234,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Wisp
   HPSlider: {fileID: 8099949362775789772}
-  maxHP: 12
-  currentHP: 12
+  maxHP: 10
+  currentHP: 10
   moveSpeed: 1
   constMoveSpeed: 0
   damage: 0

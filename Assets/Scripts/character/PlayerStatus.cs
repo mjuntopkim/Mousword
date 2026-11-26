@@ -50,7 +50,7 @@ public class PlayerStatus : MonoBehaviour
     // 테스트용: F4 키로 즉시 사망 (에디터·개발 빌드 전용)
     void Update()
     {
-        if (!IsDead && Input.GetKeyDown(KeyCode.F4))
+        if (!IsDead && !PauseMenuUI.IsPaused && Input.GetKeyDown(KeyCode.F4))
         {
             isInvincible = false;
             SkillInvincible = false;

@@ -145,6 +145,8 @@ public class PlayerSkillController : MonoBehaviour
 
     void Update()
     {
+        if (PauseMenuUI.IsPaused) return; // 일시정지 중에는 스킬 입력 무시
+
         // 쿨타임 타이머 차감(쿨타임이 남아있으면 매 프레임 흐른 시간만큼 차감)
         if (currentCoolTime > 0) currentCoolTime -= Time.deltaTime;     // 대시 스킬 쿨타임 계산
         if (swordWaveCoolTime > 0) swordWaveCoolTime -= Time.deltaTime; // 검기 스킬 쿨타임 계산
@@ -158,8 +160,8 @@ public class PlayerSkillController : MonoBehaviour
             TryExecuteDash(dashSlashSkill);
         }
 
-        // E 키 또는 마우스 우클릭: 검기 발사 스킬 실행
-        if ((Input.GetKeyDown(KeyCode.E) || Input.GetMouseButtonDown(1)) && swordWaveCoolTime <= 0 && !isCastingSwordWave && !isDashing && !isSpinning && !isCastingUltimate)
+        // E 키: 검기 발사 스킬 실행
+        if (Input.GetKeyDown(KeyCode.E) && swordWaveCoolTime <= 0 && !isCastingSwordWave && !isDashing && !isSpinning && !isCastingUltimate)
         {
             TryExecuteSwordWave(swordWaveSkill);
         }

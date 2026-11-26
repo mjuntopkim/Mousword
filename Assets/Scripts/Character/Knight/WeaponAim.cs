@@ -45,6 +45,7 @@ public class WeaponAim : MonoBehaviour
 
     void Update() // 매 프레임마다 마우스 위치를 읽어 목표 각도를 갱신
     {
+        if (PauseMenuUI.IsPaused) return; // 일시정지 중에는 메뉴를 누르는 마우스를 따라가지 않음
         Vector3 mousePos = mainCam.ScreenToWorldPoint(Input.mousePosition); // 마우스 위치를 월드 좌표로 변환
         mousePos.z = 0f;
 

@@ -72,6 +72,8 @@ public class PlayerMove : MonoBehaviour
 
     void Update()
     {
+        if (PauseMenuUI.IsPaused) return; // 일시정지 중 입력 무시 (점프 입력이 쌓여 재개 직후 뛰는 것 방지)
+
         UpdateGround();
 
         moveInput = IsMovementLocked ? 0f : Input.GetAxisRaw("Horizontal");

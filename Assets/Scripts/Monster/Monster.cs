@@ -31,6 +31,8 @@ public abstract class Monster : MonoBehaviour
     [HideInInspector] public bool isAnimeEnd = true;                        //애니메이션이 끝났는지 확인하는 변수
     protected FSM fsm;                                   //상태 전환을 위한 FSM 객체
 
+    [SerializeField] protected float dieAnimTime = 1.0f; // 죽는 애니메이션 재생 시간
+
     public bool IsDead { get; private set; } = false;
     GameObject Body;
 
@@ -107,7 +109,7 @@ public abstract class Monster : MonoBehaviour
             IsDead = true;
             curState = state.die;
             changeState(curState);
-            Destroy(gameObject, 2.0f);
+            Destroy(gameObject, dieAnimTime);
         }
     }
 

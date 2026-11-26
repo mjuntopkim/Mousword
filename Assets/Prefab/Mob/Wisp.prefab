@@ -250,6 +250,7 @@ MonoBehaviour:
   curWaitTime: 0
   anim: {fileID: 0}
   isAnimeEnd: 1
+  dieAnimTime: 0.5
   glideCells: 1
   cellSize: 1
   glideTime: 3

@@ -151,6 +151,8 @@ public class SpellCaster : MonoBehaviour
 
     void Update()
     {
+        if (PauseMenuUI.IsPaused) return; // 일시정지 중에는 시전·조준 입력 무시
+
         if (IsCasting)
         {
             UpdateCasting();

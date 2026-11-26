@@ -371,7 +371,7 @@ public sealed class PlayerUltimateVisuals : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (active) Tick(Mathf.Min(Time.unscaledDeltaTime, MaxStep));
+        if (active && !PauseMenuUI.IsPaused) Tick(Mathf.Min(Time.unscaledDeltaTime, MaxStep)); // 실제 시간 연출이라 일시정지 중엔 직접 멈춤
     }
 
     private void Tick(float dt)

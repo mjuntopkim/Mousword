@@ -51,6 +51,7 @@ public static class SkeletonState
         public override void stateExit() //상태에 나갈 때 실행되는 코드
         {
             skeleton.anim.SetBool("Idle", false);
+            skeleton.anim.SetBool("Run", false);
         }
 
     }
@@ -59,6 +60,9 @@ public static class SkeletonState
     {
         private Skeleton skeleton;
 
+        private float attackDelayTimer = 0f;
+        private const float minAttackDelay = 0.1f; // 애니메이터가 Attack 상태에서 빠져나올 최소 대기 시간
+
         public AttackState(Monster monster) : base(monster)
         {
             skeleton = (Skeleton)monster;
@@ -66,27 +70,34 @@ public static class SkeletonState
 
         public override void stateEnter() //상태에 들어갈 때 실행되는 코드
         {
-            
+            skeleton.isWait = true;
+            attackDelayTimer = minAttackDelay; // 상태 첫 진입 시에는 바로 공격 가능
         }
 
         public override void stateUpdate() //상태에 들어갈 때 계속 실행되는 코드
         {
             if (skeleton.isAnimeEnd)
             {
+                skeleton.anim.SetBool("Attack", false);
                 skeleton.isWait = true;
                 skeleton.moveDirection = skeleton.player.position.x > skeleton.transform.position.x ? 1 : -1; //플레이어 방향으로 회전
                 skeleton.flip(skeleton.moveDirection);
 
-                //쿨타임 중
+                // 화살이 아직 남아있으면 타이머 초기화 후 대기
                 if (skeleton.isAttack)
                 {
-                    skeleton.anim.SetBool("Attack", false);
+                    attackDelayTimer = 0f;
+                    return;
                 }
-                else
+
+                // 최소 대기 시간이 지난 뒤 다음 공격 실행
+                attackDelayTimer += Time.deltaTime;
+                if (attackDelayTimer >= minAttackDelay)
                 {
                     skeleton.isAnimeEnd = false;
-                    skeleton.anim.SetBool("Attack", true);       //에니메이션에 히트박스 이벤트 설정이 되어있어서 별도로 히트박스 이벤트 작성할 필요 없음
                     skeleton.isAttack = true;
+                    skeleton.anim.SetBool("Attack", true);
+                    attackDelayTimer = 0f;
                 }
             }
         }
@@ -95,8 +106,8 @@ public static class SkeletonState
         {
             skeleton.anim.SetBool("Attack", false);
             skeleton.isAttack = false;
+            skeleton.isAnimeEnd = true;
             skeleton.startPosition = skeleton.transform.position;
         }
-
     }
 }

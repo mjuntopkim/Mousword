@@ -33,6 +33,7 @@ Transform:
   - {fileID: 7291617895279582338}
   - {fileID: 4512521489619703988}
   - {fileID: 6688536047216732290}
+  - {fileID: 5404291216075813112}
   m_Father: {fileID: 6455606304564127801}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &7070697089898301475
@@ -538,6 +539,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45f900d55be7b07419ec42ef13d7d761, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MonsterHitBox
+--- !u!1 &6184555334373139687
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5404291216075813112}
+  m_Layer: 7
+  m_Name: WallCheck
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5404291216075813112
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6184555334373139687}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 2, y: 0, z: 0}
+  m_LocalScale: {x: 0.19999999, y: 0.1901806, z: 0.5451546}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1726829481188311858}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6663935625179160478
 GameObject:
   m_ObjectHideFlags: 0
@@ -1019,6 +1051,7 @@ MonoBehaviour:
   attackRadius: 2
   distanceToPlayer: 0
   groundCheck: {fileID: 6688536047216732290}
+  wallCheck: {fileID: 5404291216075813112}
   monsterAttackHitbox: {fileID: 3064475527828257580}
   isWait: 0
   maxWaitTime: 1

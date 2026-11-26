@@ -11,7 +11,7 @@ public class Slime : Monster
     [HideInInspector] public int moveDirection = 1;                                   //슬라임이 이동할 방향(1: 오른쪽, -1: 왼쪽)
 
     [HideInInspector] public bool isGround;                   //슬라임이 이동할 때 바로앞의 땅을 감지하는 변수
-    private float checkRadius = 0.2f;       //슬라임이 이동할 때 바로앞의 땅을 감지하는 반지름
+    private float checkRadius = 0.2f;       //슬라임이 이동할 때 벽이나 땅을 감지하는 반지름
 
     protected override void Start()
     {
@@ -27,7 +27,7 @@ public class Slime : Monster
     protected override void Update()
     {
         base.Update();
-        if (!isGround) //앞에 땅이 없으면
+        if (!isGround) //앞에 땅이 없거나 벽에 막혔다면
         {
             isWait = true; //대기상태 갱신
         }
@@ -51,9 +51,7 @@ public class Slime : Monster
         if (isWait)
         {
             moveSpeed = 0; //이동속도 0으로 설정
-        }
-
-        
+        }        
 
         rigid.linearVelocity = new Vector2(moveDirection * moveSpeed, rigid.linearVelocity.y);  //슬라임 이동
     }

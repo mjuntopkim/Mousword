@@ -19,6 +19,8 @@ public abstract class Monster : MonoBehaviour
     protected state curState;                                       //현재 몬스터의 상태
 
     public Transform groundCheck;                                   // 발밑 위치를 정할 오브젝트
+    public Transform wallCheck;                                   // 바로 앞 위치를 정할 오브젝트
+
     [SerializeField] private GameObject monsterAttackHitbox;                         //몬스터 공격 동작의 공격 범위 오브젝트
 
 
@@ -54,6 +56,8 @@ public abstract class Monster : MonoBehaviour
 
     protected virtual void Update()
     {
+        if (IsDead) return;
+
         //몬스터와 플레이어 거리 계산
         distanceToPlayer = Vector2.Distance(transform.position, player.position);
 
@@ -116,7 +120,9 @@ public abstract class Monster : MonoBehaviour
     {
         // 핵심: 발밑에 가상의 원을 그려서 'Ground' 레이어와 닿아있는지 체크
         bool isGrounded = Physics2D.OverlapCircle(groundCheck.position, radius, LayerMask.GetMask("Ground"));
-        return isGrounded;
+
+        bool isWall = Physics2D.OverlapCircle(wallCheck.position, radius, LayerMask.GetMask("Ground"));
+        return isGrounded && !isWall;
     }
 
     public void setAttackHitbox(int on)

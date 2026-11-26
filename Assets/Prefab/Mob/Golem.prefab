@@ -423,6 +423,7 @@ MonoBehaviour:
   attackRadius: 2
   distanceToPlayer: 0
   groundCheck: {fileID: 8998032470729088592}
+  wallCheck: {fileID: 8571432745014451855}
   monsterAttackHitbox: {fileID: 4515725191061891440}
   isWait: 0
   maxWaitTime: 2
@@ -603,6 +604,7 @@ Transform:
   - {fileID: 1822453221734766327}
   - {fileID: 4346451056498601639}
   - {fileID: 8998032470729088592}
+  - {fileID: 8571432745014451855}
   - {fileID: 8782381937593341669}
   - {fileID: 513605326788190701}
   - {fileID: 2085296038700302641}
@@ -984,6 +986,37 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!1 &5698749652619301593
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8571432745014451855}
+  m_Layer: 7
+  m_Name: WallCheck
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8571432745014451855
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5698749652619301593}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 1.5, y: -0.5, z: 0}
+  m_LocalScale: {x: 0.13333333, y: 0.12678705, z: 0.5451546}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8142860403267620723}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7344091781593871130
 GameObject:
   m_ObjectHideFlags: 0

@@ -503,6 +503,7 @@ MonoBehaviour:
   curWaitTime: 0
   anim: {fileID: 0}
   isAnimeEnd: 1
+  dieAnimTime: 1.2
   maxIdleMoveDistance: 1
   startPosition: {x: 0, y: 0}
   curMoveDistance: 0

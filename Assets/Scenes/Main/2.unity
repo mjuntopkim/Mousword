@@ -37143,7 +37143,13 @@ MonoBehaviour:
   - tileCount: 1
     monsterPrefab: {fileID: 5352592637741742304, guid: e25abd2c933999848a7324c6b8e09d7e, type: 3}
   spawnOnStart: 1
-  doorController: {fileID: 0}
+  aliveCheckInterval: 0.3
+  onMonstersSpawned:
+    m_PersistentCalls:
+      m_Calls: []
+  onAllMonstersDead:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!4 &985491040
 Transform:
   m_ObjectHideFlags: 0

@@ -13,6 +13,9 @@ public class Bat : Monster
     [HideInInspector] public bool isGround;                   //박쥐가 이동할 때 바로앞의 땅을 감지하는 변수
     private float checkRadius = 0.2f;                         //박쥐가 이동할 때 바로앞의 땅을 감지하는 반지름
 
+    public float groundIgnoreDistance = 0.3f;                 //돌진 시작 후 이 거리만큼은 땅 감지를 무시 (땅에 붙은 상태에서도 다시 돌진 가능하도록)
+    [HideInInspector] public float curDashTime = 0f;          //현재 돌진한 시간 (벽/땅에 막혀 못 움직일 때 돌진을 끝내기 위함)
+
     protected override void Start()
     {
         base.Start();
@@ -24,14 +27,27 @@ public class Bat : Monster
         fsm = new FSM(new BatState.IdleState(this));
     }
 
+    // ===== [원본 코드 - 문제 있음] =====
+    // 상태와 관계없이 isGround면 무조건 isWait = true로 만들어서,
+    // 대기 후 플레이어(땅 쪽)를 다시 바라보면 즉시 다시 대기에 들어가 무한 대기에 빠짐
+    //protected override void Update()
+    //{
+    //    base.Update();
+    //
+    //    if (isGround) //코앞에 땅이 있으면
+    //    {
+    //        isWait = true; //대기상태 갱신
+    //    }
+    //
+    //    anim.SetBool("Wait", isWait); //대기 애니메이션 상태 전환
+    //}
+    // ===== [원본 코드 끝] =====
+
     protected override void Update()
     {
         base.Update();
 
-        if (isGround) //코앞에 땅이 있으면
-        {
-            isWait = true; //대기상태 갱신
-        }
+        //땅 감지에 따른 대기 전환은 AttackState에서만 처리
 
         anim.SetBool("Wait", isWait); //대기 애니메이션 상태 전환
     }

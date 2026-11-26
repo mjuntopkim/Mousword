@@ -17,7 +17,7 @@ MonoBehaviour:
   manaCost: 50
   coolTime: 20
   effectPrefab: {fileID: 0}
-  damage: 50
+  damage: 300
   dashForce: 0
   dashDuration: 0
   projectilePrefab: {fileID: 0}

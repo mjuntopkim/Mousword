@@ -169,7 +169,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e529eaf2f99756146a1286b2aebfa813, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMove
-  moveSpeed: 7
+  moveSpeed: 8.5
   jumpForce: 9
   coyoteTime: 0.1
   jumpBufferTime: 0.12
@@ -297,6 +297,7 @@ MonoBehaviour:
   currentMp: 60
   defense: 0
   invincibleTime: 0.8
+  reviveInvincibleTime: 1.5
 --- !u!1001 &6114602546570985028
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -305,6 +306,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 9176715121401992591}
     m_Modifications:
+    - target: {fileID: 188691150854573365, guid: b3a33afbeddd08342bb8403259ff5266, type: 3}
+      propertyPath: requiredSwingAngle
+      value: 75
+      objectReference: {fileID: 0}
     - target: {fileID: 1757502443262723210, guid: b3a33afbeddd08342bb8403259ff5266, type: 3}
       propertyPath: m_Sprite
       value: 
@@ -323,7 +328,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2382758603708226184, guid: b3a33afbeddd08342bb8403259ff5266, type: 3}
       propertyPath: damage
-      value: 12
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 4755978273371958818, guid: b3a33afbeddd08342bb8403259ff5266, type: 3}
       propertyPath: m_LocalScale.x

@@ -222,8 +222,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Slime
   HPSlider: {fileID: 5743656099069938345}
-  maxHP: 36
-  currentHP: 36
+  maxHP: 30
+  currentHP: 30
   moveSpeed: 4
   constMoveSpeed: 0
   damage: 10
@@ -238,6 +238,7 @@ MonoBehaviour:
   curWaitTime: 0
   anim: {fileID: 0}
   isAnimeEnd: 1
+  dieAnimTime: 1
   maxIdleMoveDistance: 3
   noticeMoveDistance: 1
   startPosition: {x: 0, y: 0}

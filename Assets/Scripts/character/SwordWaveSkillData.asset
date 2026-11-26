@@ -14,15 +14,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SkillData
   skillName: SwordWave
   damageMultiplier: 1
-  manaCost: 8
-  coolTime: 0.8
+  manaCost: 6
+  coolTime: 0.5
   effectPrefab: {fileID: 0}
-  damage: 12
+  damage: 15
   dashForce: 0
   dashDuration: 0
   projectilePrefab: {fileID: 7341609384348836059, guid: 68a469402c9099f47a2513e9d49571ff, type: 3}
   projectileSpeed: 15
-  hitInterval: 0.08
   ultimateHitEffectPrefab: {fileID: 0}
   spinDegrees: 360
   spinDuration: 0.5
+  spinRadiusBonus: 0

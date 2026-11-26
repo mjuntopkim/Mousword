@@ -15,11 +15,11 @@ MonoBehaviour:
   skillName: Dash
   damageMultiplier: 0
   manaCost: 0
-  coolTime: 1.2
+  coolTime: 0.6
   effectPrefab: {fileID: 0}
   damage: 10
   dashForce: 50
-  dashDuration: 0.18
+  dashDuration: 0.15
   projectilePrefab: {fileID: 0}
   projectileSpeed: 15
   ultimateHitEffectPrefab: {fileID: 0}

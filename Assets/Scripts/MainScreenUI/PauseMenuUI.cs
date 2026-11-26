@@ -2,6 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.UI;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using static GameMenuKit;
 
@@ -52,10 +53,22 @@ public class PauseMenuUI : MonoBehaviour
     {
         instance = null;
         IsPaused = false;
+        SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     private static void Bootstrap()
+    {
+        EnsureInstance();
+        // 엔딩으로 넘어갈 때 GameManager 가 유지되던 오브젝트를 모두 지우면서 이 메뉴도 함께 지워진다.
+        // 그래서 씬이 바뀔 때마다 메뉴가 남아 있는지 확인하고, 없으면 다시 만든다.
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private static void OnSceneLoaded(Scene scene, LoadSceneMode mode) => EnsureInstance();
+
+    private static void EnsureInstance()
     {
         if (instance != null) return;
         var go = new GameObject("[PauseMenu]");

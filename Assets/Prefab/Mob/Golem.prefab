@@ -413,11 +413,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Golem
   HPSlider: {fileID: 1548869637985832300}
-  maxHP: 500
-  currentHP: 0
+  maxHP: 1200
+  currentHP: 1200
   moveSpeed: 4
   constMoveSpeed: 0
-  damage: 15
+  damage: 20
   player: {fileID: 0}
   recognizeRadius: 8
   attackRadius: 2
@@ -425,10 +425,11 @@ MonoBehaviour:
   groundCheck: {fileID: 8998032470729088592}
   monsterAttackHitbox: {fileID: 4515725191061891440}
   isWait: 0
-  maxWaitTime: 2
+  maxWaitTime: 1.5
   curWaitTime: 0
   anim: {fileID: 0}
   isAnimeEnd: 1
+  dieAnimTime: 1
   rigid: {fileID: 0}
   traceMoveDistance: 1
   startPosition: {x: 0, y: 0}

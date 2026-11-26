@@ -13773,7 +13773,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MonsterSpawnTimer
   monsterSpawner: {fileID: 1332648398}
-  spawnInterval: 10
+  spawnInterval: 12
   spawnImmediately: 0
   duration: 0
   startOnAwake: 0

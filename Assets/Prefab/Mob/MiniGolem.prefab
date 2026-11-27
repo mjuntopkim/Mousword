@@ -81,8 +81,8 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 320608523
+  m_SortingLayer: 1
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: -6308770485331733665, guid: afefe68b07c71fd4a90511257d959b35, type: 3}
@@ -1041,11 +1041,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MiniGolem
   HPSlider: {fileID: 7859047539810521779}
-  maxHP: 50
-  currentHP: 0
-  moveSpeed: 8
+  maxHP: 30
+  currentHP: 30
+  moveSpeed: 6
   constMoveSpeed: 0
-  damage: 15
+  damage: 10
   player: {fileID: 0}
   recognizeRadius: 8
   attackRadius: 2
@@ -1058,6 +1058,7 @@ MonoBehaviour:
   curWaitTime: 0
   anim: {fileID: 0}
   isAnimeEnd: 1
+  dieAnimTime: 1
   rigid: {fileID: 0}
   traceMoveDistance: 1
   startPosition: {x: 0, y: 0}

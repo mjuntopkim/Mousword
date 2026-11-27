@@ -488,10 +488,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Skeleton
   HPSlider: {fileID: 7005059076624625766}
   maxHP: 30
-  currentHP: 0
+  currentHP: 30
   moveSpeed: 4
   constMoveSpeed: 0
-  damage: 10
+  damage: 8
   player: {fileID: 9176715121401992591, guid: 827bfade240a89c47bd0be19baa596b8, type: 3}
   recognizeRadius: 10
   attackRadius: 10
@@ -504,6 +504,7 @@ MonoBehaviour:
   curWaitTime: 0
   anim: {fileID: 0}
   isAnimeEnd: 1
+  dieAnimTime: 1.2
   maxIdleMoveDistance: 1
   startPosition: {x: 0, y: 0}
   curMoveDistance: 0

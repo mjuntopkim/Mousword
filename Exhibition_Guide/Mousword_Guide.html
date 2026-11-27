@@ -1,0 +1,484 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mousword 플레이 방법</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&family=Noto+Sans+KR:wght@500;700;900&family=Silkscreen:wght@400;700&display=block" rel="stylesheet">
+<style>
+/* MOUSWORD 플레이 방법 — A4 세로 2장 (1장: 조작, 2장: 맵·몬스터) */
+@page { size: A4 portrait; margin: 0; }
+
+:root {
+  --teal-950: #032328;
+  --teal-900: #052e35;
+  --teal-800: #063840;
+  --teal-700: #0b4a52;
+  --cream: #f6ead0;
+  --cream-2: #e6d4ab;
+  --gold: #e8b83a;
+  --gold-dk: #a0761c;
+  --cyan: #5fe6dc;
+  --ink: #24160f;
+  --hp: #d6494a;
+  --mp: #3f8fd6;
+  --wisp: #c08af0;
+  --boss: #6b2424;
+  --px: 1.1mm;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body {
+  background: #3a3f44;
+  font-family: "Noto Sans KR", sans-serif;
+  color: var(--cream);
+  font-weight: 500;
+  word-break: keep-all;
+}
+img { display: block; }
+.pixel { image-rendering: pixelated; image-rendering: crisp-edges; }
+
+.sheet {
+  width: 210mm; height: 297mm;
+  margin: 12mm auto;
+  position: relative; overflow: hidden;
+  padding: 11mm 12mm 0;
+  background:
+    radial-gradient(ellipse 80% 45% at 50% 30%, rgba(19,101,113,.35), transparent 70%),
+    var(--teal-800);
+  box-shadow: 0 6px 30px rgba(0,0,0,.45);
+  break-after: page; page-break-after: always;
+}
+.sheet:last-child { break-after: auto; page-break-after: auto; }
+@media print {
+  body { background: none; }
+  .sheet { margin: 0; box-shadow: none; }
+}
+
+.ground {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 9mm;
+  background: url(img/tile_grass.png) repeat-x left top / 9mm 9mm;
+  image-rendering: pixelated;
+}
+
+/* 픽셀 프레임 */
+.frame {
+  position: relative;
+  background: var(--teal-900);
+  margin: var(--px);
+  box-shadow:
+    0 calc(-1 * var(--px)) 0 0 var(--gold),
+    0 var(--px) 0 0 var(--gold),
+    calc(-1 * var(--px)) 0 0 0 var(--gold),
+    var(--px) 0 0 0 var(--gold),
+    0 calc(-2 * var(--px)) 0 0 var(--ink),
+    0 calc(2 * var(--px)) 0 0 var(--ink),
+    calc(-2 * var(--px)) 0 0 0 var(--ink),
+    calc(2 * var(--px)) 0 0 0 var(--ink);
+}
+.frame.cream { background: var(--cream); color: var(--ink); }
+
+.h-kr { font-family: "Do Hyeon", sans-serif; font-weight: 400; line-height: 1.12; }
+.label {
+  font-family: "Do Hyeon", sans-serif; font-size: 5mm; color: var(--gold);
+  display: flex; align-items: center; gap: 2.2mm; margin-bottom: 2.4mm;
+}
+.label .n {
+  width: 6.5mm; height: 6.5mm; display: grid; place-items: center;
+  background: var(--gold); color: var(--ink);
+  font-family: "Silkscreen", monospace; font-weight: 700; font-size: 3.6mm;
+  box-shadow: 0 .7mm 0 0 var(--gold-dk);
+}
+.label .sub { font-family: "Noto Sans KR", sans-serif; font-size: 3.2mm; color: var(--cream-2); margin-left: 1mm; }
+section + section { margin-top: 5.5mm; }
+
+/* 머리 */
+.head { display: flex; align-items: center; justify-content: space-between; height: 22mm; }
+.head .logo {
+  height: 22mm; width: auto;
+  -webkit-mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 70%, transparent 100%);
+          mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 70%, transparent 100%);
+}
+.head .h-kr { font-size: 12mm; }
+.head.small { height: 16mm; }
+.head.small .logo { height: 16mm; }
+.head.small .h-kr { font-size: 10mm; }
+
+/* 시작 · 목표 */
+.goal { display: grid; grid-template-columns: 1fr 1fr 1fr; margin-top: 3mm; }
+.goal > div { padding: 3.2mm 4.5mm; font-size: 3.6mm; line-height: 1.45; }
+.goal .fkey { display: inline-block; padding: 0 1.2mm; border: .4mm solid var(--ink); border-bottom-width: .9mm; background: #fff8e6; font-family: "Silkscreen", monospace; font-weight: 700; font-size: 3mm; line-height: 1.3; }
+.goal > div + div { border-left: .5mm dashed rgba(36,22,15,.3); }
+.goal b { font-weight: 900; }
+.goal small { display: block; font-family: "Silkscreen", monospace; font-weight: 700; font-size: 2.8mm; letter-spacing: .08em; color: var(--gold-dk); margin-bottom: .6mm; }
+
+/* 1. 검 = 마우스 */
+.hero { display: grid; grid-template-columns: 68mm 1fr; align-items: center; gap: 5mm; padding: 4mm 6mm; }
+.hero-art { position: relative; height: 33mm; }
+.hero-art .knight { position: absolute; left: 0; top: 6mm; height: 26mm; z-index: 2; }
+.hero-art .blade { position: absolute; left: 17.5mm; top: 20.4mm; width: 26mm; transform: rotate(-18deg); transform-origin: 0 50%; z-index: 1; }
+.hero-art .mouse { position: absolute; left: 33mm; top: 0; height: 29mm; }
+.hero-text .h-kr { font-size: 8.4mm; }
+.hero-text .h-kr b { color: var(--gold); font-weight: 400; }
+.hero-text ul { list-style: none; margin-top: 3mm; }
+.hero-text li { font-size: 4mm; line-height: 1.45; padding-left: 4mm; position: relative; color: var(--cream-2); }
+.hero-text li + li { margin-top: 1.4mm; }
+.hero-text li::before { content: ""; position: absolute; left: 0; top: 1.9mm; width: 1.6mm; height: 1.6mm; background: var(--gold); }
+.hero-text li strong { color: var(--cyan); font-weight: 900; }
+
+/* 2. 이동 */
+.move { display: grid; grid-template-columns: 1fr 1fr; gap: 6mm; padding: 4mm 6mm; }
+.keyrow { display: flex; align-items: center; gap: 4mm; }
+.keyrow .key { height: 13mm; width: auto; flex: none; }
+.keyrow .h-kr { font-size: 7.4mm; }
+.keyrow small { display: block; font-size: 3.5mm; color: var(--cream-2); margin-top: .6mm; }
+
+/* 3. 스킬 */
+.skills { padding: 4.5mm 6mm; }
+.skill-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4.5mm 6mm; }
+.skill { display: grid; grid-template-columns: 17mm 1fr; gap: 3.5mm; align-items: center; }
+.skill .icon { width: 17mm; height: 17mm; object-fit: contain; }
+.skill .name { display: flex; align-items: center; gap: 2.4mm; }
+.skill .name img { height: 7.5mm; width: auto; }
+.skill .name .h-kr { font-size: 6.6mm; }
+.skill small { display: block; font-size: 3.5mm; color: var(--cream-2); margin-top: 1mm; line-height: 1.4; }
+.cost {
+  display: inline-block; margin-top: 1.2mm; padding: .3mm 1.8mm;
+  font-family: "Silkscreen", monospace; font-weight: 700; font-size: 2.7mm; letter-spacing: .04em;
+  background: var(--mp); color: #fff;
+}
+.cost.free { background: var(--cyan); color: var(--ink); }
+.mp-note { margin-top: 4mm; padding-top: 3mm; border-top: .4mm dashed rgba(232,184,58,.35); font-size: 3.7mm; color: var(--cream-2); display: flex; align-items: center; gap: 3mm; }
+.mp-note b { color: var(--cyan); font-weight: 900; }
+.bar { flex: none; display: inline-block; width: 14mm; height: 3mm; border: .5mm solid var(--ink); background: var(--teal-950); position: relative; }
+.bar::after { content: ""; position: absolute; inset: 0 30% 0 0; background: var(--mp); }
+
+/* 4. 팁 */
+.tips { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5mm; }
+.tip { padding: 3.5mm 3.5mm; font-size: 3.5mm; line-height: 1.45; display: flex; align-items: center; gap: 2.8mm; }
+.tip .ico { flex: none; width: 10mm; height: 10mm; display: flex; align-items: center; justify-content: center; }
+.tip .ico img { height: 10mm; width: auto; }
+.tip .ico .bang { font-family: "Do Hyeon", sans-serif; font-size: 11mm; color: var(--gold); line-height: 1; }
+.tip b { color: var(--gold); font-weight: 900; }
+
+/* =========================================================
+   2장 — 맵 · 몬스터
+   ========================================================= */
+/* 5. 맵 */
+.route { display: grid; grid-template-columns: 1fr 5mm 1fr 5mm 1fr 5mm 30mm; align-items: stretch; }
+.route .arrow { display: grid; place-items: center; color: var(--gold); font-family: "Silkscreen", monospace; font-weight: 700; font-size: 4.5mm; }
+.node { padding: 3mm 3mm 3.2mm; display: flex; flex-direction: column; gap: 1.4mm; }
+.node .tag {
+  align-self: flex-start; padding: .3mm 1.8mm;
+  font-family: "Silkscreen", monospace; font-weight: 700; font-size: 2.7mm; letter-spacing: .06em;
+  background: var(--gold); color: var(--ink);
+}
+.node.boss { background: #2c1414; }
+.node.boss .tag { background: var(--hp); color: #fff; }
+.node .h-kr { font-size: 5.2mm; }
+.node p { font-size: 3mm; line-height: 1.42; color: var(--cream-2); }
+.node .mini { display: flex; align-items: flex-end; gap: 1.6mm; height: 9mm; margin-top: auto; }
+.node .mini img { max-height: 9mm; width: auto; }
+.node .mini img.s { max-height: 5mm; }
+.node.end { justify-content: center; align-items: center; text-align: center; background: var(--cream); color: var(--ink); }
+.node.end .tag { align-self: center; }
+.node.end p { color: #5b4636; }
+.map-notes { margin-top: 3.5mm; padding: 2.6mm 4.5mm; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4mm; font-size: 3.2mm; line-height: 1.45; }
+.map-notes b { font-weight: 900; }
+.map-notes > div + div { border-left: .4mm dashed rgba(36,22,15,.3); padding-left: 4mm; }
+
+/* 6. 몬스터 */
+.mobs { display: grid; grid-template-columns: 1fr 1fr; gap: 3.4mm 4.5mm; }
+.mob { display: grid; grid-template-columns: 22mm 1fr; gap: 3mm; padding: 2.6mm 3.5mm; align-items: center; }
+.mob .pic { height: 20mm; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,.18); }
+.mob .pic img { max-height: 18mm; max-width: 19mm; width: auto; height: auto; }
+.mob .pic img.tiny { height: 11mm; max-height: none; }
+.mob .top { display: flex; align-items: baseline; gap: 2mm; flex-wrap: wrap; }
+.mob .top .h-kr { font-size: 5.6mm; }
+.mob .where { font-family: "Silkscreen", monospace; font-weight: 700; font-size: 2.5mm; letter-spacing: .04em; color: var(--gold); }
+.mob ul { list-style: none; margin-top: 1.3mm; }
+.mob li { font-size: 3.05mm; line-height: 1.42; color: var(--cream-2); padding-left: 3mm; position: relative; }
+.mob li::before { content: ""; position: absolute; left: 0; top: 1.5mm; width: 1.2mm; height: 1.2mm; background: var(--gold); }
+.mob li.tipline { color: var(--cyan); font-weight: 700; }
+.mob li.tipline::before { background: var(--cyan); }
+.mob.friend { background: #2a1d3a; }
+.mob.friend .where { color: var(--wisp); }
+
+/* 7. 보스 */
+.boss-card { display: grid; grid-template-columns: 36mm 1fr; gap: 4mm; padding: 3.5mm 4mm; background: #2c1414; }
+.boss-card .pic { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1.2mm; }
+.boss-card .pic img.g { height: 25mm; width: auto; }
+.boss-card .pic .nm { font-family: "Do Hyeon", sans-serif; font-size: 6.6mm; }
+.boss-card .pic .hp { font-family: "Silkscreen", monospace; font-weight: 700; font-size: 2.6mm; color: var(--hp); }
+.phases { display: grid; grid-template-columns: 1fr 1fr; gap: 3.5mm; }
+.phase { background: rgba(0,0,0,.25); padding: 2.8mm 3.2mm; }
+.phase .ph { font-family: "Do Hyeon", sans-serif; font-size: 4.3mm; color: var(--gold); margin-bottom: 1.4mm; }
+.phase.p2 .ph { color: #ff7a6b; }
+.phase li { list-style: none; font-size: 3.05mm; line-height: 1.42; color: var(--cream-2); padding-left: 3mm; position: relative; }
+.phase li + li { margin-top: .8mm; }
+.phase li::before { content: ""; position: absolute; left: 0; top: 1.5mm; width: 1.2mm; height: 1.2mm; background: var(--gold); }
+.phase li b { color: var(--cream); font-weight: 900; }
+.phase .mg { display: inline-block; height: 4.5mm; vertical-align: -1mm; margin-left: .5mm; }
+.boss-tip { grid-column: 1 / -1; margin-top: .5mm; font-size: 3.2mm; line-height: 1.5; color: var(--cyan); font-weight: 700; display: flex; gap: 2mm; }
+.boss-tip span.k { flex: none; color: var(--ink); background: var(--cyan); padding: 0 1.6mm; font-family: "Do Hyeon", sans-serif; font-weight: 400; }
+</style>
+</head>
+<body>
+
+<!-- =====================================================
+     1장 — 조작
+     ===================================================== -->
+<main class="sheet">
+
+  <header class="head">
+    <img class="logo" src="img/logo.png" alt="MOUSWORD">
+    <div class="h-kr">플레이 방법</div>
+  </header>
+
+  <div class="frame cream goal">
+    <div><small>Start</small>메인 화면에서 <b>‘시작’</b>을 클릭하세요.</div>
+    <div><small>Goal</small>스테이지를 지나 <b>보스 골렘</b>을 쓰러뜨리면 클리어!</div>
+    <div><small style="font-family:'Noto Sans KR',sans-serif;font-weight:900;letter-spacing:0">메인 메뉴로</small><span class="fkey">F4</span>를 눌러 쓰러진 뒤 <b>‘메인 화면’</b>을 누르세요.</div>
+  </div>
+
+  <section style="margin-top:6mm">
+    <div class="label"><span class="n">1</span>공격은 마우스로</div>
+    <div class="frame hero">
+      <div class="hero-art">
+        <img class="knight pixel" src="img/knight.png" alt="">
+        <img class="blade pixel" src="img/sword.png" alt="">
+        <img class="mouse pixel" src="img/mouse_circle.png" alt="">
+      </div>
+      <div class="hero-text">
+        <div class="h-kr">마우스를 움직이면<br><b>검</b>이 따라와요</div>
+        <ul>
+          <li><strong>크게 휘둘러야</strong> 적이 베어져요.</li>
+          <li>검을 적에게 대고만 있으면 피해가 없어요.</li>
+          <li><strong>클릭은 필요 없어요.</strong></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="label"><span class="n">2</span>이동</div>
+    <div class="frame move">
+      <div class="keyrow">
+        <img class="key pixel" src="img/key_ad.png" alt="A D">
+        <div><div class="h-kr">좌우 이동</div><small>A 왼쪽 · D 오른쪽</small></div>
+      </div>
+      <div class="keyrow">
+        <img class="key pixel" src="img/key_space.png" alt="SPACE" style="height:10.5mm">
+        <div><div class="h-kr">점프</div><small>길게 누르면 더 높이</small></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="label"><span class="n">3</span>스킬</div>
+    <div class="frame skills">
+      <div class="skill-grid">
+        <div class="skill">
+          <img class="icon" src="img/skill_dash.png" alt="">
+          <div><div class="name"><img class="pixel" src="img/key_shift.png" alt="SHIFT"><span class="h-kr">대시</span></div>
+          <small>앞으로 빠르게 돌진</small>
+          <span class="cost free">MP 0</span></div>
+        </div>
+        <div class="skill">
+          <img class="icon" src="img/skill_wave.png" alt="">
+          <div><div class="name"><img class="pixel" src="img/key_e.png" alt="E"><span class="h-kr">검기</span></div>
+          <small>칼날 바람을 날려 멀리 있는 적을 공격</small>
+          <span class="cost">MP 8</span></div>
+        </div>
+        <div class="skill">
+          <img class="icon" src="img/skill_spin.png" alt="">
+          <div><div class="name"><img class="pixel" src="img/key_q.png" alt="Q"><span class="h-kr">회전베기</span></div>
+          <small>360° 돌며 주변 적을 베기</small>
+          <span class="cost">MP 15</span></div>
+        </div>
+        <div class="skill">
+          <img class="icon" src="img/skill_ultimate.png" alt="">
+          <div><div class="name"><img class="pixel" src="img/key_r.png" alt="R"><span class="h-kr">궁극기</span></div>
+          <small>화면 안의 적을 한꺼번에 공격</small>
+          <span class="cost">MP 50</span></div>
+        </div>
+      </div>
+      <div class="mp-note"><span class="bar"></span><span><b>대시는 MP 없이</b> 써요. 나머지는 MP(파란 바)를 쓰고, 쓴 뒤 잠시 기다려야 해요.</span></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="label"><span class="n">4</span>알아두면 좋아요</div>
+    <div class="tips">
+      <div class="frame tip">
+        <div class="ico"><img class="pixel" src="img/wisp.png" alt=""></div>
+        <span><b>보라색 위습</b>을 베면 HP·MP가 회복돼요.</span>
+      </div>
+      <div class="frame tip">
+        <div class="ico"><span class="bang">!</span></div>
+        <span>쓰러지면 <b>계속하기</b>를 누르세요. 그 자리에서 다시 시작해요.</span>
+      </div>
+      <div class="frame tip">
+        <div class="ico"><span class="bar" style="width:10mm;height:3.4mm"></span></div>
+        <span><b>MP는 저절로 차지 않아요.</b> 아껴 쓰세요.</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="ground"></div>
+</main>
+
+<!-- =====================================================
+     2장 — 맵 · 몬스터
+     ===================================================== -->
+<main class="sheet">
+
+  <header class="head small">
+    <img class="logo" src="img/logo.png" alt="MOUSWORD">
+    <div class="h-kr">맵 · 몬스터</div>
+  </header>
+
+  <section style="margin-top:3mm">
+    <div class="label"><span class="n">5</span>모험 지도<span class="sub">스테이지 끝까지 가면 다음 스테이지로 넘어가요</span></div>
+    <div class="route">
+      <div class="frame node">
+        <span class="tag">Stage 1</span>
+        <div class="h-kr">연습 스테이지</div>
+        <p>표지판 가까이 가면 조작법이 나와요.</p>
+        <div class="mini"><img src="img/slime.png" alt="슬라임"><img class="pixel s" src="img/wisp.png" alt="위습"></div>
+      </div>
+      <div class="arrow">▶</div>
+      <div class="frame node">
+        <span class="tag">Stage 2</span>
+        <div class="h-kr">본격 전투</div>
+        <p>고블린 · 박쥐 · 해골이 나와요.</p>
+        <div class="mini"><img src="img/goblin.png" alt="고블린"><img src="img/bat.png" alt="박쥐"><img src="img/skeleton.png" alt="해골"></div>
+      </div>
+      <div class="arrow">▶</div>
+      <div class="frame node boss">
+        <span class="tag">Boss</span>
+        <div class="h-kr">골렘의 방</div>
+        <p>들어가면 문이 닫혀요. 골렘을 쓰러뜨려야 끝나요.</p>
+        <div class="mini"><img src="img/golem.png" alt="골렘"><img src="img/minigolem.png" alt="미니 골렘" style="max-height:5.5mm"></div>
+      </div>
+      <div class="arrow">▶</div>
+      <div class="frame node end">
+        <span class="tag">Ending</span>
+        <div class="h-kr" style="margin-top:1mm">클리어!</div>
+      </div>
+    </div>
+    <div class="frame cream map-notes">
+      <div>스테이지를 넘어가면 <b>HP·MP 가득!</b></div>
+      <div>MP 회복은 <b>위습 · 스테이지 이동</b>뿐</div>
+      <div>보스 방 위습은 <b>잠시 뒤 다시</b> 등장</div>
+    </div>
+  </section>
+
+  <section>
+    <div class="label"><span class="n">6</span>몬스터</div>
+    <div class="mobs">
+      <div class="frame mob">
+        <div class="pic"><img src="img/slime.png" alt=""></div>
+        <div>
+          <div class="top"><span class="h-kr">슬라임</span><span class="where">Stage 1 · 2</span></div>
+          <ul>
+            <li>평소엔 좌우로 왔다 갔다 해요.</li>
+            <li>가까이 오면 다가와 몸으로 공격해요.</li>
+            <li class="tipline">가장 약한 적. 휘두르기 연습 상대!</li>
+          </ul>
+        </div>
+      </div>
+      <div class="frame mob">
+        <div class="pic"><img src="img/goblin.png" alt=""></div>
+        <div>
+          <div class="top"><span class="h-kr">고블린</span><span class="where">Stage 2</span></div>
+          <ul>
+            <li>멀리서 <b>단검</b>을 일직선으로 던져요.</li>
+            <li>가까이 가면 <b>뒤로 도망쳐</b> 거리를 벌려요.</li>
+            <li class="tipline">단검은 점프로 피하고, 대시로 붙으세요.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="frame mob">
+        <div class="pic"><img src="img/bat.png" alt=""></div>
+        <div>
+          <div class="top"><span class="h-kr">박쥐</span><span class="where">Stage 2</span></div>
+          <ul>
+            <li>플레이어를 향해 <b>빠르게 돌진</b>해요.</li>
+            <li>돌진 후 잠깐 멈췄다가 또 돌진해요.</li>
+            <li class="tipline">멈춘 틈에 베세요. 체력이 약해요.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="frame mob">
+        <div class="pic"><img src="img/skeleton.png" alt=""></div>
+        <div>
+          <div class="top"><span class="h-kr">해골 궁수</span><span class="where">Stage 2</span></div>
+          <ul>
+            <li>아주 멀리서 <b>조준해 화살</b>을 쏴요.</li>
+            <li>평소엔 좌우로 순찰해요.</li>
+            <li class="tipline">체력이 약해요. 다가가서 빨리 처치!</li>
+          </ul>
+        </div>
+      </div>
+      <div class="frame mob">
+        <div class="pic"><img src="img/minigolem.png" alt="" style="max-height:13mm"></div>
+        <div>
+          <div class="top"><span class="h-kr">미니 골렘</span><span class="where">Boss</span></div>
+          <ul>
+            <li>보스 골렘이 <b>2마리씩</b> 불러내요.</li>
+            <li>빠르게 쫓아와 가까이서 공격해요.</li>
+            <li class="tipline">둘러싸이면 Q 회전베기!</li>
+          </ul>
+        </div>
+      </div>
+      <div class="frame mob friend">
+        <div class="pic"><img class="pixel tiny" src="img/wisp.png" alt=""></div>
+        <div>
+          <div class="top"><span class="h-kr">위습</span><span class="where">모든 스테이지 · 회복</span></div>
+          <ul>
+            <li>공격하지 않고 천천히 떠다녀요.</li>
+            <li>베면 <b>HP +20 · MP +5</b> 회복!</li>
+            <li class="tipline">보이면 꼭 베세요.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="label"><span class="n">7</span>보스</div>
+    <div class="frame boss-card">
+      <div class="pic">
+        <img class="g" src="img/golem.png" alt="">
+        <div class="nm">골렘</div>
+        <div class="hp">HP 500</div>
+      </div>
+      <div class="phases">
+        <div class="phase">
+          <div class="ph">1페이즈</div>
+          <ul>
+            <li>가까이 있으면 <b>내려찍기</b>.</li>
+            <li>멀리 있거나 다른 발판에 있으면 <b>바위 던지기</b>, 또는 <b>플레이어 쪽으로 점프</b>.</li>
+          </ul>
+        </div>
+        <div class="phase p2">
+          <div class="ph">2페이즈 · 체력 절반 이하</div>
+          <ul>
+            <li>공격이 잦아지고 <b>바위가 빨라져요</b>.</li>
+            <li><b>미니 골렘 2마리</b>를 불러내요.<img class="mg" src="img/minigolem.png" alt=""></li>
+          </ul>
+        </div>
+        <div class="boss-tip"><span class="k">공략</span><span>점프 착지 지점에서 벗어나세요. 위습으로 MP를 모아 두었다가 <b style="color:var(--cream)">R 궁극기(MP 50)</b>로 한 방에!</span></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="ground"></div>
+</main>
+
+</body>
+</html>

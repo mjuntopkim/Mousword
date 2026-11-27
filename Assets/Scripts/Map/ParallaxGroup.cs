@@ -35,6 +35,16 @@ public class ParallaxGroup : MonoBehaviour
 
     void LateUpdate()
     {
+
+        // 카메라가 삭제됐으면(씬 전환 등) 현재 메인 카메라를 다시 찾음
+        if (cam == null)
+        {
+            if (Camera.main == null) return;   // 아직 카메라가 없으면 이번 프레임은 건너뜀
+            cam = Camera.main.transform;
+            SnapToCamera();                    // 새 카메라 위치에 배경을 다시 맞춤
+            isFirstFrame = true;
+        }
+
         Vector3 camDelta = cam.position - lastCamPos;
 
         if (isFirstFrame || camDelta.magnitude > 5f)

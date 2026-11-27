@@ -698,11 +698,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Goblin
   HPSlider: {fileID: 750406452869104864}
-  maxHP: 60
-  currentHP: 0
+  maxHP: 45
+  currentHP: 45
   moveSpeed: 4
   constMoveSpeed: 0
-  damage: 20
+  damage: 15
   player: {fileID: 9176715121401992591, guid: 827bfade240a89c47bd0be19baa596b8, type: 3}
   recognizeRadius: 8
   attackRadius: 6
@@ -715,6 +715,7 @@ MonoBehaviour:
   curWaitTime: 0
   anim: {fileID: 0}
   isAnimeEnd: 1
+  dieAnimTime: 1
   maxIdleMoveDistance: 3
   startPosition: {x: 0, y: 0}
   curMoveDistance: 0
@@ -724,6 +725,10 @@ MonoBehaviour:
   Knife: {fileID: 3934052394803077905, guid: 19979647c18bafc44825c38f38178f12, type: 3}
   knifeSpawnPoint: {fileID: 4651966347684219695}
   isAttack: 0
+  directionDeadZone: 0.1
+  kiteStartOffset: 1.5
+  kiteStopOffset: 0.5
+  isKiting: 0
 --- !u!1 &7671046720491438210
 GameObject:
   m_ObjectHideFlags: 0

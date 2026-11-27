@@ -26,6 +26,24 @@ public class MiniGolem : Monster
         fsm = new FSM(new MiniGolemState.IdleState(this));
     }
 
+    // [추가] 보스(골렘)가 죽으면 같이 죽도록 보스 사망 이벤트 구독
+    // static 이벤트이므로 삭제된 미니 골렘이 남지 않도록 OnDisable에서 반드시 구독 해제
+    private void OnEnable()
+    {
+        Golem.OnBossDead += HandleBossDead;
+    }
+
+    private void OnDisable()
+    {
+        Golem.OnBossDead -= HandleBossDead;
+    }
+
+    private void HandleBossDead()
+    {
+        if (currentHP <= 0) return; // 이미 죽은 경우 사망 처리 중복 방지
+        TakeDamage(currentHP);      // 남은 체력만큼 데미지 → 기존 사망 처리(Die 애니메이션, 2초 뒤 삭제) 그대로 사용
+    }
+
     protected override void setState()
     {
         if (curState == state.die || !isAnimeEnd) return;

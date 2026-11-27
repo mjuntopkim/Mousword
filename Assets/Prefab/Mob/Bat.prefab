@@ -175,7 +175,7 @@ Transform:
   m_GameObject: {fileID: 1449541251480305522}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -1.05163, y: 0, z: 0}
+  m_LocalPosition: {x: -1, y: 0, z: 0}
   m_LocalScale: {x: 0.210326, y: 0.2, z: 0.5733024}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -213,6 +213,7 @@ Transform:
   m_Children:
   - {fileID: 6396561303664377352}
   - {fileID: 7345775521969752427}
+  - {fileID: 8179901158250631533}
   m_Father: {fileID: 5417442777306207449}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &5238955026556525295
@@ -809,6 +810,7 @@ MonoBehaviour:
   attackRadius: 8
   distanceToPlayer: 0
   groundCheck: {fileID: 7345775521969752427}
+  wallCheck: {fileID: 8179901158250631533}
   monsterAttackHitbox: {fileID: 0}
   isWait: 0
   maxWaitTime: 2
@@ -882,3 +884,34 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &8517399445934071984
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8179901158250631533}
+  m_Layer: 7
+  m_Name: WallCheck
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8179901158250631533
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8517399445934071984}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -1, y: 0, z: 0}
+  m_LocalScale: {x: 0.210326, y: 0.2, z: 0.5733023}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 528939685574218841}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
